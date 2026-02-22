@@ -711,47 +711,50 @@ const handleRecalculate = () => {
           )}
         </div>
       </div>
-      {results.bandcamp.vinyl_price && (
-        <div className="bandcamp-price-card">
-          <div className="bandcamp-price-label">Vinyl</div>
-          <div className="bandcamp-price-value">
-            ${results.bandcamp.vinyl_price.toFixed(2)}
-            {results.bandcamp.vinyl_currency !== "USD" && (
-              <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
-                ({results.bandcamp.vinyl_price_original} {results.bandcamp.vinyl_currency})
-              </span>
-            )}
-          </div>
-          <div className="bandcamp-price-note">
-            {results.bandcamp.vinyl_ships_from
-              ? "Ships from " + results.bandcamp.vinyl_ships_from
-              : results.bandcamp.vinyl_is_intl ? "International" : "Ships from US"}
-          </div>
-          {results.bandcamp.vinyl_sold_out && (
-            <div className="intl-shipping-note">Sold out on Bandcamp</div>
-          )}
-          {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
-            <div className="shipping-input-row">
-              <div className="shipping-input-label">
-                Intl Shipping Cost
-                <span>Estimated $20 — enter actual cost to recalculate</span>
-              </div>
-              <div className="shipping-input-field">
-                <input
-                  type="number"
-                  value={shippingInput}
-                  onChange={(e) => setShippingInput(parseFloat(e.target.value) || 0)}
-                  min={0}
-                  step={1}
-                />
-              </div>
-              <button className="shipping-recalc-btn" onClick={handleRecalculate}>
-                Recalc
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="bandcamp-price-card">
+  <div className="bandcamp-price-label">Vinyl</div>
+  <div className="bandcamp-price-value">
+    ${results.bandcamp.vinyl_price.toFixed(2)}
+    {results.bandcamp.vinyl_currency !== "USD" && (
+      <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
+        ({results.bandcamp.vinyl_price_original} {results.bandcamp.vinyl_currency})
+      </span>
+    )}
+  </div>
+  {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
+    <div className="bandcamp-price-note" style={{marginTop: "4px"}}>
+      + ${shippingCost.toFixed(2)} shipping = <strong style={{color: "#e8e0d0"}}>${(results.bandcamp.vinyl_price + shippingCost).toFixed(2)} total</strong>
+    </div>
+  )}
+  <div className="bandcamp-price-note">
+    {results.bandcamp.vinyl_ships_from
+      ? "Ships from " + results.bandcamp.vinyl_ships_from
+      : results.bandcamp.vinyl_is_intl ? "International" : "Ships from US"}
+  </div>
+  {results.bandcamp.vinyl_sold_out && (
+    <div className="intl-shipping-note">Sold out on Bandcamp</div>
+  )}
+  {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
+    <div className="shipping-input-row">
+      <div className="shipping-input-label">
+        Intl Shipping Cost
+        <span>Estimated $20 — enter actual cost to recalculate</span>
+      </div>
+      <div className="shipping-input-field">
+        <input
+          type="number"
+          value={shippingInput}
+          onChange={(e) => setShippingInput(parseFloat(e.target.value) || 0)}
+          min={0}
+          step={1}
+        />
+      </div>
+      <button className="shipping-recalc-btn" onClick={handleRecalculate}>
+        Recalc
+      </button>
+    </div>
+  )}
+</div>
     </div>
     <a className="bandcamp-visit" href={results.bandcamp.url} target="_blank" rel="noreferrer">
       View on Bandcamp ↗
