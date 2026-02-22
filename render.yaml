@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: record-finder-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DISCOGS_TOKEN
+        sync: false
