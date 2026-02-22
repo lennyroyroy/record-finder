@@ -372,7 +372,128 @@ const STYLES = `
     .release-header { grid-template-columns: 80px 1fr; }
     .release-cover { width: 80px; height: 80px; }
   }
-`;
+    .bandcamp-section {
+    margin-bottom: 28px;
+  }
+
+  .bandcamp-prices {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .bandcamp-price-card {
+    flex: 1;
+    padding: 12px 14px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .bandcamp-price-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+  }
+
+  .bandcamp-price-value {
+    font-size: 18px;
+    color: #e8e0d0;
+  }
+
+  .bandcamp-price-note {
+    font-size: 10px;
+    color: #444;
+  }
+
+  .bandcamp-visit {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 10px;
+    color: #c8a96e;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .bandcamp-visit:hover { text-decoration: underline; }
+  
+  .shipping-input-row {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #0e0e0e;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .shipping-input-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+    flex: 1;
+  }
+
+  .shipping-input-label span {
+    display: block;
+    font-size: 9px;
+    color: #444;
+    margin-top: 3px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .shipping-input-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .shipping-input-field input {
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    color: #e8e0d0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 8px 10px;
+    width: 80px;
+    outline: none;
+    text-align: right;
+    transition: border-color 0.2s;
+  }
+
+  .shipping-input-field input:focus { border-color: #c8a96e; }
+
+  .shipping-recalc-btn {
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid #c8a96e;
+    color: #c8a96e;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .shipping-recalc-btn:hover {
+    background: #c8a96e;
+    color: #0e0e0e;
+  }
+
+  .intl-shipping-note {
+    font-size: 10px;
+    color: #c87070;
+    margin-top: 4px;
+  }
+  `;
 
 export default function App() {
   const [artist, setArtist] = useState("");
@@ -381,14 +502,17 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [results, setResults] = useState(null);
+  const [shippingCost, setShippingCost] = useState(20);
+  const [shippingInput, setShippingInput] = useState(20);
 
-  const handleSearch = async () => {
+  const handleSearch = async (overrideShipping = null) => {
     if (!artist.trim() || !album.trim()) return;
     setLoading(true);
     setError(null);
     setResults(null);
     try {
-      const params = new URLSearchParams({ artist, album, threshold });
+      const shipping = overrideShipping !== null ? overrideShipping : shippingCost;
+      const params = new URLSearchParams({ artist, album, threshold, shipping_cost: shipping });
       const res = await fetch("http://localhost:5001/search?" + params);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -399,6 +523,12 @@ export default function App() {
       setLoading(false);
     }
   };
+
+const handleRecalculate = () => {
+    const cost = parseFloat(shippingInput) || 0;
+    setShippingCost(cost);
+    handleSearch(cost);
+};
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleSearch();
@@ -562,9 +692,76 @@ export default function App() {
               )}
             </div>
 
-            <div className="bandcamp-note">
-              <span>Bandcamp pricing coming soon.</span> Once added, the decision engine will factor in digital and vinyl prices from Bandcamp and compare against retail to give you a complete recommendation.
+{results.bandcamp ? (
+  <div className="bandcamp-section">
+    <div className="section-title">Bandcamp</div>
+    <div className="bandcamp-prices">
+      <div className="bandcamp-price-card">
+        <div className="bandcamp-price-label">Digital</div>
+        <div className="bandcamp-price-value">
+          {results.bandcamp.digital_price !== null
+            ? (results.bandcamp.digital_price === 0
+                ? "Free / NYP"
+                : "$" + results.bandcamp.digital_price.toFixed(2))
+            : "Not found"}
+          {results.bandcamp.digital_currency !== "USD" && results.bandcamp.digital_price > 0 && (
+            <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
+              ({results.bandcamp.digital_price_original} {results.bandcamp.digital_currency})
+            </span>
+          )}
+        </div>
+      </div>
+      {results.bandcamp.vinyl_price && (
+        <div className="bandcamp-price-card">
+          <div className="bandcamp-price-label">Vinyl</div>
+          <div className="bandcamp-price-value">
+            ${results.bandcamp.vinyl_price.toFixed(2)}
+            {results.bandcamp.vinyl_currency !== "USD" && (
+              <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
+                ({results.bandcamp.vinyl_price_original} {results.bandcamp.vinyl_currency})
+              </span>
+            )}
+          </div>
+          <div className="bandcamp-price-note">
+            {results.bandcamp.vinyl_ships_from
+              ? "Ships from " + results.bandcamp.vinyl_ships_from
+              : results.bandcamp.vinyl_is_intl ? "International" : "Ships from US"}
+          </div>
+          {results.bandcamp.vinyl_sold_out && (
+            <div className="intl-shipping-note">Sold out on Bandcamp</div>
+          )}
+          {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
+            <div className="shipping-input-row">
+              <div className="shipping-input-label">
+                Intl Shipping Cost
+                <span>Estimated $20 — enter actual cost to recalculate</span>
+              </div>
+              <div className="shipping-input-field">
+                <input
+                  type="number"
+                  value={shippingInput}
+                  onChange={(e) => setShippingInput(parseFloat(e.target.value) || 0)}
+                  min={0}
+                  step={1}
+                />
+              </div>
+              <button className="shipping-recalc-btn" onClick={handleRecalculate}>
+                Recalc
+              </button>
             </div>
+          )}
+        </div>
+      )}
+    </div>
+    <a className="bandcamp-visit" href={results.bandcamp.url} target="_blank" rel="noreferrer">
+      View on Bandcamp ↗
+    </a>
+  </div>
+) : (
+  <div className="bandcamp-note">
+    <span>Bandcamp not found</span> — search manually at bandcamp.com
+  </div>
+)}
 
           </div>
         )}
