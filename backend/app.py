@@ -223,6 +223,8 @@ def scrape_bandcamp_album(url):
 
         # Bandcamp sometimes reports digital currency as USD even for non-US labels
         # If a vinyl package has a different currency, trust that instead
+
+
         for pkg in packages:
             pkg_currency = pkg.get("currency", "USD") or "USD"
             if pkg_currency != "USD":
@@ -240,12 +242,16 @@ def scrape_bandcamp_album(url):
             title = (pkg.get("title") or "").lower()
             desc = (pkg.get("description_summary") or "").lower()
 
-            is_vinyl = any(kw in title or kw in desc for kw in ["vinyl", " lp", "12\"", "12 inch", "record", "7\"", "7 inch"])
+            is_vinyl = any(kw in title or kw in desc for kw in ["vinyl", " lp", "12\"", "12 inch", "7\"", "7 inch"])
             if not is_vinyl:
                 continue
 
             # Sold out check
-            qty_available = pkg.get("qty_available", 1)
+            qty_available = pkg.get("quantity_available")
+            if qty_available is None:
+                origins = pkg.get("origins", [])
+                if origins:
+                    qty_available = origins[0].get("quantity_available")
             sold_out = qty_available is not None and qty_available <= 0
             result["vinyl_sold_out"] = sold_out
 
@@ -274,7 +280,7 @@ def scrape_bandcamp_album(url):
 
 # --- DECISION ENGINE ---
 
-def make_decision(threshold, bandcamp_digital, bandcamp_vinyl, bandcamp_vinyl_intl_shipping, discogs_us, discogs_intl, retail):
+def make_decision(threshold, bandcamp_digital, bandcamp_vinyl, bandcamp_vinyl_intl_shipping, discogs_us, discogs_intl, retail, bandcamp_vinyl_sold_out=False):
     options = []
 
     # Discogs US vinyl
@@ -350,10 +356,13 @@ def make_decision(threshold, bandcamp_digital, bandcamp_vinyl, bandcamp_vinyl_in
             "all_options": options
         }
     elif digital_options:
+        reason = f"No vinyl option found within your ${threshold} threshold. Buy digital on Bandcamp."
+        if bandcamp_vinyl_sold_out:
+            reason = f"Vinyl is sold out on Bandcamp. Check Discogs for available copies or buy digital."
         return {
             "decision": "Buy Digital",
             "best_option": digital_options[0],
-            "reason": f"No vinyl option found within your ${threshold} threshold. Buy digital on Bandcamp.",
+            "reason": reason,
             "runner_up": None,
             "all_options": options
         }
@@ -422,7 +431,8 @@ def search():
         bandcamp_vinyl_intl_shipping=bandcamp_vinyl_intl_shipping,
         discogs_us=discogs_us,
         discogs_intl=discogs_intl,
-        retail=None
+        retail=None,
+        bandcamp_vinyl_sold_out=bc_data.get("vinyl_sold_out", False) if bc_album_url else False
     )
 
     return jsonify({
