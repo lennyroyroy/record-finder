@@ -514,7 +514,9 @@ export default function App() {
     try {
       const shipping = overrideShipping !== null ? overrideShipping : shippingCost;
       const params = new URLSearchParams({ artist, album, threshold, shipping_cost: shipping, bandcamp_url: bandcampUrl });
-      const res = await fetch("https://record-finder-backend.onrender.com/search?" + params);
+      const API = "http://localhost:5001"; // local
+      // const API = "https://record-finder-backend.onrender.com"; // production
+      const res = await fetch(API + "/search?" + params);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResults(data);
@@ -578,10 +580,10 @@ const handleRecalculate = () => {
           </div>
 
             <div className="field" style={{gridColumn: "1 / -1"}}>
-            <label>Bandcamp URL (optional)</label>
+            <label>Bandcamp URL (local only — optional)</label>
             <input
               type="text"
-              placeholder="e.g. https://burial.bandcamp.com/album/untrue"
+              placeholder="Paste Bandcamp album URL — only works when running locally"
               value={bandcampUrl}
               onChange={(e) => setBandcampUrl(e.target.value)}
               onKeyDown={handleKeyDown}
