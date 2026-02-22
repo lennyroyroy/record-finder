@@ -1,102 +1,97 @@
 import { useState } from "react";
 
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background-color: #0e0e0e;
-    color: #e8e0d0;
-    font-family: 'IBM Plex Mono', monospace;
+    background: #f5f0e8;
+    color: #1a1a1a;
+    font-family: 'DM Mono', monospace;
     min-height: 100vh;
-  }
-
-  .grain {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 100;
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
+    display: flex;
+    justify-content: center;
   }
 
   .app {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 60px 24px 120px;
+    width: 100%;
+    max-width: 680px;
+    padding: 48px 24px 120px;
   }
 
   .header {
-    margin-bottom: 56px;
-    border-bottom: 1px solid #2a2a2a;
-    padding-bottom: 32px;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid #1a1a1a;
   }
 
   .header-eyebrow {
     font-size: 10px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: #c8a96e;
-    margin-bottom: 12px;
+    color: #888;
+    margin-bottom: 10px;
   }
 
   .header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(32px, 6vw, 52px);
-    font-weight: 400;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
     line-height: 1.1;
-    color: #f0e8d8;
+    color: #1a1a1a;
     letter-spacing: -0.02em;
   }
 
   .header h1 em {
     font-style: italic;
-    color: #c8a96e;
+    font-weight: 400;
+    color: #c8622e;
   }
 
   .header-sub {
-    margin-top: 12px;
+    margin-top: 8px;
     font-size: 11px;
-    color: #555;
+    color: #999;
     letter-spacing: 0.05em;
   }
 
-  .search-form { margin-bottom: 48px; }
+  .search-form { margin-bottom: 36px; }
 
   .fields-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 
-  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
 
   .field label {
     font-size: 9px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #666;
+    color: #888;
+    font-weight: 500;
   }
 
   .field input {
-    background: #161616;
-    border: 1px solid #2a2a2a;
-    color: #e8e0d0;
-    font-family: 'IBM Plex Mono', monospace;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    color: #1a1a1a;
+    font-family: 'DM Mono', monospace;
     font-size: 13px;
-    padding: 12px 14px;
+    padding: 11px 13px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.15s;
     width: 100%;
+    border-radius: 4px;
   }
 
-  .field input:focus { border-color: #c8a96e; }
-  .field input::placeholder { color: #333; }
+  .field input:focus { border-color: #c8622e; }
+  .field input::placeholder { color: #bbb; }
 
-  .slider-row { margin-bottom: 20px; margin-top: 12px; }
+  .slider-row { margin: 12px 0; }
 
   .slider-label-row {
     display: flex;
@@ -105,202 +100,209 @@ const STYLES = `
     margin-bottom: 8px;
   }
 
-  .slider-label {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #666;
-  }
-
-  .slider-value { font-size: 13px; color: #c8a96e; }
+  .slider-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #888; }
+  .slider-value { font-size: 13px; color: #c8622e; font-weight: 500; }
 
   input[type="range"] {
     width: 100%;
     appearance: none;
-    background: #2a2a2a;
-    height: 2px;
+    background: #ddd;
+    height: 3px;
     outline: none;
     cursor: pointer;
+    border-radius: 2px;
   }
 
   input[type="range"]::-webkit-slider-thumb {
     appearance: none;
-    width: 14px;
-    height: 14px;
-    background: #c8a96e;
+    width: 16px;
+    height: 16px;
+    background: #c8622e;
     cursor: pointer;
+    border-radius: 50%;
   }
 
   .search-btn {
     width: 100%;
     padding: 14px;
-    background: #c8a96e;
-    color: #0e0e0e;
+    background: #1a1a1a;
+    color: #f5f0e8;
     border: none;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'DM Mono', monospace;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.2s, opacity 0.2s;
+    transition: background 0.15s;
+    border-radius: 4px;
+    margin-top: 4px;
   }
 
-  .search-btn:hover:not(:disabled) { background: #d4b87e; }
-  .search-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .search-btn:hover:not(:disabled) { background: #333; }
+  .search-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
   .error-msg {
     padding: 12px 16px;
-    border: 1px solid #4a2a2a;
-    background: #1a0e0e;
-    color: #c87070;
+    border: 1.5px solid #e8a090;
+    background: #fff5f3;
+    color: #c0392b;
     font-size: 11px;
     margin-bottom: 24px;
+    border-radius: 4px;
   }
 
-  .results { animation: fadeUp 0.4s ease forwards; }
+  .results { animation: fadeUp 0.35s ease forwards; }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
   .release-header {
     display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 20px;
-    margin-bottom: 32px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid #1e1e1e;
+    grid-template-columns: 90px 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
     align-items: start;
   }
 
   .release-cover {
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     object-fit: cover;
     display: block;
-    filter: sepia(10%);
+    border-radius: 3px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
   }
 
   .release-cover-placeholder {
-    width: 100px;
-    height: 100px;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    width: 90px;
+    height: 90px;
+    background: #e8e3da;
+    border-radius: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #333;
+    color: #bbb;
     font-size: 10px;
     letter-spacing: 0.1em;
   }
 
-  .release-meta {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 6px;
-  }
+  .release-meta { display: flex; flex-direction: column; justify-content: center; gap: 5px; }
 
   .release-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 400;
-    color: #f0e8d8;
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
     line-height: 1.2;
   }
 
-  .release-year { font-size: 11px; color: #555; letter-spacing: 0.1em; }
+  .release-year { font-size: 11px; color: #999; letter-spacing: 0.1em; }
 
   .release-link {
     font-size: 10px;
-    color: #c8a96e;
+    color: #c8622e;
     text-decoration: none;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-top: 4px;
     display: inline-block;
   }
 
   .release-link:hover { text-decoration: underline; }
 
+  /* DECISION CARD — the hero element */
   .decision-card {
-    padding: 24px;
+    border-radius: 6px;
+    padding: 28px;
     margin-bottom: 32px;
-    border: 1px solid #2a2a2a;
-    background: #111;
     position: relative;
     overflow: hidden;
   }
 
-  .decision-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
+  .decision-card.vinyl {
+    background: #1a1a1a;
+    color: #f5f0e8;
   }
 
-  .decision-card.vinyl::before { background: #c8a96e; }
-  .decision-card.digital::before { background: #6e9ec8; }
-  .decision-card.noresults::before { background: #444; }
+  .decision-card.digital {
+    background: #1e3a5f;
+    color: #f0f4f8;
+  }
+
+  .decision-card.noresults {
+    background: #e8e3da;
+    color: #888;
+    border: 1.5px solid #ddd;
+  }
 
   .decision-label {
     font-size: 9px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: #555;
-    margin-bottom: 10px;
-  }
-
-  .decision-verdict {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 400;
+    opacity: 0.5;
     margin-bottom: 8px;
   }
 
-  .decision-card.vinyl .decision-verdict { color: #c8a96e; }
-  .decision-card.digital .decision-verdict { color: #6e9ec8; }
-  .decision-card.noresults .decision-verdict { color: #555; }
+  .decision-verdict {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(32px, 6vw, 48px);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .decision-card.vinyl .decision-verdict { color: #f0c060; }
+  .decision-card.digital .decision-verdict { color: #7ec8f0; }
+  .decision-card.noresults .decision-verdict { color: #aaa; font-size: 28px; }
 
   .decision-reason {
-    font-size: 11px;
-    color: #666;
+    font-size: 12px;
+    opacity: 0.7;
     line-height: 1.6;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    max-width: 480px;
   }
 
   .decision-best {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
-    background: #0e0e0e;
-    border: 1px solid #1e1e1e;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    gap: 12px;
   }
 
-  .decision-best-source { font-size: 11px; color: #e8e0d0; }
-  .decision-best-price { font-size: 18px; color: #c8a96e; }
+  .decision-card.noresults .decision-best {
+    background: rgba(0,0,0,0.05);
+  }
+
+  .decision-best-source { font-size: 12px; opacity: 0.8; }
+  .decision-best-price { font-size: 22px; font-weight: 500; opacity: 1; }
+  .decision-card.vinyl .decision-best-price { color: #f0c060; }
+  .decision-card.digital .decision-best-price { color: #7ec8f0; }
 
   .decision-best a {
     font-size: 10px;
-    color: #555;
+    color: rgba(255,255,255,0.4);
     text-decoration: none;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  .decision-best a:hover { color: #c8a96e; }
+  .decision-best a:hover { color: rgba(255,255,255,0.8); }
 
   .section-title {
     font-size: 9px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: #555;
-    margin-bottom: 12px;
+    color: #999;
+    margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid #e0dbd2;
   }
 
   .listings-section { margin-bottom: 28px; }
@@ -310,96 +312,79 @@ const STYLES = `
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid #161616;
-    gap: 12px;
+    border-bottom: 1px solid #ece8e0;
+    gap: 10px;
   }
 
   .listing-row:last-child { border-bottom: none; }
-  .listing-country { font-size: 11px; color: #888; min-width: 40px; }
-  .listing-format { font-size: 10px; color: #444; flex: 1; letter-spacing: 0.05em; }
-  .listing-forsale { font-size: 10px; color: #444; }
-  .listing-price { font-size: 14px; color: #e8e0d0; min-width: 60px; text-align: right; }
+  .listing-country { font-size: 11px; color: #666; min-width: 60px; }
+  .listing-format { font-size: 10px; color: #aaa; flex: 1; letter-spacing: 0.05em; }
+  .listing-forsale { font-size: 10px; color: #bbb; white-space: nowrap; }
+  .listing-price { font-size: 15px; color: #1a1a1a; font-weight: 500; min-width: 60px; text-align: right; }
 
   .listing-link {
     font-size: 10px;
-    color: #c8a96e;
+    color: #c8622e;
     text-decoration: none;
     letter-spacing: 0.05em;
+    white-space: nowrap;
   }
 
   .listing-link:hover { text-decoration: underline; }
 
   .empty-state {
     font-size: 11px;
-    color: #333;
-    padding: 16px 0;
+    color: #bbb;
+    padding: 14px 0;
     font-style: italic;
   }
 
   .retail-section { margin-bottom: 28px; }
 
-  .retail-links {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 4px;
-  }
+  .retail-links { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
 
   .retail-link-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
-    background: #111;
-    border: 1px solid #2a2a2a;
+    padding: 11px 14px;
+    background: #fff;
+    border: 1.5px solid #e0dbd2;
     text-decoration: none;
-    transition: border-color 0.2s;
+    border-radius: 4px;
+    transition: border-color 0.15s, background 0.15s;
   }
 
-  .retail-link-row:hover { border-color: #c8a96e; }
-  .retail-link-name { font-size: 11px; color: #e8e0d0; letter-spacing: 0.05em; }
-  .retail-link-action { font-size: 10px; color: #c8a96e; letter-spacing: 0.1em; text-transform: uppercase; }
+  .retail-link-row:hover { border-color: #c8622e; background: #fff9f6; }
+  .retail-link-name { font-size: 12px; color: #1a1a1a; font-weight: 500; }
+  .retail-link-action { font-size: 10px; color: #c8622e; letter-spacing: 0.1em; text-transform: uppercase; }
 
-  .retail-note {
-    font-size: 10px;
-    color: #444;
-    margin-top: 8px;
-    line-height: 1.6;
-  }
+  .retail-note { font-size: 10px; color: #aaa; margin-top: 8px; line-height: 1.6; }
 
   .bandcamp-section { margin-bottom: 28px; }
 
-  .bandcamp-prices {
-    display: flex;
-    gap: 12px;
-    margin-top: 4px;
-  }
+  .bandcamp-prices { display: flex; gap: 10px; margin-top: 4px; }
 
   .bandcamp-price-card {
     flex: 1;
-    padding: 12px 14px;
-    background: #111;
-    border: 1px solid #2a2a2a;
+    padding: 14px;
+    background: #fff;
+    border: 1.5px solid #e0dbd2;
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
 
-  .bandcamp-price-label {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #555;
-  }
-
-  .bandcamp-price-value { font-size: 18px; color: #e8e0d0; }
-  .bandcamp-price-note { font-size: 10px; color: #444; }
+  .bandcamp-price-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #aaa; }
+  .bandcamp-price-value { font-size: 20px; color: #1a1a1a; font-weight: 500; }
+  .bandcamp-price-note { font-size: 10px; color: #aaa; }
 
   .bandcamp-visit {
     display: inline-block;
     margin-top: 10px;
     font-size: 10px;
-    color: #c8a96e;
+    color: #c8622e;
     text-decoration: none;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -409,79 +394,64 @@ const STYLES = `
 
   .shipping-input-row {
     margin-top: 12px;
-    padding: 12px 14px;
-    background: #0e0e0e;
-    border: 1px solid #2a2a2a;
+    padding: 12px;
+    background: #f5f0e8;
+    border: 1.5px solid #e0dbd2;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
   }
 
-  .shipping-input-label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #666;
-    flex: 1;
-  }
-
-  .shipping-input-label span {
-    display: block;
-    font-size: 9px;
-    color: #444;
-    margin-top: 3px;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-
+  .shipping-input-label { font-size: 10px; color: #888; flex: 1; line-height: 1.5; }
+  .shipping-input-label span { display: block; font-size: 9px; color: #bbb; margin-top: 2px; }
   .shipping-input-field { display: flex; align-items: center; gap: 6px; }
 
   .shipping-input-field input {
-    background: #161616;
-    border: 1px solid #2a2a2a;
-    color: #e8e0d0;
-    font-family: 'IBM Plex Mono', monospace;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    color: #1a1a1a;
+    font-family: 'DM Mono', monospace;
     font-size: 13px;
-    padding: 8px 10px;
-    width: 80px;
+    padding: 7px 10px;
+    width: 75px;
     outline: none;
     text-align: right;
-    transition: border-color 0.2s;
+    border-radius: 4px;
+    transition: border-color 0.15s;
   }
 
-  .shipping-input-field input:focus { border-color: #c8a96e; }
+  .shipping-input-field input:focus { border-color: #c8622e; }
 
   .shipping-recalc-btn {
     padding: 8px 14px;
-    background: transparent;
-    border: 1px solid #c8a96e;
-    color: #c8a96e;
-    font-family: 'IBM Plex Mono', monospace;
+    background: #1a1a1a;
+    border: none;
+    color: #f5f0e8;
+    font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    border-radius: 4px;
+    transition: background 0.15s;
   }
 
-  .shipping-recalc-btn:hover { background: #c8a96e; color: #0e0e0e; }
+  .shipping-recalc-btn:hover { background: #333; }
 
-  .intl-shipping-note { font-size: 10px; color: #c87070; margin-top: 4px; }
+  .intl-shipping-note { font-size: 10px; color: #e05030; margin-top: 4px; font-weight: 500; }
 
   .loading-state {
     text-align: center;
-    padding: 60px 0;
+    padding: 48px 0;
     font-size: 11px;
-    color: #444;
+    color: #aaa;
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }
 
-  .loading-dot {
-    display: inline-block;
-    animation: pulse 1.2s ease-in-out infinite;
-  }
+  .loading-dot { display: inline-block; animation: pulse 1.2s ease-in-out infinite; }
   .loading-dot:nth-child(2) { animation-delay: 0.2s; }
   .loading-dot:nth-child(3) { animation-delay: 0.4s; }
 
@@ -491,10 +461,13 @@ const STYLES = `
   }
 
   @media (max-width: 520px) {
+    .app { padding: 32px 16px 80px; }
     .fields-row { grid-template-columns: 1fr; }
-    .release-header { grid-template-columns: 80px 1fr; }
-    .release-cover { width: 80px; height: 80px; }
+    .release-header { grid-template-columns: 72px 1fr; }
+    .release-cover { width: 72px; height: 72px; }
     .bandcamp-prices { flex-direction: column; }
+    .decision-card { padding: 20px; }
+    .shipping-input-row { flex-direction: column; align-items: flex-start; }
   }
 `;
 
@@ -517,14 +490,11 @@ export default function App() {
     try {
       const shipping = overrideShipping !== null ? overrideShipping : shippingCost;
       const params = new URLSearchParams({
-        artist,
-        album,
-        threshold,
+        artist, album, threshold,
         shipping_cost: shipping,
         bandcamp_url: bandcampUrl
       });
-      // const API = "http://localhost:5001"; // local 
-      const API = "https://record-finder-backend.onrender.com"; // production
+      const API = import.meta.env.VITE_API_URL;
       const res = await fetch(API + "/search?" + params);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -542,9 +512,7 @@ export default function App() {
     handleSearch(cost);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSearch();
-  };
+  const handleKeyDown = (e) => { if (e.key === "Enter") handleSearch(); };
 
   const release = results ? results.release : null;
   const decision = results ? results.decision : null;
@@ -553,35 +521,31 @@ export default function App() {
   const isVinyl = decision && decision.decision === "Buy Vinyl";
   const isNoResults = decision && decision.decision === "No Results";
   const isRecentRelease = release && release.year && parseInt(release.year) >= new Date().getFullYear() - 2;
-
-  const buildRetailLinks = (a, b) => {
-    const query = encodeURIComponent(a + " " + b + " vinyl");
-    return [
-      { name: "Amazon", url: "https://www.amazon.com/s?k=" + query },
-      { name: "Walmart", url: "https://www.walmart.com/search?q=" + query },
-      { name: "Target", url: "https://www.target.com/s?searchTerm=" + query }
-    ];
-  };
-
   const decisionClass = isVinyl ? "decision-card vinyl" : isNoResults ? "decision-card noresults" : "decision-card digital";
-  const retailLinks = buildRetailLinks(artist, album).map(function(r, i) {
+
+  const retailLinks = isRecentRelease ? ["Amazon", "Walmart", "Target"].map(function(name, i) {
+    const query = encodeURIComponent(artist + " " + album + " vinyl");
+    const urls = {
+      Amazon: "https://www.amazon.com/s?k=" + query,
+      Walmart: "https://www.walmart.com/search?q=" + query,
+      Target: "https://www.target.com/s?searchTerm=" + query
+    };
     return (
-      <a key={i} className="retail-link-row" href={r.url} target="_blank" rel="noreferrer">
-        <span className="retail-link-name">{r.name}</span>
+      <a key={i} className="retail-link-row" href={urls[name]} target="_blank" rel="noreferrer">
+        <span className="retail-link-name">{name}</span>
         <span className="retail-link-action">Search ↗</span>
       </a>
     );
-  });
+  }) : null;
 
   return (
     <>
       <style>{STYLES}</style>
-      <div className="grain" />
       <div className="app">
 
         <header className="header">
           <p className="header-eyebrow">Record Procurement Tool</p>
-          <h1>Find the <em>best way</em><br />to buy this record</h1>
+          <h1>Should I buy the <em>vinyl</em><br />or go digital?</h1>
           <p className="header-sub">Discogs · Bandcamp · Retail — your rules, one answer</p>
         </header>
 
@@ -589,35 +553,23 @@ export default function App() {
           <div className="fields-row">
             <div className="field">
               <label>Artist</label>
-              <input
-                type="text"
-                placeholder="e.g. Burial"
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
+              <input type="text" placeholder="e.g. Burial" value={artist}
+                onChange={(e) => setArtist(e.target.value)} onKeyDown={handleKeyDown} />
             </div>
             <div className="field">
               <label>Album</label>
-              <input
-                type="text"
-                placeholder="e.g. Untrue"
-                value={album}
-                onChange={(e) => setAlbum(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
+              <input type="text" placeholder="e.g. Untrue" value={album}
+                onChange={(e) => setAlbum(e.target.value)} onKeyDown={handleKeyDown} />
             </div>
           </div>
 
           <div className="field" style={{marginBottom: "12px"}}>
             <label>Bandcamp URL (local only — optional)</label>
-            <input
-              type="text"
+            <input type="text"
               placeholder="Paste Bandcamp album URL — only works when running locally"
               value={bandcampUrl}
               onChange={(e) => setBandcampUrl(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
+              onKeyDown={handleKeyDown} />
           </div>
 
           <div className="slider-row">
@@ -625,21 +577,12 @@ export default function App() {
               <span className="slider-label">Vinyl Premium Threshold</span>
               <span className="slider-value">${threshold}</span>
             </div>
-            <input
-              type="range"
-              min={0}
-              max={50}
-              step={1}
-              value={threshold}
-              onChange={(e) => setThreshold(Number(e.target.value))}
-            />
+            <input type="range" min={0} max={50} step={1} value={threshold}
+              onChange={(e) => setThreshold(Number(e.target.value))} />
           </div>
 
-          <button
-            className="search-btn"
-            onClick={handleSearch}
-            disabled={loading || !artist.trim() || !album.trim()}
-          >
+          <button className="search-btn" onClick={() => handleSearch()}
+            disabled={loading || !artist.trim() || !album.trim()}>
             {loading ? "Searching..." : "Find Best Price"}
           </button>
         </div>
@@ -659,18 +602,14 @@ export default function App() {
           <div className="results">
 
             <div className="release-header">
-              {release && release.cover ? (
-                <img className="release-cover" src={release.cover} alt={release.title} />
-              ) : (
-                <div className="release-cover-placeholder">No Art</div>
-              )}
+              {release && release.cover
+                ? <img className="release-cover" src={release.cover} alt={release.title} />
+                : <div className="release-cover-placeholder">No Art</div>}
               <div className="release-meta">
                 <div className="release-title">
                   {release && release.title ? release.title : artist + " — " + album}
                 </div>
-                {release && release.year && (
-                  <div className="release-year">{release.year}</div>
-                )}
+                {release && release.year && <div className="release-year">{release.year}</div>}
                 {release && release.discogs_url && (
                   <a className="release-link" href={release.discogs_url} target="_blank" rel="noreferrer">
                     View on Discogs ↗
@@ -689,9 +628,7 @@ export default function App() {
                     <div>
                       <div className="decision-best-source">{decision.best_option.source}</div>
                       {decision.best_option.url && (
-                        <a href={decision.best_option.url} target="_blank" rel="noreferrer">
-                          Go to listing ↗
-                        </a>
+                        <a href={decision.best_option.url} target="_blank" rel="noreferrer">Go to listing ↗</a>
                       )}
                     </div>
                     <div className="decision-best-price">
@@ -712,9 +649,7 @@ export default function App() {
                   <span className="listing-price">${l.price ? l.price.toFixed(2) : "—"}</span>
                   <a className="listing-link" href={l.url} target="_blank" rel="noreferrer">View ↗</a>
                 </div>
-              )) : (
-                <div className="empty-state">No US listings found for this release.</div>
-              )}
+              )) : <div className="empty-state">No US listings found for this release.</div>}
             </div>
 
             <div className="listings-section">
@@ -727,20 +662,14 @@ export default function App() {
                   <span className="listing-price">${l.price ? l.price.toFixed(2) : "—"}</span>
                   <a className="listing-link" href={l.url} target="_blank" rel="noreferrer">View ↗</a>
                 </div>
-              )) : (
-                <div className="empty-state">No international listings found.</div>
-              )}
+              )) : <div className="empty-state">No international listings found.</div>}
             </div>
 
             {isRecentRelease && (
               <div className="retail-section">
                 <div className="section-title">Retail — New Release</div>
-                <div className="retail-links">
-                  {retailLinks}
-                </div>
-                <div className="retail-note">
-                  This is a recent release — check retail for new copies which may be cheaper than Discogs.
-                </div>
+                <div className="retail-links">{retailLinks}</div>
+                <div className="retail-note">Recent release — check retail for new copies which may be cheaper than Discogs.</div>
               </div>
             )}
 
@@ -752,12 +681,10 @@ export default function App() {
                     <div className="bandcamp-price-label">Digital</div>
                     <div className="bandcamp-price-value">
                       {results.bandcamp.digital_price !== null
-                        ? (results.bandcamp.digital_price === 0
-                            ? "Free / NYP"
-                            : "$" + results.bandcamp.digital_price.toFixed(2))
+                        ? (results.bandcamp.digital_price === 0 ? "Free / NYP" : "$" + results.bandcamp.digital_price.toFixed(2))
                         : "Not found"}
                       {results.bandcamp.digital_currency !== "USD" && results.bandcamp.digital_price > 0 && (
-                        <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
+                        <span style={{fontSize: "11px", color: "#aaa", marginLeft: "6px"}}>
                           ({results.bandcamp.digital_price_original} {results.bandcamp.digital_currency})
                         </span>
                       )}
@@ -770,14 +697,14 @@ export default function App() {
                       <div className="bandcamp-price-value">
                         ${results.bandcamp.vinyl_price.toFixed(2)}
                         {results.bandcamp.vinyl_currency !== "USD" && (
-                          <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
+                          <span style={{fontSize: "11px", color: "#aaa", marginLeft: "6px"}}>
                             ({results.bandcamp.vinyl_price_original} {results.bandcamp.vinyl_currency})
                           </span>
                         )}
                       </div>
                       {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
                         <div className="bandcamp-price-note" style={{marginTop: "4px"}}>
-                          + ${shippingCost.toFixed(2)} shipping = <strong style={{color: "#e8e0d0"}}>${(results.bandcamp.vinyl_price + shippingCost).toFixed(2)} total</strong>
+                          + ${shippingCost.toFixed(2)} shipping = <strong style={{color: "#1a1a1a"}}>${(results.bandcamp.vinyl_price + shippingCost).toFixed(2)} total</strong>
                         </div>
                       )}
                       <div className="bandcamp-price-note">
@@ -792,20 +719,14 @@ export default function App() {
                         <div className="shipping-input-row">
                           <div className="shipping-input-label">
                             Intl Shipping Cost
-                            <span>Estimated $20 — enter actual cost to recalculate</span>
+                            <span>Estimated $20 — enter actual to recalculate</span>
                           </div>
                           <div className="shipping-input-field">
-                            <input
-                              type="number"
-                              value={shippingInput}
+                            <input type="number" value={shippingInput}
                               onChange={(e) => setShippingInput(parseFloat(e.target.value) || 0)}
-                              min={0}
-                              step={1}
-                            />
+                              min={0} step={1} />
                           </div>
-                          <button className="shipping-recalc-btn" onClick={handleRecalculate}>
-                            Recalc
-                          </button>
+                          <button className="shipping-recalc-btn" onClick={handleRecalculate}>Recalc</button>
                         </div>
                       )}
                     </div>
