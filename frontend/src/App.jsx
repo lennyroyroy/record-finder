@@ -665,11 +665,23 @@ export default function App() {
               )) : <div className="empty-state">No international listings found.</div>}
             </div>
 
-            {isRecentRelease && (
+            {(isRecentRelease || true) && (
               <div className="retail-section">
-                <div className="section-title">Retail — New Release</div>
-                <div className="retail-links">{retailLinks}</div>
-                <div className="retail-note">Recent release — check retail for new copies which may be cheaper than Discogs.</div>
+                <div className="section-title">
+                  {isRecentRelease ? "Find It Elsewhere" : "Find on Bandcamp"}
+                </div>
+                <div className="retail-links">
+                  <a className="retail-link-row"
+                    href={"https://bandcamp.com/search?q=" + encodeURIComponent(artist + " " + album) + "&item_type=a"}
+                    target="_blank" rel="noreferrer">
+                    <span className="retail-link-name">Bandcamp</span>
+                    <span className="retail-link-action">Search ↗</span>
+                  </a>
+                  {isRecentRelease && retailLinks}
+                </div>
+                {isRecentRelease && (
+                  <div className="retail-note">Recent release — check retail for new copies which may be cheaper than Discogs.</div>
+                )}
               </div>
             )}
 
