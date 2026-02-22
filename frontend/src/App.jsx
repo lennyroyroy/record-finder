@@ -523,8 +523,8 @@ export default function App() {
         shipping_cost: shipping,
         bandcamp_url: bandcampUrl
       });
-      const API = "http://localhost:5001"; // local
-      // const API = "https://record-finder-backend.onrender.com"; // production
+      // const API = "http://localhost:5001"; // local 
+      const API = "https://record-finder-backend.onrender.com"; // production
       const res = await fetch(API + "/search?" + params);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
