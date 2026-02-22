@@ -504,6 +504,7 @@ export default function App() {
   const [results, setResults] = useState(null);
   const [shippingCost, setShippingCost] = useState(20);
   const [shippingInput, setShippingInput] = useState(20);
+  const [bandcampUrl, setBandcampUrl] = useState("");
 
   const handleSearch = async (overrideShipping = null) => {
     if (!artist.trim() || !album.trim()) return;
@@ -512,8 +513,8 @@ export default function App() {
     setResults(null);
     try {
       const shipping = overrideShipping !== null ? overrideShipping : shippingCost;
-      const params = new URLSearchParams({ artist, album, threshold, shipping_cost: shipping });
-      const res = await fetch("http://localhost:5001/search?" + params);
+      const params = new URLSearchParams({ artist, album, threshold, shipping_cost: shipping, bandcamp_url: bandcampUrl });
+      const res = await fetch("https://record-finder-backend.onrender.com/search?" + params);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResults(data);
@@ -574,6 +575,17 @@ const handleRecalculate = () => {
                 onKeyDown={handleKeyDown}
               />
             </div>
+          </div>
+
+            <div className="field" style={{gridColumn: "1 / -1"}}>
+            <label>Bandcamp URL (optional)</label>
+            <input
+              type="text"
+              placeholder="e.g. https://burial.bandcamp.com/album/untrue"
+              value={bandcampUrl}
+              onChange={(e) => setBandcampUrl(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </div>
 
           <div className="slider-row">

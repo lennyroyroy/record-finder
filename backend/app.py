@@ -141,35 +141,7 @@ def get_discogs_listings(releases):
 
 # --- BANDCAMP ---
 
-def search_bandcamp(artist, album):
-    """Search Bandcamp and return the best matching album URL."""
-    query = f"{artist} {album}"
-    search_url = f"https://bandcamp.com/search?q={requests.utils.quote(query)}&item_type=a"
 
-    try:
-        response = requests.get(search_url, headers=SCRAPE_HEADERS, timeout=10)
-        if response.status_code != 200:
-            print(f"Bandcamp search error: {response.status_code}")
-            return None
-
-        soup = BeautifulSoup(response.text, "html.parser")
-        results = soup.select(".result-items .searchresult")
-        print(f"Bandcamp search results: {len(results)}")
-
-        for result in results[:5]:
-            result_type = result.select_one(".itemtype")
-            if result_type and "ALBUM" in result_type.text.upper():
-                link = result.select_one(".itemurl a")
-                if link:
-                    url = link.get("href", "").split("?")[0]
-                    print(f"Bandcamp album URL: {url}")
-                    return url
-
-        return None
-
-    except Exception as e:
-        print(f"Bandcamp search exception: {e}")
-        return None
 
 
 def detect_bandcamp_country(soup, pkg):
@@ -429,19 +401,19 @@ def search():
     bandcamp_url = None
     bc_data = {}
 
-    bc_album_url = search_bandcamp(artist, album)
+    bc_album_url = request.args.get("bandcamp_url", "").strip()
     if bc_album_url:
         bc_data = scrape_bandcamp_album(bc_album_url)
         bandcamp_url = bc_album_url
         bandcamp_digital = bc_data.get("digital_price")
 
-    if bc_data.get("vinyl_price") and not bc_data.get("vinyl_sold_out"):
-        bandcamp_vinyl = bc_data["vinyl_price"]
-        if bc_data.get("vinyl_is_intl"):
-            try:
-                bandcamp_vinyl_intl_shipping = float(request.args.get("shipping_cost", 20.0))
-            except (ValueError, TypeError):
-                bandcamp_vinyl_intl_shipping = 20.0
+        if bc_data.get("vinyl_price") and not bc_data.get("vinyl_sold_out"):
+            bandcamp_vinyl = bc_data["vinyl_price"]
+            if bc_data.get("vinyl_is_intl"):
+                try:
+                    bandcamp_vinyl_intl_shipping = float(request.args.get("shipping_cost", 20.0))
+                except (ValueError, TypeError):
+                    bandcamp_vinyl_intl_shipping = 20.0
 
     decision = make_decision(
         threshold=threshold,
@@ -471,6 +443,21 @@ def search():
         } if bc_album_url else None,
         "decision": decision
     })
+
+@app.route("/debug-bandcamp", methods=["GET"])
+def debug_bandcamp():
+    url = request.args.get("url", "")
+    if not url:
+        return jsonify({"error": "no url provided"})
+    try:
+        response = requests.get(url, headers=SCRAPE_HEADERS, timeout=10)
+        return jsonify({
+            "status_code": response.status_code,
+            "content_length": len(response.text),
+            "first_500_chars": response.text[:500]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 @app.route("/health", methods=["GET"])
