@@ -1,0 +1,12 @@
+# Environment variables - NEVER share these
+.env
+
+# Python
+__pycache__/
+venv/
+
+# Node
+node_modules/
+
+# Mac junk
+.DS_Store
