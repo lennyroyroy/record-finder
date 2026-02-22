@@ -281,31 +281,36 @@ const STYLES = `
     border-radius: 6px;
     padding: 28px;
     margin-bottom: 32px;
-    background: #fff;
-    border: 1.5px solid #e0dbd2;
+    background: #2c4a3e;
+    color: #f0f5f2;
+    position: relative;
+    overflow: hidden;
   }
 
   .scout-label {
     font-size: 9px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: #aaa;
+    opacity: 0.5;
     margin-bottom: 8px;
   }
 
   .scout-title {
     font-family: 'Fraunces', serif;
-    font-size: 22px;
+    font-size: clamp(32px, 6vw, 48px);
     font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 6px;
+    color: #7ef0c0;
+    margin-bottom: 10px;
+    line-height: 1;
+    letter-spacing: -0.02em;
   }
 
   .scout-subtitle {
-    font-size: 11px;
-    color: #999;
+    font-size: 12px;
+    opacity: 0.7;
     line-height: 1.6;
     margin-bottom: 20px;
+    max-width: 480px;
   }
 
   .scout-best {
@@ -313,29 +318,30 @@ const STYLES = `
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    background: #f5f0e8;
+    background: rgba(255,255,255,0.08);
     border-radius: 4px;
     gap: 12px;
     margin-bottom: 8px;
   }
 
-  .scout-best-label { font-size: 11px; color: #666; }
-  .scout-best-price { font-size: 28px; font-weight: 700; color: #1a1a1a; }
-  .scout-best-source { font-size: 10px; color: #aaa; margin-top: 2px; }
+  .scout-best-label { font-size: 11px; opacity: 0.6; }
+  .scout-best-price { font-size: 28px; font-weight: 700; color: #7ef0c0; }
+  .scout-best-source { font-size: 10px; opacity: 0.5; margin-top: 2px; }
 
   .scout-best a {
     font-size: 10px;
-    color: #c8622e;
+    color: #7ef0c0;
     text-decoration: none;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    opacity: 0.8;
   }
 
-  .scout-best a:hover { text-decoration: underline; }
+  .scout-best a:hover { opacity: 1; }
 
   .scout-note {
     font-size: 10px;
-    color: #bbb;
+    opacity: 0.5;
     line-height: 1.6;
     margin-top: 10px;
   }
@@ -540,8 +546,7 @@ export default function App() {
         shipping_cost: shipping,
         bandcamp_url: bandcampUrl
       });
-      // const API = "http://localhost:5001"; // local
-      const API = "https://record-finder-backend.onrender.com"; // production
+      const API = import.meta.env.VITE_API_URL;
       const res = await fetch(API + "/search?" + params);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -715,7 +720,7 @@ export default function App() {
                     <div>
                       <div className="scout-best-label">Lowest price</div>
                       <div className="scout-best-source">
-                        {bestDiscogs.ships_from} · {bestDiscogs.num_for_sale} for sale
+                          {bestDiscogs.ships_from}{bestDiscogs.year ? " · " + bestDiscogs.year : ""} · {bestDiscogs.num_for_sale} for sale
                       </div>
                       {bestDiscogs.url && (
                         <a href={bestDiscogs.url} target="_blank" rel="noreferrer">View on Discogs ↗</a>
@@ -735,6 +740,7 @@ export default function App() {
               {discogsUs.length > 0 ? discogsUs.map((l, i) => (
                 <div className="listing-row" key={i}>
                   <span className="listing-country">US</span>
+                  <span className="listing-format">Vinyl{l.year ? " · " + l.year : ""}</span>
                   <span className="listing-format">Vinyl</span>
                   <span className="listing-forsale">{l.num_for_sale} for sale</span>
                   <span className="listing-price">${l.price.toFixed(2)}</span>
@@ -748,6 +754,7 @@ export default function App() {
               {discogsIntl.length > 0 ? discogsIntl.map((l, i) => (
                 <div className="listing-row" key={i}>
                   <span className="listing-country">{l.ships_from}</span>
+                  <span className="listing-format">Vinyl{l.year ? " · " + l.year : ""}</span>
                   <span className="listing-format">Vinyl</span>
                   <span className="listing-forsale">{l.num_for_sale} for sale</span>
                   <span className="listing-price">${l.price.toFixed(2)}</span>

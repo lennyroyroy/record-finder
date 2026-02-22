@@ -127,6 +127,7 @@ def get_discogs_listings(releases):
             "currency": "USD",
             "condition": "Various",
             "ships_from": country,
+            "year": release.get("year", ""),
             "num_for_sale": num_for_sale,
             "url": f"https://www.discogs.com/release/{release_id}"
         }
