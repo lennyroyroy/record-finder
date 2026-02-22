@@ -186,7 +186,6 @@ const STYLES = `
     justify-content: center;
     color: #bbb;
     font-size: 10px;
-    letter-spacing: 0.1em;
   }
 
   .release-meta { display: flex; flex-direction: column; justify-content: center; gap: 5px; }
@@ -212,7 +211,7 @@ const STYLES = `
 
   .release-link:hover { text-decoration: underline; }
 
-  /* DECISION CARD — the hero element */
+  /* MODE 1 — Full Analysis Decision Card */
   .decision-card {
     border-radius: 6px;
     padding: 28px;
@@ -221,21 +220,8 @@ const STYLES = `
     overflow: hidden;
   }
 
-  .decision-card.vinyl {
-    background: #1a1a1a;
-    color: #f5f0e8;
-  }
-
-  .decision-card.digital {
-    background: #1e3a5f;
-    color: #f0f4f8;
-  }
-
-  .decision-card.noresults {
-    background: #e8e3da;
-    color: #888;
-    border: 1.5px solid #ddd;
-  }
+  .decision-card.vinyl { background: #1a1a1a; color: #f5f0e8; }
+  .decision-card.digital { background: #1e3a5f; color: #f0f4f8; }
 
   .decision-label {
     font-size: 9px;
@@ -256,7 +242,6 @@ const STYLES = `
 
   .decision-card.vinyl .decision-verdict { color: #f0c060; }
   .decision-card.digital .decision-verdict { color: #7ec8f0; }
-  .decision-card.noresults .decision-verdict { color: #aaa; font-size: 28px; }
 
   .decision-reason {
     font-size: 12px;
@@ -276,12 +261,8 @@ const STYLES = `
     gap: 12px;
   }
 
-  .decision-card.noresults .decision-best {
-    background: rgba(0,0,0,0.05);
-  }
-
   .decision-best-source { font-size: 12px; opacity: 0.8; }
-  .decision-best-price { font-size: 22px; font-weight: 500; opacity: 1; }
+  .decision-best-price { font-size: 22px; font-weight: 500; }
   .decision-card.vinyl .decision-best-price { color: #f0c060; }
   .decision-card.digital .decision-best-price { color: #7ec8f0; }
 
@@ -295,6 +276,71 @@ const STYLES = `
 
   .decision-best a:hover { color: rgba(255,255,255,0.8); }
 
+  /* MODE 2 — Price Scout Card */
+  .scout-card {
+    border-radius: 6px;
+    padding: 28px;
+    margin-bottom: 32px;
+    background: #fff;
+    border: 1.5px solid #e0dbd2;
+  }
+
+  .scout-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+
+  .scout-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  .scout-subtitle {
+    font-size: 11px;
+    color: #999;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .scout-best {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #f5f0e8;
+    border-radius: 4px;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .scout-best-label { font-size: 11px; color: #666; }
+  .scout-best-price { font-size: 28px; font-weight: 700; color: #1a1a1a; }
+  .scout-best-source { font-size: 10px; color: #aaa; margin-top: 2px; }
+
+  .scout-best a {
+    font-size: 10px;
+    color: #c8622e;
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .scout-best a:hover { text-decoration: underline; }
+
+  .scout-note {
+    font-size: 10px;
+    color: #bbb;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+
+  /* Shared section styles */
   .section-title {
     font-size: 9px;
     letter-spacing: 0.25em;
@@ -339,11 +385,12 @@ const STYLES = `
     font-style: italic;
   }
 
-  .retail-section { margin-bottom: 28px; }
+  /* Check These Next — always visible */
+  .check-next-section { margin-bottom: 28px; }
 
-  .retail-links { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .check-next-links { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
 
-  .retail-link-row {
+  .check-next-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -355,14 +402,13 @@ const STYLES = `
     transition: border-color 0.15s, background 0.15s;
   }
 
-  .retail-link-row:hover { border-color: #c8622e; background: #fff9f6; }
-  .retail-link-name { font-size: 12px; color: #1a1a1a; font-weight: 500; }
-  .retail-link-action { font-size: 10px; color: #c8622e; letter-spacing: 0.1em; text-transform: uppercase; }
+  .check-next-row:hover { border-color: #c8622e; background: #fff9f6; }
+  .check-next-name { font-size: 12px; color: #1a1a1a; font-weight: 500; }
+  .check-next-action { font-size: 10px; color: #c8622e; letter-spacing: 0.1em; text-transform: uppercase; }
+  .check-next-note { font-size: 10px; color: #aaa; margin-top: 8px; line-height: 1.6; }
 
-  .retail-note { font-size: 10px; color: #aaa; margin-top: 8px; line-height: 1.6; }
-
+  /* Bandcamp section — Mode 1 only */
   .bandcamp-section { margin-bottom: 28px; }
-
   .bandcamp-prices { display: flex; gap: 10px; margin-top: 4px; }
 
   .bandcamp-price-card {
@@ -439,7 +485,6 @@ const STYLES = `
   }
 
   .shipping-recalc-btn:hover { background: #333; }
-
   .intl-shipping-note { font-size: 10px; color: #e05030; margin-top: 4px; font-weight: 500; }
 
   .loading-state {
@@ -467,6 +512,7 @@ const STYLES = `
     .release-cover { width: 72px; height: 72px; }
     .bandcamp-prices { flex-direction: column; }
     .decision-card { padding: 20px; }
+    .scout-card { padding: 20px; }
     .shipping-input-row { flex-direction: column; align-items: flex-start; }
   }
 `;
@@ -494,7 +540,8 @@ export default function App() {
         shipping_cost: shipping,
         bandcamp_url: bandcampUrl
       });
-      const API = import.meta.env.VITE_API_URL;
+      // const API = "http://localhost:5001"; // local
+      const API = "https://record-finder-backend.onrender.com"; // production
       const res = await fetch(API + "/search?" + params);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -516,27 +563,38 @@ export default function App() {
 
   const release = results ? results.release : null;
   const decision = results ? results.decision : null;
-  const discogsUs = results ? results.discogs_us : [];
-  const discogsIntl = results ? results.discogs_intl : [];
-  const isVinyl = decision && decision.decision === "Buy Vinyl";
-  const isNoResults = decision && decision.decision === "No Results";
+  const discogsUs = results ? (results.discogs_us || []) : [];
+  const discogsIntl = results ? (results.discogs_intl || []) : [];
+  const hasBandcamp = results && results.bandcamp && results.bandcamp.digital_price !== null;
   const isRecentRelease = release && release.year && parseInt(release.year) >= new Date().getFullYear() - 2;
-  const decisionClass = isVinyl ? "decision-card vinyl" : isNoResults ? "decision-card noresults" : "decision-card digital";
 
-  const retailLinks = isRecentRelease ? ["Amazon", "Walmart", "Target"].map(function(name, i) {
-    const query = encodeURIComponent(artist + " " + album + " vinyl");
-    const urls = {
-      Amazon: "https://www.amazon.com/s?k=" + query,
-      Walmart: "https://www.walmart.com/search?q=" + query,
-      Target: "https://www.target.com/s?searchTerm=" + query
-    };
-    return (
-      <a key={i} className="retail-link-row" href={urls[name]} target="_blank" rel="noreferrer">
-        <span className="retail-link-name">{name}</span>
-        <span className="retail-link-action">Search ↗</span>
-      </a>
+  // Best Discogs price across US and intl for scout mode
+  const allDiscogs = [...discogsUs, ...discogsIntl];
+  const bestDiscogs = allDiscogs.length > 0
+    ? allDiscogs.reduce((a, b) => a.price < b.price ? a : b)
+    : null;
+
+  const isVinyl = decision && decision.decision === "Buy Vinyl";
+  const decisionClass = isVinyl ? "decision-card vinyl" : "decision-card digital";
+
+  // Build "Check These Next" links — always shown
+  const bcSearchUrl = "https://bandcamp.com/search?q=" + encodeURIComponent(artist + " " + album) + "&item_type=a";
+
+  const checkNextLinks = [];
+
+  // Bandcamp always first — unless we already have scraped data
+  if (!hasBandcamp) {
+    checkNextLinks.push({ name: "Bandcamp", url: bcSearchUrl });
+  }
+
+  if (isRecentRelease) {
+    const q = encodeURIComponent(artist + " " + album + " vinyl");
+    checkNextLinks.push(
+      { name: "Amazon", url: "https://www.amazon.com/s?k=" + q },
+      { name: "Walmart", url: "https://www.walmart.com/search?q=" + q },
+      { name: "Target", url: "https://www.target.com/s?searchTerm=" + q }
     );
-  }) : null;
+  }
 
   return (
     <>
@@ -618,7 +676,8 @@ export default function App() {
               </div>
             </div>
 
-            {decision && (
+            {/* MODE 1 — Full Analysis */}
+            {hasBandcamp && decision && decision.decision !== "No Results" && (
               <div className={decisionClass}>
                 <div className="decision-label">Recommendation</div>
                 <div className="decision-verdict">{decision.decision}</div>
@@ -639,62 +698,93 @@ export default function App() {
               </div>
             )}
 
+            {/* MODE 2 — Price Scout */}
+            {!hasBandcamp && (
+              <div className="scout-card">
+                <div className="scout-label">Price Scout</div>
+                <div className="scout-title">
+                  {bestDiscogs ? "Best vinyl price found" : "No Discogs listings found"}
+                </div>
+                <div className="scout-subtitle">
+                  {bestDiscogs
+                    ? "Add a Bandcamp URL locally for a full buy vs digital recommendation."
+                    : "No vinyl listings on Discogs yet. Check Bandcamp and retail below."}
+                </div>
+                {bestDiscogs && (
+                  <div className="scout-best">
+                    <div>
+                      <div className="scout-best-label">Lowest price</div>
+                      <div className="scout-best-source">
+                        {bestDiscogs.ships_from} · {bestDiscogs.num_for_sale} for sale
+                      </div>
+                      {bestDiscogs.url && (
+                        <a href={bestDiscogs.url} target="_blank" rel="noreferrer">View on Discogs ↗</a>
+                      )}
+                    </div>
+                    <div className="scout-best-price">${bestDiscogs.price.toFixed(2)}</div>
+                  </div>
+                )}
+                <div className="scout-note">
+                  Running locally? Paste a Bandcamp URL above to unlock the full vinyl vs digital analysis.
+                </div>
+              </div>
+            )}
+
             <div className="listings-section">
               <div className="section-title">Discogs — US Sellers</div>
-              {discogsUs && discogsUs.length > 0 ? discogsUs.map((l, i) => (
+              {discogsUs.length > 0 ? discogsUs.map((l, i) => (
                 <div className="listing-row" key={i}>
                   <span className="listing-country">US</span>
                   <span className="listing-format">Vinyl</span>
                   <span className="listing-forsale">{l.num_for_sale} for sale</span>
-                  <span className="listing-price">${l.price ? l.price.toFixed(2) : "—"}</span>
+                  <span className="listing-price">${l.price.toFixed(2)}</span>
                   <a className="listing-link" href={l.url} target="_blank" rel="noreferrer">View ↗</a>
                 </div>
-              )) : <div className="empty-state">No US listings found for this release.</div>}
+              )) : <div className="empty-state">No US listings found.</div>}
             </div>
 
             <div className="listings-section">
               <div className="section-title">Discogs — International Sellers</div>
-              {discogsIntl && discogsIntl.length > 0 ? discogsIntl.map((l, i) => (
+              {discogsIntl.length > 0 ? discogsIntl.map((l, i) => (
                 <div className="listing-row" key={i}>
                   <span className="listing-country">{l.ships_from}</span>
                   <span className="listing-format">Vinyl</span>
                   <span className="listing-forsale">{l.num_for_sale} for sale</span>
-                  <span className="listing-price">${l.price ? l.price.toFixed(2) : "—"}</span>
+                  <span className="listing-price">${l.price.toFixed(2)}</span>
                   <a className="listing-link" href={l.url} target="_blank" rel="noreferrer">View ↗</a>
                 </div>
               )) : <div className="empty-state">No international listings found.</div>}
             </div>
 
-            {(isRecentRelease || true) && (
-              <div className="retail-section">
-                <div className="section-title">
-                  {isRecentRelease ? "Find It Elsewhere" : "Find on Bandcamp"}
-                </div>
-                <div className="retail-links">
-                  <a className="retail-link-row"
-                    href={"https://bandcamp.com/search?q=" + encodeURIComponent(artist + " " + album) + "&item_type=a"}
-                    target="_blank" rel="noreferrer">
-                    <span className="retail-link-name">Bandcamp</span>
-                    <span className="retail-link-action">Search ↗</span>
-                  </a>
-                  {isRecentRelease && retailLinks}
+            {checkNextLinks.length > 0 && (
+              <div className="check-next-section">
+                <div className="section-title">Check These Next</div>
+                <div className="check-next-links">
+                  {checkNextLinks.map(function(link, i) {
+                    return (
+                      <a key={i} className="check-next-row" href={link.url} target="_blank" rel="noreferrer">
+                        <span className="check-next-name">{link.name}</span>
+                        <span className="check-next-action">Search ↗</span>
+                      </a>
+                    );
+                  })}
                 </div>
                 {isRecentRelease && (
-                  <div className="retail-note">Recent release — check retail for new copies which may be cheaper than Discogs.</div>
+                  <div className="check-next-note">Recent release — retail may have new copies cheaper than Discogs.</div>
                 )}
               </div>
             )}
 
-            {results.bandcamp ? (
+            {hasBandcamp && (
               <div className="bandcamp-section">
                 <div className="section-title">Bandcamp</div>
                 <div className="bandcamp-prices">
                   <div className="bandcamp-price-card">
                     <div className="bandcamp-price-label">Digital</div>
                     <div className="bandcamp-price-value">
-                      {results.bandcamp.digital_price !== null
-                        ? (results.bandcamp.digital_price === 0 ? "Free / NYP" : "$" + results.bandcamp.digital_price.toFixed(2))
-                        : "Not found"}
+                      {results.bandcamp.digital_price === 0
+                        ? "Free / NYP"
+                        : "$" + results.bandcamp.digital_price.toFixed(2)}
                       {results.bandcamp.digital_currency !== "USD" && results.bandcamp.digital_price > 0 && (
                         <span style={{fontSize: "11px", color: "#aaa", marginLeft: "6px"}}>
                           ({results.bandcamp.digital_price_original} {results.bandcamp.digital_currency})
@@ -747,10 +837,6 @@ export default function App() {
                 <a className="bandcamp-visit" href={results.bandcamp.url} target="_blank" rel="noreferrer">
                   View on Bandcamp ↗
                 </a>
-              </div>
-            ) : (
-              <div className="empty-state" style={{marginTop: "28px"}}>
-                Bandcamp not found — paste a URL above for full results.
               </div>
             )}
 
