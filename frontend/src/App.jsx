@@ -69,7 +69,7 @@ const STYLES = `
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .field { display: flex; flex-direction: column; gap: 6px; }
@@ -96,7 +96,7 @@ const STYLES = `
   .field input:focus { border-color: #c8a96e; }
   .field input::placeholder { color: #333; }
 
-  .slider-row { margin-bottom: 20px; }
+  .slider-row { margin-bottom: 20px; margin-top: 12px; }
 
   .slider-label-row {
     display: flex;
@@ -243,6 +243,7 @@ const STYLES = `
 
   .decision-card.vinyl::before { background: #c8a96e; }
   .decision-card.digital::before { background: #6e9ec8; }
+  .decision-card.noresults::before { background: #444; }
 
   .decision-label {
     font-size: 9px;
@@ -261,6 +262,7 @@ const STYLES = `
 
   .decision-card.vinyl .decision-verdict { color: #c8a96e; }
   .decision-card.digital .decision-verdict { color: #6e9ec8; }
+  .decision-card.noresults .decision-verdict { color: #555; }
 
   .decision-reason {
     font-size: 11px;
@@ -334,47 +336,38 @@ const STYLES = `
     font-style: italic;
   }
 
-  .bandcamp-note {
-    margin-top: 32px;
-    padding: 16px;
-    border: 1px dashed #2a2a2a;
-    font-size: 11px;
+  .retail-section { margin-bottom: 28px; }
+
+  .retail-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .retail-link-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .retail-link-row:hover { border-color: #c8a96e; }
+  .retail-link-name { font-size: 11px; color: #e8e0d0; letter-spacing: 0.05em; }
+  .retail-link-action { font-size: 10px; color: #c8a96e; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .retail-note {
+    font-size: 10px;
     color: #444;
+    margin-top: 8px;
     line-height: 1.6;
-    letter-spacing: 0.03em;
   }
 
-  .bandcamp-note span { color: #c8a96e; }
-
-  .loading-state {
-    text-align: center;
-    padding: 60px 0;
-    font-size: 11px;
-    color: #444;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  .loading-dot {
-    display: inline-block;
-    animation: pulse 1.2s ease-in-out infinite;
-  }
-  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes pulse {
-    0%, 80%, 100% { opacity: 0.2; }
-    40% { opacity: 1; }
-  }
-
-  @media (max-width: 520px) {
-    .fields-row { grid-template-columns: 1fr; }
-    .release-header { grid-template-columns: 80px 1fr; }
-    .release-cover { width: 80px; height: 80px; }
-  }
-    .bandcamp-section {
-    margin-bottom: 28px;
-  }
+  .bandcamp-section { margin-bottom: 28px; }
 
   .bandcamp-prices {
     display: flex;
@@ -399,15 +392,8 @@ const STYLES = `
     color: #555;
   }
 
-  .bandcamp-price-value {
-    font-size: 18px;
-    color: #e8e0d0;
-  }
-
-  .bandcamp-price-note {
-    font-size: 10px;
-    color: #444;
-  }
+  .bandcamp-price-value { font-size: 18px; color: #e8e0d0; }
+  .bandcamp-price-note { font-size: 10px; color: #444; }
 
   .bandcamp-visit {
     display: inline-block;
@@ -420,7 +406,7 @@ const STYLES = `
   }
 
   .bandcamp-visit:hover { text-decoration: underline; }
-  
+
   .shipping-input-row {
     margin-top: 12px;
     padding: 12px 14px;
@@ -449,11 +435,7 @@ const STYLES = `
     letter-spacing: 0;
   }
 
-  .shipping-input-field {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .shipping-input-field { display: flex; align-items: center; gap: 6px; }
 
   .shipping-input-field input {
     background: #161616;
@@ -483,28 +465,49 @@ const STYLES = `
     transition: background 0.2s, color 0.2s;
   }
 
-  .shipping-recalc-btn:hover {
-    background: #c8a96e;
-    color: #0e0e0e;
+  .shipping-recalc-btn:hover { background: #c8a96e; color: #0e0e0e; }
+
+  .intl-shipping-note { font-size: 10px; color: #c87070; margin-top: 4px; }
+
+  .loading-state {
+    text-align: center;
+    padding: 60px 0;
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
   }
 
-  .intl-shipping-note {
-    font-size: 10px;
-    color: #c87070;
-    margin-top: 4px;
+  .loading-dot {
+    display: inline-block;
+    animation: pulse 1.2s ease-in-out infinite;
   }
-  `;
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.2; }
+    40% { opacity: 1; }
+  }
+
+  @media (max-width: 520px) {
+    .fields-row { grid-template-columns: 1fr; }
+    .release-header { grid-template-columns: 80px 1fr; }
+    .release-cover { width: 80px; height: 80px; }
+    .bandcamp-prices { flex-direction: column; }
+  }
+`;
 
 export default function App() {
   const [artist, setArtist] = useState("");
   const [album, setAlbum] = useState("");
+  const [bandcampUrl, setBandcampUrl] = useState("");
   const [threshold, setThreshold] = useState(15);
+  const [shippingCost, setShippingCost] = useState(20);
+  const [shippingInput, setShippingInput] = useState(20);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [results, setResults] = useState(null);
-  const [shippingCost, setShippingCost] = useState(20);
-  const [shippingInput, setShippingInput] = useState(20);
-  const [bandcampUrl, setBandcampUrl] = useState("");
 
   const handleSearch = async (overrideShipping = null) => {
     if (!artist.trim() || !album.trim()) return;
@@ -513,7 +516,13 @@ export default function App() {
     setResults(null);
     try {
       const shipping = overrideShipping !== null ? overrideShipping : shippingCost;
-      const params = new URLSearchParams({ artist, album, threshold, shipping_cost: shipping, bandcamp_url: bandcampUrl });
+      const params = new URLSearchParams({
+        artist,
+        album,
+        threshold,
+        shipping_cost: shipping,
+        bandcamp_url: bandcampUrl
+      });
       const API = "http://localhost:5001"; // local
       // const API = "https://record-finder-backend.onrender.com"; // production
       const res = await fetch(API + "/search?" + params);
@@ -527,11 +536,11 @@ export default function App() {
     }
   };
 
-const handleRecalculate = () => {
+  const handleRecalculate = () => {
     const cost = parseFloat(shippingInput) || 0;
     setShippingCost(cost);
     handleSearch(cost);
-};
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleSearch();
@@ -542,6 +551,27 @@ const handleRecalculate = () => {
   const discogsUs = results ? results.discogs_us : [];
   const discogsIntl = results ? results.discogs_intl : [];
   const isVinyl = decision && decision.decision === "Buy Vinyl";
+  const isNoResults = decision && decision.decision === "No Results";
+  const isRecentRelease = release && release.year && parseInt(release.year) >= new Date().getFullYear() - 2;
+
+  const buildRetailLinks = (a, b) => {
+    const query = encodeURIComponent(a + " " + b + " vinyl");
+    return [
+      { name: "Amazon", url: "https://www.amazon.com/s?k=" + query },
+      { name: "Walmart", url: "https://www.walmart.com/search?q=" + query },
+      { name: "Target", url: "https://www.target.com/s?searchTerm=" + query }
+    ];
+  };
+
+  const decisionClass = isVinyl ? "decision-card vinyl" : isNoResults ? "decision-card noresults" : "decision-card digital";
+  const retailLinks = buildRetailLinks(artist, album).map(function(r, i) {
+    return (
+      <a key={i} className="retail-link-row" href={r.url} target="_blank" rel="noreferrer">
+        <span className="retail-link-name">{r.name}</span>
+        <span className="retail-link-action">Search ↗</span>
+      </a>
+    );
+  });
 
   return (
     <>
@@ -579,7 +609,7 @@ const handleRecalculate = () => {
             </div>
           </div>
 
-            <div className="field" style={{gridColumn: "1 / -1"}}>
+          <div className="field" style={{marginBottom: "12px"}}>
             <label>Bandcamp URL (local only — optional)</label>
             <input
               type="text"
@@ -618,7 +648,7 @@ const handleRecalculate = () => {
 
         {loading && (
           <div className="loading-state">
-            Searching Discogs
+            Searching
             <span className="loading-dot"> .</span>
             <span className="loading-dot">.</span>
             <span className="loading-dot">.</span>
@@ -630,11 +660,7 @@ const handleRecalculate = () => {
 
             <div className="release-header">
               {release && release.cover ? (
-                <img
-                  className="release-cover"
-                  src={release.cover}
-                  alt={release.title}
-                />
+                <img className="release-cover" src={release.cover} alt={release.title} />
               ) : (
                 <div className="release-cover-placeholder">No Art</div>
               )}
@@ -654,7 +680,7 @@ const handleRecalculate = () => {
             </div>
 
             {decision && (
-              <div className={isVinyl ? "decision-card vinyl" : "decision-card digital"}>
+              <div className={decisionClass}>
                 <div className="decision-label">Recommendation</div>
                 <div className="decision-verdict">{decision.decision}</div>
                 <div className="decision-reason">{decision.reason}</div>
@@ -706,79 +732,94 @@ const handleRecalculate = () => {
               )}
             </div>
 
-{results.bandcamp ? (
-  <div className="bandcamp-section">
-    <div className="section-title">Bandcamp</div>
-    <div className="bandcamp-prices">
-      <div className="bandcamp-price-card">
-        <div className="bandcamp-price-label">Digital</div>
-        <div className="bandcamp-price-value">
-          {results.bandcamp.digital_price !== null
-            ? (results.bandcamp.digital_price === 0
-                ? "Free / NYP"
-                : "$" + results.bandcamp.digital_price.toFixed(2))
-            : "Not found"}
-          {results.bandcamp.digital_currency !== "USD" && results.bandcamp.digital_price > 0 && (
-            <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
-              ({results.bandcamp.digital_price_original} {results.bandcamp.digital_currency})
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="bandcamp-price-card">
-  <div className="bandcamp-price-label">Vinyl</div>
-  <div className="bandcamp-price-value">
-    ${results.bandcamp.vinyl_price.toFixed(2)}
-    {results.bandcamp.vinyl_currency !== "USD" && (
-      <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
-        ({results.bandcamp.vinyl_price_original} {results.bandcamp.vinyl_currency})
-      </span>
-    )}
-  </div>
-  {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
-    <div className="bandcamp-price-note" style={{marginTop: "4px"}}>
-      + ${shippingCost.toFixed(2)} shipping = <strong style={{color: "#e8e0d0"}}>${(results.bandcamp.vinyl_price + shippingCost).toFixed(2)} total</strong>
-    </div>
-  )}
-  <div className="bandcamp-price-note">
-    {results.bandcamp.vinyl_ships_from
-      ? "Ships from " + results.bandcamp.vinyl_ships_from
-      : results.bandcamp.vinyl_is_intl ? "International" : "Ships from US"}
-  </div>
-  {results.bandcamp.vinyl_sold_out && (
-    <div className="intl-shipping-note">Sold out on Bandcamp</div>
-  )}
-  {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
-    <div className="shipping-input-row">
-      <div className="shipping-input-label">
-        Intl Shipping Cost
-        <span>Estimated $20 — enter actual cost to recalculate</span>
-      </div>
-      <div className="shipping-input-field">
-        <input
-          type="number"
-          value={shippingInput}
-          onChange={(e) => setShippingInput(parseFloat(e.target.value) || 0)}
-          min={0}
-          step={1}
-        />
-      </div>
-      <button className="shipping-recalc-btn" onClick={handleRecalculate}>
-        Recalc
-      </button>
-    </div>
-  )}
-</div>
-    </div>
-    <a className="bandcamp-visit" href={results.bandcamp.url} target="_blank" rel="noreferrer">
-      View on Bandcamp ↗
-    </a>
-  </div>
-) : (
-  <div className="bandcamp-note">
-    <span>Bandcamp not found</span> — search manually at bandcamp.com
-  </div>
-)}
+            {isRecentRelease && (
+              <div className="retail-section">
+                <div className="section-title">Retail — New Release</div>
+                <div className="retail-links">
+                  {retailLinks}
+                </div>
+                <div className="retail-note">
+                  This is a recent release — check retail for new copies which may be cheaper than Discogs.
+                </div>
+              </div>
+            )}
+
+            {results.bandcamp ? (
+              <div className="bandcamp-section">
+                <div className="section-title">Bandcamp</div>
+                <div className="bandcamp-prices">
+                  <div className="bandcamp-price-card">
+                    <div className="bandcamp-price-label">Digital</div>
+                    <div className="bandcamp-price-value">
+                      {results.bandcamp.digital_price !== null
+                        ? (results.bandcamp.digital_price === 0
+                            ? "Free / NYP"
+                            : "$" + results.bandcamp.digital_price.toFixed(2))
+                        : "Not found"}
+                      {results.bandcamp.digital_currency !== "USD" && results.bandcamp.digital_price > 0 && (
+                        <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
+                          ({results.bandcamp.digital_price_original} {results.bandcamp.digital_currency})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {results.bandcamp.vinyl_price && (
+                    <div className="bandcamp-price-card">
+                      <div className="bandcamp-price-label">Vinyl</div>
+                      <div className="bandcamp-price-value">
+                        ${results.bandcamp.vinyl_price.toFixed(2)}
+                        {results.bandcamp.vinyl_currency !== "USD" && (
+                          <span style={{fontSize: "11px", color: "#555", marginLeft: "6px"}}>
+                            ({results.bandcamp.vinyl_price_original} {results.bandcamp.vinyl_currency})
+                          </span>
+                        )}
+                      </div>
+                      {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
+                        <div className="bandcamp-price-note" style={{marginTop: "4px"}}>
+                          + ${shippingCost.toFixed(2)} shipping = <strong style={{color: "#e8e0d0"}}>${(results.bandcamp.vinyl_price + shippingCost).toFixed(2)} total</strong>
+                        </div>
+                      )}
+                      <div className="bandcamp-price-note">
+                        {results.bandcamp.vinyl_ships_from
+                          ? "Ships from " + results.bandcamp.vinyl_ships_from
+                          : results.bandcamp.vinyl_is_intl ? "International" : "Ships from US"}
+                      </div>
+                      {results.bandcamp.vinyl_sold_out && (
+                        <div className="intl-shipping-note">Sold out on Bandcamp</div>
+                      )}
+                      {results.bandcamp.vinyl_is_intl && !results.bandcamp.vinyl_sold_out && (
+                        <div className="shipping-input-row">
+                          <div className="shipping-input-label">
+                            Intl Shipping Cost
+                            <span>Estimated $20 — enter actual cost to recalculate</span>
+                          </div>
+                          <div className="shipping-input-field">
+                            <input
+                              type="number"
+                              value={shippingInput}
+                              onChange={(e) => setShippingInput(parseFloat(e.target.value) || 0)}
+                              min={0}
+                              step={1}
+                            />
+                          </div>
+                          <button className="shipping-recalc-btn" onClick={handleRecalculate}>
+                            Recalc
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <a className="bandcamp-visit" href={results.bandcamp.url} target="_blank" rel="noreferrer">
+                  View on Bandcamp ↗
+                </a>
+              </div>
+            ) : (
+              <div className="empty-state" style={{marginTop: "28px"}}>
+                Bandcamp not found — paste a URL above for full results.
+              </div>
+            )}
 
           </div>
         )}
