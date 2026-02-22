@@ -444,22 +444,6 @@ def search():
         "decision": decision
     })
 
-@app.route("/debug-bandcamp", methods=["GET"])
-def debug_bandcamp():
-    url = request.args.get("url", "")
-    if not url:
-        return jsonify({"error": "no url provided"})
-    try:
-        response = requests.get(url, headers=SCRAPE_HEADERS, timeout=10)
-        return jsonify({
-            "status_code": response.status_code,
-            "content_length": len(response.text),
-            "first_500_chars": response.text[:500]
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"})
