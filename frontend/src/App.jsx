@@ -233,7 +233,7 @@ const STYLES = `
 
   .card-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 14px;
     padding: 16px 18px;
   }
@@ -559,7 +559,7 @@ const STYLES = `
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
+    padding: 7px 12px;
     background: var(--surface);
     border: 1.5px solid var(--border);
     border-radius: 4px;
@@ -808,64 +808,69 @@ function WishlistCard({ item, onMoveToCompare, onRemove, onToggleLimited }) {
       {/* Expanded US/Intl sections when searched */}
       {status === "done" && (usListings.length > 0 || intlListings.length > 0) && (
         <div className="card-body" style={{paddingTop:"12px"}}>
-          {usListings.length > 0 && (
-            <div style={{marginBottom: intlListings.length > 0 ? "14px" : "0"}}>
+
+          {bestUs && (
+            <div style={{marginBottom: bestIntl ? "14px" : "0"}}>
               <div style={{fontSize:"9px", letterSpacing:"0.2em", textTransform:"uppercase",
                 color:"var(--text-3)", marginBottom:"8px"}}>
-                US Sellers · {usListings.length} listing{usListings.length !== 1 ? "s" : ""}
+                Best US · {usListings.length} listing{usListings.length !== 1 ? "s" : ""} available
               </div>
-              {usListings.map((l, i) => (
-                <div key={i} style={{display:"flex", justifyContent:"space-between",
-                  alignItems:"center", padding:"6px 0",
-                  borderBottom: i < usListings.length - 1 ? "1px solid var(--border)" : "none",
-                  gap:"10px"}}>
+              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:"10px"}}>
+                <div>
                   <span style={{fontSize:"11px", color:"var(--text-2)"}}>
-                    {l.year || "—"} · {l.num_for_sale} for sale
+                    {bestUs.year || "—"} · {bestUs.num_for_sale} for sale
                   </span>
-                  <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
-                    <span style={{fontSize:"15px", fontWeight:"500"}}>${l.price.toFixed(2)}</span>
-                    <a href={l.url} target="_blank" rel="noreferrer"
-                      style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none",
-                        letterSpacing:"0.08em", textTransform:"uppercase"}}>
-                      View ↗
-                    </a>
+                  <div style={{fontSize:"11px", color:"var(--text-3)", marginTop:"2px"}}>
+                    ${bestUs.price.toFixed(2)} + est. $4–8 shipping
+                  </div>
+                  <div style={{fontSize:"12px", color:"var(--text-2)", marginTop:"2px", fontWeight:"500"}}>
+                    Total est. ${(bestUs.price + 4).toFixed(2)}–${(bestUs.price + 8).toFixed(2)}
                   </div>
                 </div>
-              ))}
+                <a href={bestUs.url} target="_blank" rel="noreferrer"
+                  style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none",
+                    letterSpacing:"0.08em", textTransform:"uppercase", flexShrink:0}}>
+                  View ↗
+                </a>
+              </div>
             </div>
           )}
 
-          {intlListings.length > 0 && (
+          {bestIntl && (
             <div>
               <div style={{fontSize:"9px", letterSpacing:"0.2em", textTransform:"uppercase",
                 color:"var(--text-3)", marginBottom:"8px"}}>
-                International · {intlListings.length} listing{intlListings.length !== 1 ? "s" : ""}
+                Best International · {intlListings.length} listing{intlListings.length !== 1 ? "s" : ""} available
               </div>
-              {intlListings.map((l, i) => (
-                <div key={i} style={{display:"flex", justifyContent:"space-between",
-                  alignItems:"center", padding:"6px 0",
-                  borderBottom: i < intlListings.length - 1 ? "1px solid var(--border)" : "none",
-                  gap:"10px"}}>
+              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:"10px"}}>
+                <div>
                   <span style={{fontSize:"11px", color:"var(--text-2)"}}>
-                    {l.ships_from} · {l.year || "—"} · {l.num_for_sale} for sale
+                    {bestIntl.ships_from} · {bestIntl.year || "—"} · {bestIntl.num_for_sale} for sale
                   </span>
-                  <div style={{display:"flex", alignItems:"center", gap:"10px", flexShrink:0}}>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{fontSize:"15px", fontWeight:"500"}}>${l.price.toFixed(2)}</div>
-                      <div style={{fontSize:"10px", color:"var(--text-3)"}}>
-                        +${l.shipping_low}–${l.shipping_high} ship · total ${l.total_low}–${l.total_high}
-                      </div>
-                    </div>
-                    <a href={l.url} target="_blank" rel="noreferrer"
-                      style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none",
-                        letterSpacing:"0.08em", textTransform:"uppercase"}}>
-                      View ↗
-                    </a>
+                  <div style={{fontSize:"11px", color:"var(--text-3)", marginTop:"2px"}}>
+                    ${bestIntl.price.toFixed(2)} + est. ${bestIntl.shipping_low}–${bestIntl.shipping_high} shipping
+                  </div>
+                  <div style={{fontSize:"12px", color:"var(--text-2)", marginTop:"2px", fontWeight:"500"}}>
+                    Total est. ${bestIntl.total_low.toFixed(2)}–${bestIntl.total_high.toFixed(2)}
                   </div>
                 </div>
-              ))}
+                <a href={bestIntl.url} target="_blank" rel="noreferrer"
+                  style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none",
+                    letterSpacing:"0.08em", textTransform:"uppercase", flexShrink:0}}>
+                  View ↗
+                </a>
+              </div>
             </div>
           )}
+
+          {(bestUs || bestIntl) && (
+            <div style={{marginTop:"12px", paddingTop:"10px", borderTop:"1px solid var(--border)",
+              fontSize:"10px", color:"var(--text-3)"}}>
+              Full range: ${bestUs ? (bestUs.price + 4).toFixed(2) : bestIntl.total_low.toFixed(2)} (cheapest US all-in)
+              {" "}→ ${bestIntl ? bestIntl.total_high.toFixed(2) : (bestUs.price + 8).toFixed(2)} (most expensive intl all-in)
+            </div>
+          )}
+
         </div>
       )}
     </div>
@@ -881,19 +886,97 @@ function WantlistTab({ username, onCountChange }) {
   const [addArtist, setAddArtist] = useState("");
   const [addAlbum, setAddAlbum] = useState("");
   const [addBcUrl, setAddBcUrl] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [parseUrl, setParseUrl] = useState("");
+  const [parseError, setParseError] = useState(null);
   const cancelRef = { current: false };
-  const [sortUs, setSortUs] = useState("price");
-  const [sortIntl, setSortIntl] = useState("price");
+  const parseUrlHelper = (url) => {
+  setParseError(null);
+  if (!url.trim()) return;
+  try {
+    const u = new URL(url.trim());
+    const host = u.hostname.replace("www.", "");
+    const parts = u.pathname.split("/").filter(Boolean);
+
+    // Amazon: /Artist-Album-Title/dp/...
+    if (host.includes("amazon.")) {
+      const slug = parts[0] || "";
+      const words = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      // Try to split artist from album — Amazon slugs often run them together
+      // Best we can do is pre-fill the album field and let user fix artist
+      setAddAlbum(words);
+      setAddArtist("");
+      setParseError("Amazon URLs don't always contain the artist — please fill that in manually.");
+      return;
+    }
+
+    // Pitchfork reviews: /reviews/albums/artist-name-album-title/
+    if (host.includes("pitchfork.")) {
+      const slug = parts[parts.indexOf("albums") + 1] || parts[parts.length - 1] || "";
+      const words = slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1));
+      // Pitchfork slugs are "artist-name-album-title" — hard to split perfectly
+      // Put full slug in album, let user split
+      setAddAlbum(words.join(" "));
+      setAddArtist("");
+      setParseError("Pitchfork URLs combine artist and album — split them manually above.");
+      return;
+    }
+
+    // Bandcamp: artist.bandcamp.com/album/album-name
+    if (host.includes("bandcamp.")) {
+      const artistName = u.hostname.split(".")[0].replace(/-/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase());
+      const albumSlug = parts[parts.indexOf("album") + 1] || "";
+      const albumName = albumSlug.replace(/-/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase());
+      setAddArtist(artistName);
+      setAddAlbum(albumName);
+      setAddBcUrl(url.trim());
+      return;
+    }
+
+    // Discogs: discogs.com/artist-name-album-title/release/...
+    if (host.includes("discogs.")) {
+      const slug = parts[0] || "";
+      const words = slug.replace(/-/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase());
+      setAddAlbum(words);
+      setAddArtist("");
+      setParseError("Discogs URLs combine artist and album — split them manually above.");
+      return;
+    }
+
+    // Generic fallback — use last path segment
+    const slug = parts[parts.length - 1] || "";
+    const words = slug.replace(/[-_]/g, " ")
+      .replace(/\b\w/g, c => c.toUpperCase());
+    setAddAlbum(words);
+    setAddArtist("");
+    setParseError("Couldn't fully parse this URL — please review and fill in the artist.");
+
+  } catch {
+    setParseError("That doesn't look like a valid URL.");
+  }
+};
+
+  const [sortBy, setSortBy] = useState("price");
+  const [sortDir, setSortDir] = useState("asc");
+  const [filterUs, setFilterUs] = useState(false);
 
   useEffect(() => { onCountChange(wantlist.length); }, [wantlist.length]);
 
-  const sortListings = (items, sortBy) => {
-    return [...items].sort((a, b) => {
-      if (sortBy === "price") return a.price - b.price;
-      if (sortBy === "year") return (a.year || 0) - (b.year || 0);
-      if (sortBy === "artist") return a.artist?.localeCompare(b.artist || "") || 0;
+  const sortListings = (items, by, dir) => {
+    const sorted = [...items].sort((a, b) => {
+      if (by === "price") {
+        const aPrice = a.result?.best_us?.price ?? a.result?.best_intl?.total_low ?? 9999;
+        const bPrice = b.result?.best_us?.price ?? b.result?.best_intl?.total_low ?? 9999;
+        return aPrice - bPrice;
+      }
+      if (by === "year") return (a.year || 0) - (b.year || 0);
+      if (by === "artist") return (a.artist || "").localeCompare(b.artist || "");
       return 0;
     });
+    return dir === "desc" ? sorted.reverse() : sorted;
   };
 
   
@@ -1077,6 +1160,23 @@ function WantlistTab({ username, onCountChange }) {
 
       <div className="manual-add-form">
         <div className="form-section-label">Add Manually</div>
+        <div className="field" style={{marginBottom:"12px"}}>
+          <label>Paste a URL to parse (Bandcamp, Pitchfork, Amazon, Discogs…)</label>
+          <div style={{display:"flex", gap:"8px"}}>
+            <input type="text" placeholder="https://..."
+              value={parseUrl}
+              onChange={e => setParseUrl(e.target.value)} />
+            <button className="btn btn-ghost"
+              style={{flexShrink:0, whiteSpace:"nowrap"}}
+              onClick={() => { parseUrlHelper(parseUrl); setParseUrl(""); }}
+              disabled={!parseUrl.trim()}>
+              Parse ↗
+            </button>
+          </div>
+          {parseError && (
+            <div style={{fontSize:"11px", color:"var(--accent)", marginTop:"4px"}}>{parseError}</div>
+          )}
+        </div>
         <div className="fields-row">
           <div className="field">
             <label>Artist</label>
@@ -1152,28 +1252,65 @@ function WantlistTab({ username, onCountChange }) {
               </div>
             </div>
           )}
+        <div style={{marginBottom:"12px"}}>
+          <input
+            type="text"
+            placeholder="Filter by artist or album…"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{width:"100%", background:"var(--surface-raised)", border:"1.5px solid var(--border)",
+              color:"var(--text)", fontFamily:"'DM Mono', monospace", fontSize:"13px",
+              padding:"10px 14px", outline:"none", borderRadius:"4px", transition:"border-color 0.15s"}}
+          />
+        </div>
 
-{wantlist.filter(i => i.status === "done" && i.result?.best_us).length > 0 && (
-  <div style={{display:"flex", alignItems:"center", gap:"8px", marginBottom:"8px"}}>
-    <span style={{fontSize:"9px", letterSpacing:"0.2em", textTransform:"uppercase", color:"var(--text-3)"}}>
-      Sort
-    </span>
-    {["price","year","artist"].map(opt => (
-      <button key={opt}
-        onClick={() => setSortUs(opt)}
-        style={{fontSize:"9px", letterSpacing:"0.15em", textTransform:"uppercase",
-          padding:"4px 10px", borderRadius:"4px", cursor:"pointer", border:"1.5px solid",
-          background: sortUs === opt ? "var(--text)" : "transparent",
-          color: sortUs === opt ? "var(--surface)" : "var(--text-3)",
-          borderColor: sortUs === opt ? "var(--text)" : "var(--border)",
-          fontFamily:"'DM Mono', monospace", transition:"all 0.15s"}}>
-        {opt}
-      </button>
-    ))}
-  </div>
-)}
-        <div className="wl-grid">
-          {sortListings(wantlist, sortUs).map(item => (
+      <div style={{display:"flex", alignItems:"center", gap:"8px", marginBottom:"16px", flexWrap:"wrap"}}>
+        <span style={{fontSize:"9px", letterSpacing:"0.2em", textTransform:"uppercase", color:"var(--text-3)"}}>
+          Sort
+        </span>
+        {["price","year","artist"].map(opt => (
+          <button key={opt}
+            onClick={() => setSortBy(opt)}
+            style={{fontSize:"9px", letterSpacing:"0.15em", textTransform:"uppercase",
+              padding:"4px 10px", borderRadius:"4px", cursor:"pointer", border:"1.5px solid",
+              background: sortBy === opt ? "var(--text)" : "transparent",
+              color: sortBy === opt ? "var(--surface)" : "var(--text-3)",
+              borderColor: sortBy === opt ? "var(--text)" : "var(--border)",
+              fontFamily:"'DM Mono', monospace", transition:"all 0.15s"}}>
+            {opt}
+          </button>
+        ))}
+        <button
+          onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
+          style={{fontSize:"9px", letterSpacing:"0.15em", textTransform:"uppercase",
+            padding:"4px 10px", borderRadius:"4px", cursor:"pointer", border:"1.5px solid",
+            background:"transparent", color:"var(--text-3)", borderColor:"var(--border)",
+            fontFamily:"'DM Mono', monospace", transition:"all 0.15s"}}>
+          {sortDir === "asc" ? "↑ Asc" : "↓ Desc"}
+        </button>
+        <div style={{marginLeft:"auto"}}>
+          <button
+            onClick={() => setFilterUs(f => !f)}
+            style={{fontSize:"9px", letterSpacing:"0.15em", textTransform:"uppercase",
+              padding:"4px 10px", borderRadius:"4px", cursor:"pointer", border:"1.5px solid",
+              background: filterUs ? "var(--teal)" : "transparent",
+              color: filterUs ? "#fff" : "var(--text-3)",
+              borderColor: filterUs ? "var(--teal)" : "var(--border)",
+              fontFamily:"'DM Mono', monospace", transition:"all 0.15s"}}>
+            {filterUs ? "US Only" : "All Regions"}
+          </button>
+        </div>
+      </div>
+          <div className="wl-grid">
+          {sortListings(
+            (filterUs ? wantlist.filter(i => !i.result || i.result.best_us) : wantlist)
+              .filter(i => {
+                if (!searchQuery.trim()) return true;
+                const q = searchQuery.toLowerCase();
+                return i.artist.toLowerCase().includes(q) || i.album.toLowerCase().includes(q);
+              }),
+            sortBy, sortDir
+          ).map(item => (
             <WishlistCard key={item.id} item={item}
               onMoveToCompare={moveToCompare}
               onRemove={removeItem}/>
@@ -1215,10 +1352,13 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
   }
 
   const q = encodeURIComponent(`${item.artist} ${item.album} vinyl`);
+  const bcQ = encodeURIComponent(`${item.artist} ${item.album}`);
+  const bcSearch = `https://bandcamp.com/search?q=${bcQ}&item_type=a`;
   const retailLinks = [
     { name: "Amazon", url: `https://www.amazon.com/s?k=${q}` },
     { name: "Target", url: `https://www.target.com/s?searchTerm=${q}` },
     { name: "Walmart", url: `https://www.walmart.com/search?q=${q}` },
+    { name: "Bandcamp — Digital", url: bcSearch },
   ];
 
   const saveBcData = () => {
@@ -1240,7 +1380,10 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
         </div>
         {item.discogs_url && (
           <a href={item.discogs_url} target="_blank" rel="noreferrer"
-            style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none", letterSpacing:"0.08em", textTransform:"uppercase", flexShrink:0}}>
+            style={{fontSize:"10px", color:"#fff", textDecoration:"none", letterSpacing:"0.12em",
+              textTransform:"uppercase", flexShrink:0, background:"var(--accent)",
+              padding:"6px 12px", borderRadius:"4px", fontWeight:"500",
+              fontFamily:"'DM Mono', monospace", transition:"background 0.15s"}}>
             Discogs ↗
           </a>
         )}
@@ -1268,7 +1411,7 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
               <span className="price-label">Best Intl · {bestIntl.ships_from}</span>
               <span className="price-value intl">${bestIntl.price.toFixed(2)}</span>
               <span className="price-sub">+ est. ${bestIntl.shipping_low}–${bestIntl.shipping_high} shipping</span>
-              <span className="price-sub">Total: ${bestIntl.total_low}–${bestIntl.total_high}</span>
+              <span className="price-sub">Total: ${bestIntl.total_low.toFixed(2)}–${bestIntl.total_high.toFixed(2)}</span>
               {intlBudget && (
                 <div className={`budget-indicator budget-${intlBudget}`}>
                   {intlBudget === "ok" ? "✓ Within budget"
@@ -1304,48 +1447,7 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
       </div>
 
       {/* Compare with any listing */}
-      <div className="cmp-section">
-        <div className="cmp-section-title">Compare with Any Listing</div>
-        <div className="bc-compare">
-          <div className="bc-fields-row">
-            <div className="field">
-              <label>Paste any URL (Amazon, Bandcamp, Target, etc.)</label>
-              <input type="text" placeholder="https://..."
-                value={bcUrl} onChange={e => setBcUrl(e.target.value)}
-                onBlur={saveBcData} />
-            </div>
-            <div className="field">
-              <label>Price you see ($)</label>
-              <input type="number" placeholder="e.g. 24.99" min="0" step="0.01"
-                value={bcPrice} onChange={e => setBcPrice(e.target.value)}
-                onBlur={saveBcData} />
-            </div>
-          </div>
 
-          {bcUrl.trim() && (
-            <a href={bcUrl.trim()} target="_blank" rel="noreferrer"
-              style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none",
-                letterSpacing:"0.08em", textTransform:"uppercase"}}>
-              Open Link ↗
-            </a>
-          )}
-
-          {bcPriceNum && bestUs && (
-            <div className="bc-result">
-              <div className="bc-result-label">Discogs US vs This Listing</div>
-              <div className="bc-result-value">
-                ${Math.abs(bestUs.price - bcPriceNum).toFixed(2)} {bestUs.price > bcPriceNum ? "cheaper elsewhere" : "cheaper on Discogs"}
-              </div>
-              <div className="bc-result-note">
-                Discogs US ${bestUs.price.toFixed(2)} vs this listing ${bcPriceNum.toFixed(2)}
-                {Math.abs(bestUs.price - bcPriceNum) <= threshold
-                  ? " — within your budget"
-                  : " — over your budget"}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Actions */}
       <div className="cmp-actions">
@@ -1623,7 +1725,7 @@ export default function App() {
       <div className="app">
 
         <header className="header">
-          <p className="header-eyebrow">Record Procurement Tool</p>
+          <p className="header-eyebrow">Record Procurement Tool · v0.05</p>
           <h1>Find the best <em>vinyl</em><br />before you buy.</h1>
           <div className="header-meta">
             <span className="header-sub">Discogs Wantlist → Compare → Collection</span>
