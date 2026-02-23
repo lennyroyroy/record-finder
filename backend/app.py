@@ -23,15 +23,33 @@ FALLBACK_RATES = {
 }
 
 SHIPPING_ESTIMATES = {
-    "US": (0, 0), "Canada": (8, 16), "UK": (12, 22),
-    "Germany": (10, 22), "France": (10, 22), "Netherlands": (10, 20),
-    "Belgium": (10, 20), "Italy": (12, 24), "Spain": (12, 24),
-    "Sweden": (12, 22), "Denmark": (12, 22), "Norway": (12, 22),
-    "Finland": (12, 22), "Switzerland": (12, 24), "Austria": (10, 22),
-    "Poland": (12, 22), "Portugal": (12, 22), "Japan": (18, 35),
-    "Australia": (18, 32), "New Zealand": (20, 36), "Brazil": (20, 40),
-    "Mexico": (10, 20), "South Korea": (18, 32), "Hong Kong": (16, 30),
+    # North America
+    "US": (0, 0), "Canada": (8, 16), "Mexico": (10, 20),
+    # Latin America
+    "Colombia": (18, 38), "Brazil": (20, 40), "Argentina": (22, 42),
+    "Chile": (20, 38), "Peru": (20, 38), "Venezuela": (22, 42),
+    "Ecuador": (20, 38), "Bolivia": (22, 42), "Uruguay": (22, 42),
+    "Paraguay": (22, 42), "Cuba": (24, 44),
+    # Europe
+    "UK": (12, 22), "Germany": (10, 22), "France": (10, 22),
+    "Netherlands": (10, 20), "Belgium": (10, 20), "Italy": (12, 24),
+    "Spain": (12, 24), "Sweden": (12, 22), "Denmark": (12, 22),
+    "Norway": (12, 22), "Finland": (12, 22), "Switzerland": (12, 24),
+    "Austria": (10, 22), "Poland": (12, 22), "Portugal": (12, 22),
+    "Czech Republic": (12, 22), "Hungary": (12, 22), "Romania": (14, 26),
+    "Greece": (14, 26), "Turkey": (14, 28), "Ukraine": (16, 30),
+    "Russia": (18, 36),
+    # Asia Pacific
+    "Japan": (18, 35), "Australia": (18, 32), "New Zealand": (20, 36),
+    "South Korea": (18, 32), "Hong Kong": (16, 30), "Taiwan": (16, 30),
+    "China": (16, 32), "Singapore": (16, 30), "Thailand": (16, 30),
+    "Indonesia": (18, 34), "Philippines": (18, 34), "India": (18, 34),
+    # Middle East / Africa
+    "South Africa": (20, 38),
 }
+
+US_SHIPPING_ESTIMATE = (4, 8)  # typical US domestic media mail range
+
 DEFAULT_SHIPPING = (15, 32)
 
 _rate_cache = {}
