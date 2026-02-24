@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#1c1814"/>
+
+  <!-- Subtle groove rings (decorative, right side) -->
+  <circle cx="950" cy="315" r="280" fill="none" stroke="#2c2820" stroke-width="1.5"/>
+  <circle cx="950" cy="315" r="240" fill="none" stroke="#2c2820" stroke-width="1.5"/>
+  <circle cx="950" cy="315" r="200" fill="none" stroke="#2c2820" stroke-width="1.5"/>
+  <circle cx="950" cy="315" r="160" fill="none" stroke="#2c2820" stroke-width="1.5"/>
+  <circle cx="950" cy="315" r="120" fill="none" stroke="#2c2820" stroke-width="1.5"/>
+  <circle cx="950" cy="315" r="80" fill="none" stroke="#2c2820" stroke-width="1.5"/>
+
+  <!-- Vinyl disc -->
+  <circle cx="950" cy="315" r="270" fill="#1a1816"/>
+  <circle cx="950" cy="315" r="200" fill="#161412"/>
+  <circle cx="950" cy="315" r="130" fill="#1a1816"/>
+  <circle cx="950" cy="315" r="80"  fill="#161412"/>
+  <circle cx="950" cy="315" r="48"  fill="#e07840"/>
+  <circle cx="950" cy="315" r="18"  fill="#1c1814"/>
+
+  <!-- Left content area -->
+  <!-- Accent bar -->
+  <rect x="80" y="80" width="4" height="60" fill="#e07840" rx="2"/>
+
+  <!-- "Spin or Stream" title -->
+  <text x="104" y="122" font-family="Georgia, serif" font-size="72" font-weight="700" fill="#f0e8d8" letter-spacing="-2">Spin or</text>
+  <text x="104" y="200" font-family="Georgia, serif" font-size="72" font-weight="400" font-style="italic" fill="#e07840" letter-spacing="-2">Stream</text>
+
+  <!-- Divider -->
+  <rect x="80" y="236" width="520" height="1" fill="#3a3530"/>
+
+  <!-- Tagline -->
+  <text x="80" y="286" font-family="monospace" font-size="26" fill="#9a8f80" letter-spacing="0">Compare your Discogs wantlist prices.</text>
+  <text x="80" y="326" font-family="monospace" font-size="26" fill="#9a8f80">Know what's worth buying on wax</text>
+  <text x="80" y="366" font-family="monospace" font-size="26" fill="#9a8f80">versus just streaming it.</text>
+
+  <!-- URL pill -->
+  <rect x="80" y="430" width="280" height="44" rx="22" fill="#2c2820" stroke="#3a3530" stroke-width="1"/>
+  <text x="220" y="458" font-family="monospace" font-size="18" fill="#6a6058" text-anchor="middle" letter-spacing="1">spinorstream.com</text>
+
+  <!-- Teal accent dot -->
+  <circle cx="96" cy="452" r="6" fill="#4a9080"/>
+</svg>
