@@ -66,3 +66,25 @@ High-level summary of work done per session. Not a technical deep-dive — just 
 - CORS errors on dev preview — backend only knew about prod URL, not the Netlify preview URL
 - Dev branch CORS fix not running on Render — backend deploys from `main` only, fix had to be cherry-picked to `main`
 - Branches out of sync — reset `dev` to match `main` exactly using `git reset --hard` for a clean slate
+
+---
+
+## Session 5 — Security, Legal & Production Polish
+
+**What was fixed/built:**
+- Added `APP_VERSION` constant to App.jsx — single place to bump version, renders as dim chip in sidebar
+- Moved production to `spinorstream.com` — updated `FRONTEND_URL` env var across backend and Render
+- Added OG / Twitter Card meta tags to `index.html` — proper title, description, image for link previews
+- Created `og-image.svg` (1200×630) — branded share preview card with vinyl disc, orange title, dark background
+- Added Discogs attribution to sidebar: "Data by Discogs. Cover art © respective rights holders."
+- Added Flask-Limiter: per-IP rate limits (20/min on `/search`, 10/min on others)
+- Added security headers on all responses: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`
+- Added 1MB `MAX_CONTENT_LENGTH` to Flask to prevent payload abuse
+- Removed unused `DISCOGS_TOKEN` / `DISCOGS_HEADERS` dead code from backend
+- Created `MONETIZATION.md` — logged no-affiliate-links decision and future-compatible monetization paths
+- Added `CHANGELOG.md` (this file) and `LEARNING.md` curriculum to the repo
+
+**Problems solved:**
+- Desktop showing Squarespace instead of app — `nslookup` revealed 4 conflicting A records (2 Squarespace default, 2 Netlify). Root cause: Squarespace silently injects its own hosting IPs alongside custom records. Fix: switch to Netlify DNS (nameserver delegation) to remove Squarespace from the DNS equation entirely
+- CORS errors on dev preview URL (`dev--recordfinder.netlify.app`) — added `DEV_FRONTEND_URL` env var to CORS allowlist, required cherry-picking the fix to `main` since Render deploys from `main` only
+- Netlify deploy cancellations on docs-only commits — expected behavior, Netlify skips rebuilds when no frontend source files changed

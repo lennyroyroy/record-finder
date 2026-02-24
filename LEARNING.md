@@ -207,3 +207,59 @@ git checkout dev           # go back immediately
 - **Wrong Squarespace page** (Domain Nameservers vs DNS Settings) — same UI, completely different function. Lesson: read labels carefully before making changes
 - **Backend code on wrong branch** — CORS fix was on `dev` but Render deploys `main`, so the fix never ran. Lesson: understand which branch each service deploys from
 - **Multiple conflicting DNS records** — registrar defaults + custom records pointing different directions. Lesson: check for and remove defaults before adding new records
+- **nslookup as a diagnostic tool** — `nslookup spinorstream.com` reveals exactly which IPs DNS returns. Multiple IPs = conflicting records. Lesson: always verify with the actual tool, not just the registrar UI
+
+---
+
+## Module 16 — Open Graph & Link Previews
+
+**Concepts:**
+- `<title>` sets the browser tab label and is also a fallback for link previews
+- **Open Graph (OG) tags** — `<meta property="og:*">` — standard used by iMessage, Slack, Twitter, LinkedIn to build link preview cards
+- **Twitter Card tags** — `<meta name="twitter:*">` — Twitter-specific variant, `summary_large_image` gets the full-width image format
+- OG image dimensions: 1200×630 is the universal standard for link preview images
+- **SVG vs PNG for OG images**: SVG works on most modern platforms (iMessage, Slack, Twitter); Facebook/WhatsApp require PNG. Swap the file and update the two `og:image` references when PNG support is needed
+- The `og:image` URL must be absolute (`https://spinorstream.com/og-image.svg`), not relative
+- Files in `/public/` are served at the root URL in Vite — `public/og-image.svg` → `https://spinorstream.com/og-image.svg`
+
+**Where it lives:** `frontend/index.html`, `frontend/public/og-image.svg`
+
+---
+
+## Module 17 — Backend Rate Limiting
+
+**Concepts:**
+- **Flask-Limiter** — decorator-based per-IP rate limiting for Flask routes
+- `get_remote_address` — built-in key function that uses the client IP as the limit identifier
+- `storage_uri="memory://"` — in-process storage (resets on restart); fine for a single-server setup, would need Redis at multi-instance scale
+- Rate limits are set per route with `@limiter.limit("N per minute")` — different endpoints can have different limits based on how expensive they are
+- When a limit is exceeded, Flask-Limiter returns a 429 automatically — no extra code needed
+- Typical limits for this app: heavy search endpoint (20/min), lighter read endpoints (10/min), auth (10/min to prevent token farming)
+
+**Where it lives:** `backend/app.py` — `Limiter` setup, `@limiter.limit()` decorators
+
+---
+
+## Module 18 — HTTP Security Headers
+
+**Concepts:**
+- Security headers are set on HTTP responses to tell browsers how to handle the content
+- `X-Content-Type-Options: nosniff` — prevents browsers from guessing content type (MIME sniffing attacks)
+- `X-Frame-Options: DENY` — prevents your app from being embedded in an `<iframe>` (clickjacking protection)
+- `Referrer-Policy: strict-origin-when-cross-origin` — controls how much URL info is sent in the `Referer` header when navigating away
+- Set once in `@app.after_request` hook — applies to every response automatically
+- `MAX_CONTENT_LENGTH` on Flask — caps request body size (1MB here) to prevent payload-based DoS attacks
+
+**Where it lives:** `backend/app.py` — `add_cors_headers` after_request hook, `app.config["MAX_CONTENT_LENGTH"]`
+
+---
+
+## Module 19 — Nameserver Delegation (Netlify DNS)
+
+**Concepts:**
+- **Nameservers (NS records)** control which DNS provider answers queries for your domain — they sit one level above A/CNAME records
+- **The problem with registrar DNS**: when your domain registrar (Squarespace) also provides DNS, they may inject their own default records (like hosting IPs) that you can't see or delete from the UI
+- **Switching to Netlify DNS**: point your domain's nameservers to Netlify's NS records — Netlify then becomes the authoritative DNS provider and you manage all records there
+- This removes any hidden registrar records and gives Netlify full control to auto-create optimal records
+- **Nameserver propagation** is slower than A record changes — can take 1–4 hours (sometimes up to 24h) because NS changes have to propagate to root DNS servers
+- After switching, `nslookup` should only return Netlify IPs — no more mixed results
