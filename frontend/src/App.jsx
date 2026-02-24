@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+const APP_VERSION = "v0.07";
+
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
 const STYLES = `
@@ -89,6 +91,13 @@ const STYLES = `
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-top: 5px;
+  }
+
+  .sidebar-version {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    opacity: 0.6;
   }
 
   .sidebar-nav {
@@ -2020,6 +2029,7 @@ export default function App() {
               Spin or <em>Stream</em>
             </span>
             <p className="sidebar-tagline">Vinyl price tool</p>
+            <p className="sidebar-version">{APP_VERSION}</p>
           </div>
 
           <nav className="sidebar-nav" role="tablist">
