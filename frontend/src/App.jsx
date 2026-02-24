@@ -879,9 +879,16 @@ const STYLES = `
 
   .collection-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
     margin-top: 4px;
+  }
+
+  @media (max-width: 540px) {
+    .collection-grid {
+      grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+      gap: 8px;
+    }
   }
 
   .collection-thumb {
@@ -1040,6 +1047,88 @@ const STYLES = `
       padding: 10px 16px;
     }
   }
+
+  /* ── LOGIN – mobile centering ───────────────────────────────────────────── */
+  @media (max-width: 540px) {
+    .login-screen { align-items: flex-start; padding-top: 40px; }
+    .login-card   { padding: 36px 24px; }
+  }
+
+  /* ── VINYL DISC BACKDROP ────────────────────────────────────────────────── */
+  .login-disc {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle,
+      var(--surface2) 0%,   var(--surface2) 27%,
+      var(--border)   28%,  var(--border)   30%,
+      var(--bg)       31%,  var(--bg)       44%,
+      var(--border)   45%,  var(--border)   47%,
+      var(--bg)       48%,  var(--bg)       61%,
+      var(--border)   62%,  var(--border)   64%,
+      transparent     65%
+    );
+  }
+
+  /* ── VINYL FACTS BOX ────────────────────────────────────────────────────── */
+  .vinyl-facts-wrap   { margin-top: 18px; }
+  .vinyl-facts-label  { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); text-align: center; margin-bottom: 7px; }
+  .vinyl-facts-box    { background: rgba(74,144,128,0.07); border: 1px solid var(--teal-dim); border-radius: var(--radius); padding: 12px 16px; font-size: 11px; color: var(--teal); line-height: 1.7; text-align: center; min-height: 58px; display: flex; align-items: center; justify-content: center; }
+
+  /* ── GUEST BUTTON ───────────────────────────────────────────────────────── */
+  .btn-guest {
+    width: 100%; background: none; border: 1px solid var(--teal-dim);
+    border-radius: var(--radius); color: var(--teal);
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 12px;
+    cursor: pointer; margin-top: 10px; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-guest:hover { background: rgba(74,144,128,0.1); border-color: var(--teal); }
+
+  /* ── MOBILE USER BAR ────────────────────────────────────────────────────── */
+  .mobile-user-bar {
+    display: none; background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 9px 16px; align-items: center; justify-content: space-between; gap: 8px;
+    margin: -24px -16px 20px -16px;
+  }
+  @media (max-width: 680px) { .mobile-user-bar { display: flex; } }
+  .mobile-user-name { font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ── SORT BAR ───────────────────────────────────────────────────────────── */
+  .sort-bar       { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .sort-bar-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; }
+  .sort-btn {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 999px;
+    color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 10px;
+    font-weight: 500; letter-spacing: 0.05em; padding: 4px 10px; cursor: pointer; transition: all 0.15s;
+  }
+  .sort-btn:hover  { border-color: var(--accent); color: var(--accent); }
+  .sort-btn.active { background: rgba(224,120,64,0.1); border-color: var(--accent-dim); color: var(--accent); }
+
+  /* ── VINYL PLACEHOLDER ──────────────────────────────────────────────────── */
+  .vinyl-ph {
+    border-radius: 50%; background: var(--surface2); border: 1px solid var(--border);
+    flex-shrink: 0; position: relative; overflow: hidden;
+  }
+  .vinyl-ph::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 38%; height: 38%; border-radius: 50%; border: 1px solid var(--border); }
+  .vinyl-ph::after  { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 13%; height: 13%; border-radius: 50%; background: var(--accent-dim); }
+
+  /* ── FIND ELSEWHERE BRAND BUTTONS ───────────────────────────────────────── */
+  .find-elsewhere-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .btn-brand {
+    flex: 1; min-width: 58px; background: none; border: 1px solid;
+    border-radius: var(--radius); font-family: 'DM Mono', monospace;
+    font-size: 9px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 7px 4px; cursor: pointer; transition: opacity 0.15s; text-align: center; line-height: 1.2;
+  }
+  .btn-brand:hover { opacity: 0.7; }
+  .btn-brand-discogs  { color: #ef6216; border-color: rgba(239,98,22,0.45);  background: rgba(239,98,22,0.07);  }
+  .btn-brand-amazon   { color: #e47911; border-color: rgba(228,121,17,0.45); background: rgba(228,121,17,0.07); }
+  .btn-brand-target   { color: #cc0000; border-color: rgba(204,0,0,0.45);    background: rgba(204,0,0,0.07);    }
+  .btn-brand-walmart  { color: #0071dc; border-color: rgba(0,113,220,0.45);  background: rgba(0,113,220,0.07);  }
+  .btn-brand-ytmusic  { color: #ff4e45; border-color: rgba(255,78,69,0.45);  background: rgba(255,78,69,0.07);  }
+  .btn-brand-bandcamp { color: #1da0c3; border-color: rgba(29,160,195,0.45); background: rgba(29,160,195,0.07); }
 `;
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
@@ -1068,6 +1157,29 @@ function useToast() {
     timerRef.current = setTimeout(() => setToast((t) => ({ ...t, show: false })), 2500);
   };
   return [toast, showToast];
+}
+
+// ─── VINYL FACTS ─────────────────────────────────────────────────────────────
+
+const VINYL_FACTS = [
+  "A standard 12\" LP spins at 33⅓ RPM and holds about 22 minutes per side.",
+  "The grooves on a vinyl record are a single continuous spiral — one groove per side.",
+  "Peak vinyl sales were in 1978, when 341 million LPs were sold in the US alone.",
+  "Vinyl outsold CDs for the first time since the 1980s in 2020.",
+  "The 45 RPM single format was introduced by RCA Victor in 1949.",
+  "A new LP pressed today typically weighs 180g — heavier than vintage pressings for better audio.",
+  "The first gold record was awarded to Glenn Miller in 1942 for \"Chattanooga Choo Choo.\"",
+  "Vinyl records are made from PVC — polyvinyl chloride — the same material in pipes.",
+  "Audiophiles call the snap, crackle, and pop of vinyl \"surface noise\" — many consider it part of the charm.",
+  "The diamond stylus on a turntable needle can last 500–1,000 hours of playtime.",
+  "First pressings typically command higher prices because the master lacquer is freshest.",
+  "A record's label color, matrix number, and deadwax etchings can identify the pressing era.",
+];
+
+// ─── VINYL PLACEHOLDER ───────────────────────────────────────────────────────
+
+function VinylPh({ size }) {
+  return <div className="vinyl-ph" style={{ width: size, height: size }} />;
 }
 
 // ─── GUEST FIXTURE DATA ──────────────────────────────────────────────────────
@@ -1148,13 +1260,31 @@ const GUEST_DATA = {
 
 // ─── LOGIN ───────────────────────────────────────────────────────────────────
 
+// Vinyl disc positions for login backdrop
+const DISCS = [
+  { size: 320, top: "-90px",  right: "-100px", opacity: 0.28 },
+  { size: 220, top: "30px",   left: "-110px",  opacity: 0.22 },
+  { size: 400, bottom:"-140px", right: "-60px", opacity: 0.18 },
+  { size: 170, bottom: "80px", left: "-70px",  opacity: 0.24 },
+  { size: 130, top: "220px",  right: "20px",   opacity: 0.15 },
+  { size: 260, top: "50%",    left: "15%",     opacity: 0.10 },
+];
+
 function LoginScreen({ error, loading, onGuestMode }) {
   const [starting, setStarting] = useState(false);
+  const [factIdx, setFactIdx] = useState(() => Math.floor(Math.random() * VINYL_FACTS.length));
+
+  useEffect(() => {
+    if (!starting && !loading) return;
+    const id = setInterval(() => {
+      setFactIdx((i) => (i + 1) % VINYL_FACTS.length);
+    }, 3500);
+    return () => clearInterval(id);
+  }, [starting, loading]);
 
   async function handleAuthorize() {
     setStarting(true);
     try {
-      // Backend returns { auth_url: "https://discogs.com/oauth/authorize?oauth_token=..." }
       const data = await fetchAPI("/auth/start");
       window.location.href = data.auth_url;
     } catch (err) {
@@ -1167,11 +1297,14 @@ function LoginScreen({ error, loading, onGuestMode }) {
 
   return (
     <div className="login-screen">
+      {/* Vinyl disc backdrop */}
+      {DISCS.map((d, i) => (
+        <div key={i} className="login-disc" style={{ width: d.size, height: d.size, top: d.top, bottom: d.bottom, left: d.left, right: d.right, opacity: d.opacity }} />
+      ))}
+
       <div className="login-card">
         <p className="login-eyebrow">Discogs Price Tool</p>
-        <h1 className="login-title">
-          Spin or <em>Stream v1</em>
-        </h1>
+        <h1 className="login-title">Spin or <em>Stream</em></h1>
         <p className="login-sub">
           Compare wantlist prices and make smarter decisions about what's worth buying on wax versus just streaming it.
         </p>
@@ -1179,27 +1312,27 @@ function LoginScreen({ error, loading, onGuestMode }) {
         {error && <div className="login-error">{error}</div>}
 
         {busy ? (
-          <div className="loading-state" style={{ justifyContent: "center", padding: "20px 0" }}>
-            <div className="spinner" />
-            {loading ? "Completing authorization…" : "Redirecting to Discogs…"}
-          </div>
+          <>
+            <div className="loading-state" style={{ justifyContent: "center", padding: "16px 0 8px" }}>
+              <div className="spinner" />
+              {loading ? "Completing authorization…" : "Redirecting to Discogs…"}
+            </div>
+            <div className="vinyl-facts-wrap">
+              <p className="vinyl-facts-label">While you wait — did you know?</p>
+              <div className="vinyl-facts-box">{VINYL_FACTS[factIdx]}</div>
+            </div>
+          </>
         ) : (
           <>
             <button className="btn-primary" onClick={handleAuthorize}>
               Authorize with Discogs
             </button>
-            <p className="form-hint" style={{ marginTop: "14px", textAlign: "center" }}>
-              You'll be taken to Discogs to sign in and approve access — then right back here.
+            <p className="form-hint" style={{ marginTop: "12px", textAlign: "center" }}>
+              You'll be taken to Discogs to sign in — then right back here.
             </p>
-            <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
-              <button
-                onClick={onGuestMode}
-                style={{ background: "none", border: "none", color: "var(--text-dim)", fontFamily: "'DM Mono', monospace", fontSize: "11px", cursor: "pointer", letterSpacing: "0.04em" }}
-              >
-                or{" "}
-                <span style={{ color: "var(--teal)", textDecoration: "underline" }}>
-                  try a demo without logging in →
-                </span>
+            <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--border)" }}>
+              <button className="btn-guest" onClick={onGuestMode}>
+                ◎ Try a demo without logging in
               </button>
             </div>
           </>
@@ -1217,7 +1350,25 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   const [syncing, setSyncing] = useState(false);
   const [searching, setSearching] = useState({});
   const [results, setResults] = useState(() => isGuest ? GUEST_DATA.results : {});
+  const [sortBy, setSortBy] = useState("none");
+  const [sortDir, setSortDir] = useState("asc");
   const [toast, showToast] = useToast();
+
+  function toggleSort(field) {
+    if (sortBy === field) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(field);
+      setSortDir("asc");
+    }
+  }
+
+  const sortedItems = [...items].sort((a, b) => {
+    if (sortBy === "none") return 0;
+    const av = sortBy === "year" ? (a.year || "0") : (a.artist || "");
+    const bv = sortBy === "year" ? (b.year || "0") : (b.artist || "");
+    return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+  });
 
   useEffect(() => {
     if (isGuest) {
@@ -1299,6 +1450,21 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         )}
       </div>
 
+      {items.length > 1 && (
+        <div className="sort-bar">
+          <span className="sort-bar-label">Sort:</span>
+          <button className={`sort-btn ${sortBy === "artist" ? "active" : ""}`} onClick={() => toggleSort("artist")}>
+            Artist {sortBy === "artist" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+          </button>
+          <button className={`sort-btn ${sortBy === "year" ? "active" : ""}`} onClick={() => toggleSort("year")}>
+            Year {sortBy === "year" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+          </button>
+          {sortBy !== "none" && (
+            <button className="sort-btn" onClick={() => setSortBy("none")}>✕ Clear</button>
+          )}
+        </div>
+      )}
+
       {items.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">◎</div>
@@ -1306,7 +1472,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
           <p className="empty-sub">Head to Discogs and add some records — they'll show up here.</p>
         </div>
       ) : (
-        items.map((item) => (
+        sortedItems.map((item) => (
           <WantlistCard
             key={item.id}
             item={item}
@@ -1333,18 +1499,22 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
   const avgPrice = prices.length ? prices.reduce((a, b) => a + b) / prices.length : null;
   const usPrices = usListings.map((l) => l.price).filter(Boolean);
   const minUS = usPrices.length ? Math.min(...usPrices) : null;
+  // Best total-with-shipping across all listings
+  const bestUS = result?.best_us;
+  const bestIntl = result?.best_intl;
+  const bestTotalUS = bestUS ? bestUS.total_low : null;
+  const bestTotalIntl = bestIntl ? bestIntl.total_low : null;
+
+  const ytQuery = encodeURIComponent(`${item.artist} ${item.title}`);
 
   return (
     <div className="card">
       <div className="card-header">
         <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", flex: 1, minWidth: 0 }}>
-          {item.cover_url && (
-            <img
-              src={item.cover_url}
-              alt={item.title}
-              style={{ width: "52px", height: "52px", objectFit: "cover", borderRadius: "6px", border: "1px solid var(--border)", flexShrink: 0 }}
-            />
-          )}
+          {item.cover_url
+            ? <img src={item.cover_url} alt={item.title} style={{ width: "52px", height: "52px", objectFit: "cover", borderRadius: "6px", border: "1px solid var(--border)", flexShrink: 0 }} />
+            : <VinylPh size={52} />
+          }
           <div style={{ minWidth: 0 }}>
             <div className="card-title">{item.title}</div>
             <div className="card-artist">{item.artist}</div>
@@ -1356,9 +1526,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
       <div className="card-meta">
         {item.format && <span className="chip">{item.format}</span>}
         {item.label && <span className="chip">{item.label}</span>}
-        {result && (
-          <span className="chip teal">{allListings.length} listings</span>
-        )}
+        {result && <span className="chip teal">{allListings.length} listings</span>}
       </div>
 
       {searching && (
@@ -1375,14 +1543,28 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
               <div className="price-cell">
                 <div className="price-label">Lowest</div>
                 <div className="price-value best">${minPrice.toFixed(2)}</div>
-                <div className="price-sub">anywhere</div>
+                <div className="price-sub">record only</div>
               </div>
             )}
             {minUS != null && (
               <div className="price-cell">
-                <div className="price-label">Best US Ship</div>
+                <div className="price-label">Best US</div>
                 <div className="price-value">${minUS.toFixed(2)}</div>
                 <div className="price-sub">ships from US</div>
+              </div>
+            )}
+            {bestTotalUS != null && (
+              <div className="price-cell">
+                <div className="price-label">Total US *</div>
+                <div className="price-value best">${bestTotalUS.toFixed(2)}</div>
+                <div className="price-sub">inc. est. shipping</div>
+              </div>
+            )}
+            {bestTotalIntl != null && !bestTotalUS && (
+              <div className="price-cell">
+                <div className="price-label">Best Intl Total *</div>
+                <div className="price-value">${bestTotalIntl.toFixed(2)}</div>
+                <div className="price-sub">inc. est. shipping</div>
               </div>
             )}
             {avgPrice != null && (
@@ -1401,13 +1583,13 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
                 <span>Avg ${avgPrice.toFixed(2)}</span>
               </div>
               <div className="progress-bar-track">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${Math.min((minPrice / avgPrice) * 100, 100)}%` }}
-                />
+                <div className="progress-bar-fill" style={{ width: `${Math.min((minPrice / avgPrice) * 100, 100)}%` }} />
               </div>
             </div>
           )}
+          <p style={{ fontSize: "9px", color: "var(--text-dim)", marginTop: "6px", letterSpacing: "0.06em" }}>
+            * shipping is estimated
+          </p>
         </>
       )}
 
@@ -1417,32 +1599,32 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
         </p>
       )}
 
-      <div className="card-actions">
-        {!result && (
-          <button className="btn-search" onClick={onSearch} disabled={searching}>
-            {searching ? "Searching…" : "Check Prices"}
-          </button>
-        )}
-        {result && (
-          <button className="btn-secondary" onClick={onSearch} disabled={searching}>
-            Refresh
-          </button>
-        )}
-        {result && allListings.length > 0 && (
-          <button className="btn-secondary teal" onClick={onCompareAdd}>
-            + Compare
-          </button>
-        )}
-        {item.discogs_url && (
-          <a
-            href={item.discogs_url}
-            target="_blank"
-            rel="noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <button className="btn-secondary">View on Discogs ↗</button>
+      <div className="card-actions" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "8px" }}>
+          {!result && (
+            <button className="btn-search" onClick={onSearch} disabled={searching}>
+              {searching ? "Searching…" : "Check Prices"}
+            </button>
+          )}
+          {result && (
+            <button className="btn-secondary" onClick={onSearch} disabled={searching}>Refresh</button>
+          )}
+          <a href={`https://music.youtube.com/search?q=${ytQuery}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+            <button className="btn-secondary">▶ YT Music</button>
           </a>
-        )}
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          {item.discogs_url && (
+            <a href={item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+              <button className="btn-secondary">Discogs ↗</button>
+            </a>
+          )}
+          {result && allListings.length > 0 && (
+            <button className="btn-secondary" style={{ borderColor: "var(--teal-dim)", color: "var(--teal)" }} onClick={onCompareAdd}>
+              + Compare
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1508,6 +1690,7 @@ function CompareTab({ compareItems, onRemove }) {
 
           const qVinyl = encodeURIComponent(`${ci.item.artist} ${ci.item.title} vinyl`);
           const qPlain = encodeURIComponent(`${ci.item.artist} ${ci.item.title}`);
+          const avgPrice = prices.length ? prices.reduce((a, b) => a + b) / prices.length : null;
 
           const listingRow = (l, i, isUS) => (
             <a key={`${isUS ? "us" : "intl"}-${i}`} href={l.url} target="_blank" rel="noreferrer"
@@ -1530,9 +1713,7 @@ function CompareTab({ compareItems, onRemove }) {
                     ${l.price.toFixed(2)}
                   </span>
                   <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "6px" }}>
-                    {isUS
-                      ? `+ $${l.shipping_low}–$${l.shipping_high} ship`
-                      : `+ est. $${l.shipping_low}–$${l.shipping_high} ship`}
+                    + ${l.shipping_low}–${l.shipping_high} ship *
                   </span>
                 </div>
               </div>
@@ -1544,11 +1725,10 @@ function CompareTab({ compareItems, onRemove }) {
               {/* Header */}
               <div className="card-header">
                 <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", flex: 1, minWidth: 0 }}>
-                  {ci.item.cover_url && (
-                    <img src={ci.item.cover_url} alt={ci.item.title}
-                      style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "6px",
-                        border: "1px solid var(--border)", flexShrink: 0 }} />
-                  )}
+                  {ci.item.cover_url
+                    ? <img src={ci.item.cover_url} alt={ci.item.title} style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "6px", border: "1px solid var(--border)", flexShrink: 0 }} />
+                    : <VinylPh size={56} />
+                  }
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                       <div className="card-title">{ci.item.title}</div>
@@ -1569,6 +1749,18 @@ function CompareTab({ compareItems, onRemove }) {
                   <p className="section-label" style={{ marginTop: "14px" }}>Discogs marketplace</p>
                   {usListings.map((l, i) => listingRow(l, i, true))}
                   {intlListings.map((l, i) => listingRow(l, i, false))}
+                  {minPrice != null && avgPrice != null && (
+                    <div className="progress-bar-wrap" style={{ marginTop: "10px" }}>
+                      <div className="progress-bar-label">
+                        <span>Low ${minPrice.toFixed(2)}</span>
+                        <span>Avg ${avgPrice.toFixed(2)}</span>
+                      </div>
+                      <div className="progress-bar-track">
+                        <div className="progress-bar-fill" style={{ width: `${Math.min((minPrice / avgPrice) * 100, 100)}%` }} />
+                      </div>
+                    </div>
+                  )}
+                  <p style={{ fontSize: "9px", color: "var(--text-dim)", marginTop: "6px", letterSpacing: "0.06em" }}>* shipping is estimated</p>
                 </>
               ) : (
                 <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "10px 0 4px" }}>
@@ -1576,26 +1768,29 @@ function CompareTab({ compareItems, onRemove }) {
                 </p>
               )}
 
-              {/* Retail search links */}
+              {/* Find elsewhere */}
               <p className="section-label" style={{ marginTop: "16px" }}>Find elsewhere</p>
-              <div className="card-actions">
-                <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-secondary">Amazon ↗</button>
-                </a>
-                <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-secondary">Bandcamp ↗</button>
-                </a>
-                <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-secondary">Target ↗</button>
-                </a>
-                <a href={`https://www.walmart.com/search?q=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-secondary">Walmart ↗</button>
-                </a>
+              <div className="find-elsewhere-row">
                 {ci.item.discogs_url && (
-                  <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                    <button className="btn-secondary teal">Discogs ↗</button>
+                  <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
+                    <button className="btn-brand btn-brand-discogs" style={{ width: "100%" }}>Discogs</button>
                   </a>
                 )}
+                <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
+                  <button className="btn-brand btn-brand-amazon" style={{ width: "100%" }}>Amazon</button>
+                </a>
+                <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
+                  <button className="btn-brand btn-brand-target" style={{ width: "100%" }}>Target</button>
+                </a>
+                <a href={`https://www.walmart.com/search?q=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
+                  <button className="btn-brand btn-brand-walmart" style={{ width: "100%" }}>Walmart</button>
+                </a>
+                <a href={`https://music.youtube.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
+                  <button className="btn-brand btn-brand-ytmusic" style={{ width: "100%" }}>YT Music</button>
+                </a>
+                <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
+                  <button className="btn-brand btn-brand-bandcamp" style={{ width: "100%" }}>Bandcamp</button>
+                </a>
               </div>
             </div>
           );
@@ -1884,6 +2079,21 @@ export default function App() {
 
         {/* ── MAIN CONTENT ── */}
         <main className="main">
+          {/* Mobile-only user/logout bar (sidebar is hidden on mobile) */}
+          <div className="mobile-user-bar">
+            {isGuest ? (
+              <>
+                <span className="mobile-user-name" style={{ color: "var(--accent)" }}>◎ Demo mode</span>
+                <button className="sidebar-logout" onClick={handleExitGuest}>Log in</button>
+              </>
+            ) : (
+              <>
+                <span className="mobile-user-name">{authUsername}</span>
+                <button className="sidebar-logout" onClick={handleLogout}>Log out</button>
+              </>
+            )}
+          </div>
+
           {isGuest && (
             <div className="guest-banner">
               <span>Demo mode · Browsing sample data, no Discogs account needed.</span>
