@@ -1009,8 +1009,9 @@ const STYLES = `
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function fetchAPI(path, options = {}) {
+  const token = localStorage.getItem("sos_token") || "";
   const res = await fetch(`${API}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "X-Auth-Token": token },
     ...options,
   });
   if (!res.ok) {
@@ -1568,6 +1569,17 @@ useEffect(() => {
     })
     .catch((err) => setOauthError(err.message || "Authorization failed. Please try again."))
     .finally(() => setOauthLoading(false));
+}, []);
+
+useEffect(() => {
+  if (!authUsername || !authToken) return;
+  fetchAPI("/oauth/me")
+    .then((data) => {
+      if (!data.authenticated) {
+        handleLogout();
+      }
+    })
+    .catch(() => handleLogout());
 }, []);
 
   function handleLogout() {

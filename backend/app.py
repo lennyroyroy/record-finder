@@ -124,7 +124,7 @@ def oauth_logout():
 def oauth_me():
     token = request.headers.get("X-Auth-Token")
     if not token or token not in TOKEN_STORE:
-        return jsonify({"authenticated": False})
+        return jsonify({"authenticated": False}), 401
     return jsonify({
         "authenticated": True,
         "username": TOKEN_STORE[token]["username"]
