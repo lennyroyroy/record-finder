@@ -24,12 +24,14 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-CORS(app, supports_credentials=True, origins=[FRONTEND_URL, "http://localhost:5173"])
+DEV_FRONTEND_URL = os.getenv("DEV_FRONTEND_URL", "")
+_ALLOWED_ORIGINS = [o for o in [FRONTEND_URL, DEV_FRONTEND_URL, "http://localhost:5173"] if o]
+CORS(app, supports_credentials=True, origins=_ALLOWED_ORIGINS)
 
 @app.after_request
 def add_cors_headers(response):
     origin = request.headers.get("Origin", "")
-    allowed = [FRONTEND_URL, "http://localhost:5173"]
+    allowed = _ALLOWED_ORIGINS
     if origin in allowed:
         response.headers["Access-Control-Allow-Origin"] = origin
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Auth-Token"

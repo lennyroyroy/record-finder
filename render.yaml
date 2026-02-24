@@ -16,5 +16,7 @@ services:
         sync: false
       - key: FRONTEND_URL
         sync: false
+      - key: DEV_FRONTEND_URL
+        sync: false
       - key: FLASK_ENV
         value: production
