@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 import requests
 import os
 import re
+import secrets
+TOKEN_STORE = {}
 
 load_dotenv()
 
@@ -55,10 +57,6 @@ def oauth_callback():
         verifier=oauth_verifier
     )
     tokens = oauth.fetch_access_token(ACCESS_TOKEN_URL)
-    session["access_token"] = tokens["oauth_token"]
-    session["access_token_secret"] = tokens["oauth_token_secret"]
-
-    # Fetch Discogs identity to get username
     authed = OAuth1Session(
         DISCOGS_CONSUMER_KEY,
         client_secret=DISCOGS_CONSUMER_SECRET,
@@ -66,22 +64,32 @@ def oauth_callback():
         resource_owner_secret=tokens["oauth_token_secret"]
     )
     identity = authed.get("https://api.discogs.com/oauth/identity").json()
-    session["username"] = identity.get("username")
+    username = identity.get("username")
 
-    return redirect(f"{FRONTEND_URL}?auth=success")
+    token = secrets.token_hex(32)
+    TOKEN_STORE[token] = {
+        "access_token": tokens["oauth_token"],
+        "access_token_secret": tokens["oauth_token_secret"],
+        "username": username
+    }
+
+    return redirect(f"{FRONTEND_URL}?auth=success&token={token}")
 
 @app.route("/oauth/logout")
 def oauth_logout():
-    session.clear()
+    token = request.headers.get("X-Auth-Token")
+    if token and token in TOKEN_STORE:
+        del TOKEN_STORE[token]
     return jsonify({"ok": True})
 
 @app.route("/oauth/me")
 def oauth_me():
-    if not session.get("access_token"):
+    token = request.headers.get("X-Auth-Token")
+    if not token or token not in TOKEN_STORE:
         return jsonify({"authenticated": False})
     return jsonify({
         "authenticated": True,
-        "username": session.get("username")
+        "username": TOKEN_STORE[token]["username"]
     })
 
 FALLBACK_RATES = {
@@ -245,16 +253,19 @@ def search():
     })
 
 def _auth_headers():
-    if session.get("access_token"):
+    token = request.headers.get("X-Auth-Token")
+    if token and token in TOKEN_STORE:
+        data = TOKEN_STORE[token]
         return {
-            "Authorization": f"OAuth oauth_token={session['access_token']}, oauth_consumer_key={DISCOGS_CONSUMER_KEY}",
+            "Authorization": f"OAuth oauth_token={data['access_token']}, oauth_consumer_key={DISCOGS_CONSUMER_KEY}",
             "User-Agent": "RecordFinder/1.0"
         }
     return DISCOGS_HEADERS
 
 @app.route("/wantlist", methods=["GET"])
 def wantlist():
-    username = session.get("username") or request.args.get("username", "").strip()
+    token = request.headers.get("X-Auth-Token")
+    username = (TOKEN_STORE.get(token) or {}).get("username") or request.args.get("username", "").strip()
     if not username:
         return jsonify({"error": "Username is required"}), 400
     headers = _auth_headers()
@@ -295,7 +306,8 @@ def wantlist():
 
 @app.route("/collection", methods=["GET"])
 def collection():
-    username = session.get("username") or request.args.get("username", "").strip()
+    token = request.headers.get("X-Auth-Token")
+    username = (TOKEN_STORE.get(token) or {}).get("username") or request.args.get("username", "").strip()
     if not username:
         return jsonify({"error": "Username is required"}), 400
     headers = _auth_headers()

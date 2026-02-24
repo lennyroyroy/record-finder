@@ -1383,19 +1383,23 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(null); // null = loading
   const [authUsername, setAuthUsername] = useState("");
 
-  const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    // Strip ?auth=success from URL after Discogs redirect
-    if (window.location.search.includes("auth=success")) {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("rf_auth_token", token);
       window.history.replaceState({}, "", window.location.pathname);
     }
-    // Check if already logged in
-    fetch(`${API}/oauth/me`, { credentials: "include" })
+    const stored = localStorage.getItem("rf_auth_token");
+    if (!stored) { setAuthenticated(false); return; }
+    fetch(`${API}/oauth/me`, { headers: { "X-Auth-Token": stored } })
       .then(r => r.json())
       .then(data => {
         setAuthenticated(data.authenticated);
         if (data.username) setAuthUsername(data.username);
+        if (!data.authenticated) localStorage.removeItem("rf_auth_token");
       })
       .catch(() => setAuthenticated(false));
   }, []);
@@ -1451,7 +1455,11 @@ export default function App() {
               <span style={{fontSize:"13px", fontFamily:"'DM Mono', monospace"}}>{authUsername}</span>
               <button
                 style={{fontSize:"9px", color:"var(--text-3)", letterSpacing:"0.15em", textTransform:"uppercase", textDecoration:"none", background:"none", border:"none", cursor:"pointer", padding:0}}
-                onClick={() => fetch(`${API}/oauth/logout`, { credentials:"include" }).then(() => setAuthenticated(false))}>
+                onClick={() => {
+                  const token = localStorage.getItem("rf_auth_token");
+                  fetch(`${API}/oauth/logout`, { headers: { "X-Auth-Token": token } })
+                    .then(() => { localStorage.removeItem("rf_auth_token"); setAuthenticated(false); });
+                }}>
                 Log out
               </button>
             </div>
