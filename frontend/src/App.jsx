@@ -1002,6 +1002,44 @@ const STYLES = `
     margin-bottom: 14px;
     letter-spacing: 0.06em;
   }
+
+  /* ── GUEST BANNER ──────────────────────────────────────────────────────── */
+
+  .guest-banner {
+    margin: -40px -40px 28px -40px;
+    padding: 10px 40px;
+    background: rgba(224,120,64,0.08);
+    border-bottom: 1px solid var(--accent-dim);
+    font-size: 11px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .guest-banner-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 680px) {
+    .guest-banner {
+      margin: -24px -16px 20px -16px;
+      padding: 10px 16px;
+    }
+  }
 `;
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
@@ -1032,9 +1070,85 @@ function useToast() {
   return [toast, showToast];
 }
 
+// ─── GUEST FIXTURE DATA ──────────────────────────────────────────────────────
+
+const _dUrl = (q) => `https://www.discogs.com/search/?q=${encodeURIComponent(q)}&type=release&format=Vinyl`;
+
+const GUEST_DATA = {
+  wantlist: [
+    { id: "g1", artist: "Kendrick Lamar", title: "To Pimp a Butterfly", year: "2015", cover_url: "", discogs_url: _dUrl("Kendrick Lamar To Pimp a Butterfly") },
+    { id: "g2", artist: "Radiohead",      title: "OK Computer",          year: "1997", cover_url: "", discogs_url: _dUrl("Radiohead OK Computer") },
+    { id: "g3", artist: "Amy Winehouse",  title: "Back to Black",        year: "2006", cover_url: "", discogs_url: _dUrl("Amy Winehouse Back to Black") },
+    { id: "g4", artist: "D'Angelo",       title: "Voodoo",               year: "2000", cover_url: "", discogs_url: _dUrl("D'Angelo Voodoo") },
+  ],
+  results: {
+    "g1": {
+      release: { title: "To Pimp a Butterfly", year: "2015", cover_url: "", discogs_url: _dUrl("Kendrick Lamar To Pimp a Butterfly") },
+      discogs_us: [
+        { price: 34.99, ships_from: "US", num_for_sale: 14, url: _dUrl("Kendrick Lamar To Pimp a Butterfly"), shipping_low: 4, shipping_high: 8, total_low: 38.99, total_high: 42.99 },
+        { price: 42.00, ships_from: "US", num_for_sale:  6, url: _dUrl("Kendrick Lamar To Pimp a Butterfly"), shipping_low: 4, shipping_high: 8, total_low: 46.00, total_high: 50.00 },
+      ],
+      discogs_intl: [
+        { price: 27.00, ships_from: "Germany", num_for_sale: 4, url: _dUrl("Kendrick Lamar To Pimp a Butterfly"), shipping_low: 10, shipping_high: 22, total_low: 37.00, total_high: 49.00 },
+        { price: 31.50, ships_from: "UK",      num_for_sale: 7, url: _dUrl("Kendrick Lamar To Pimp a Butterfly"), shipping_low: 12, shipping_high: 22, total_low: 43.50, total_high: 53.50 },
+      ],
+      best_us:   { price: 34.99, ships_from: "US",      num_for_sale: 14, url: _dUrl("Kendrick Lamar To Pimp a Butterfly"), shipping_low: 4,  shipping_high: 8,  total_low: 38.99, total_high: 42.99 },
+      best_intl: { price: 27.00, ships_from: "Germany", num_for_sale:  4, url: _dUrl("Kendrick Lamar To Pimp a Butterfly"), shipping_low: 10, shipping_high: 22, total_low: 37.00, total_high: 49.00 },
+      us_only_warning: false, us_shipping_estimate: "$4–$8",
+    },
+    "g2": {
+      release: { title: "OK Computer", year: "1997", cover_url: "", discogs_url: _dUrl("Radiohead OK Computer") },
+      discogs_us: [
+        { price: 22.50, ships_from: "US", num_for_sale: 21, url: _dUrl("Radiohead OK Computer"), shipping_low: 4, shipping_high: 8, total_low: 26.50, total_high: 30.50 },
+        { price: 28.00, ships_from: "US", num_for_sale:  9, url: _dUrl("Radiohead OK Computer"), shipping_low: 4, shipping_high: 8, total_low: 32.00, total_high: 36.00 },
+      ],
+      discogs_intl: [
+        { price: 18.00, ships_from: "Netherlands", num_for_sale: 11, url: _dUrl("Radiohead OK Computer"), shipping_low: 10, shipping_high: 20, total_low: 28.00, total_high: 38.00 },
+        { price: 20.00, ships_from: "France",      num_for_sale:  8, url: _dUrl("Radiohead OK Computer"), shipping_low: 10, shipping_high: 22, total_low: 30.00, total_high: 42.00 },
+      ],
+      best_us:   { price: 22.50, ships_from: "US",          num_for_sale: 21, url: _dUrl("Radiohead OK Computer"), shipping_low: 4,  shipping_high: 8,  total_low: 26.50, total_high: 30.50 },
+      best_intl: { price: 18.00, ships_from: "Netherlands", num_for_sale: 11, url: _dUrl("Radiohead OK Computer"), shipping_low: 10, shipping_high: 20, total_low: 28.00, total_high: 38.00 },
+      us_only_warning: false, us_shipping_estimate: "$4–$8",
+    },
+    "g3": {
+      release: { title: "Back to Black", year: "2006", cover_url: "", discogs_url: _dUrl("Amy Winehouse Back to Black") },
+      discogs_us: [
+        { price: 19.99, ships_from: "US", num_for_sale: 18, url: _dUrl("Amy Winehouse Back to Black"), shipping_low: 4, shipping_high: 8, total_low: 23.99, total_high: 27.99 },
+      ],
+      discogs_intl: [
+        { price: 14.00, ships_from: "UK",      num_for_sale: 22, url: _dUrl("Amy Winehouse Back to Black"), shipping_low: 12, shipping_high: 22, total_low: 26.00, total_high: 36.00 },
+        { price: 16.00, ships_from: "Belgium", num_for_sale:  5, url: _dUrl("Amy Winehouse Back to Black"), shipping_low: 10, shipping_high: 20, total_low: 26.00, total_high: 36.00 },
+      ],
+      best_us:   { price: 19.99, ships_from: "US", num_for_sale: 18, url: _dUrl("Amy Winehouse Back to Black"), shipping_low: 4,  shipping_high: 8,  total_low: 23.99, total_high: 27.99 },
+      best_intl: { price: 14.00, ships_from: "UK", num_for_sale: 22, url: _dUrl("Amy Winehouse Back to Black"), shipping_low: 12, shipping_high: 22, total_low: 26.00, total_high: 36.00 },
+      us_only_warning: false, us_shipping_estimate: "$4–$8",
+    },
+    "g4": {
+      release: { title: "Voodoo", year: "2000", cover_url: "", discogs_url: _dUrl("D'Angelo Voodoo") },
+      discogs_us: [
+        { price: 74.99, ships_from: "US", num_for_sale: 5, url: _dUrl("D'Angelo Voodoo"), shipping_low: 4, shipping_high: 8, total_low: 78.99, total_high: 82.99 },
+      ],
+      discogs_intl: [
+        { price: 60.00, ships_from: "Japan", num_for_sale: 3, url: _dUrl("D'Angelo Voodoo"), shipping_low: 18, shipping_high: 35, total_low: 78.00, total_high: 95.00 },
+      ],
+      best_us:   { price: 74.99, ships_from: "US",    num_for_sale: 5, url: _dUrl("D'Angelo Voodoo"), shipping_low: 4,  shipping_high: 8,  total_low: 78.99, total_high: 82.99 },
+      best_intl: { price: 60.00, ships_from: "Japan", num_for_sale: 3, url: _dUrl("D'Angelo Voodoo"), shipping_low: 18, shipping_high: 35, total_low: 78.00, total_high: 95.00 },
+      us_only_warning: false, us_shipping_estimate: "$4–$8",
+    },
+  },
+  collection: [
+    { id: "gc1", artist: "Pink Floyd",    title: "The Wall",                   year: "1979", cover_url: "", discogs_url: _dUrl("Pink Floyd The Wall"),                   date_added: "2024-01-15" },
+    { id: "gc2", artist: "The Beatles",   title: "Abbey Road",                 year: "1969", cover_url: "", discogs_url: _dUrl("Beatles Abbey Road"),                    date_added: "2024-02-20" },
+    { id: "gc3", artist: "Fleetwood Mac", title: "Rumours",                    year: "1977", cover_url: "", discogs_url: _dUrl("Fleetwood Mac Rumours"),                  date_added: "2024-03-10" },
+    { id: "gc4", artist: "Stevie Wonder", title: "Songs in the Key of Life",   year: "1976", cover_url: "", discogs_url: _dUrl("Stevie Wonder Songs in the Key of Life"), date_added: "2024-04-05" },
+    { id: "gc5", artist: "Miles Davis",   title: "Kind of Blue",               year: "1959", cover_url: "", discogs_url: _dUrl("Miles Davis Kind of Blue"),               date_added: "2024-05-12" },
+    { id: "gc6", artist: "Joni Mitchell", title: "Blue",                       year: "1971", cover_url: "", discogs_url: _dUrl("Joni Mitchell Blue"),                     date_added: "2024-06-01" },
+  ],
+};
+
 // ─── LOGIN ───────────────────────────────────────────────────────────────────
 
-function LoginScreen({ error, loading }) {
+function LoginScreen({ error, loading, onGuestMode }) {
   const [starting, setStarting] = useState(false);
 
   async function handleAuthorize() {
@@ -1077,6 +1191,17 @@ function LoginScreen({ error, loading }) {
             <p className="form-hint" style={{ marginTop: "14px", textAlign: "center" }}>
               You'll be taken to Discogs to sign in and approve access — then right back here.
             </p>
+            <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
+              <button
+                onClick={onGuestMode}
+                style={{ background: "none", border: "none", color: "var(--text-dim)", fontFamily: "'DM Mono', monospace", fontSize: "11px", cursor: "pointer", letterSpacing: "0.04em" }}
+              >
+                or{" "}
+                <span style={{ color: "var(--teal)", textDecoration: "underline" }}>
+                  try a demo without logging in →
+                </span>
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -1086,16 +1211,20 @@ function LoginScreen({ error, loading }) {
 
 // ─── WANTLIST TAB ────────────────────────────────────────────────────────────
 
-function WantlistTab({ username, onCountChange, onCompareAdd }) {
-  const [items, setItems] = useState([]);
+function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
+  const [items, setItems] = useState(() => isGuest ? GUEST_DATA.wantlist : []);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [searching, setSearching] = useState({});
-  const [results, setResults] = useState({});
+  const [results, setResults] = useState(() => isGuest ? GUEST_DATA.results : {});
   const [toast, showToast] = useToast();
 
   useEffect(() => {
-    loadWantlist();
+    if (isGuest) {
+      onCountChange?.(GUEST_DATA.wantlist.length);
+    } else {
+      loadWantlist();
+    }
   }, []);
 
   async function loadWantlist() {
@@ -1112,6 +1241,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd }) {
   }
 
   async function syncWantlist() {
+    if (isGuest) return;
     setSyncing(true);
     try {
       await loadWantlist();
@@ -1122,6 +1252,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd }) {
   }
 
   async function searchPrices(item) {
+    if (isGuest) return; // Guest prices are pre-loaded fixture data
     setSearching((s) => ({ ...s, [item.id]: true }));
     try {
       const data = await fetchAPI(
@@ -1159,11 +1290,13 @@ function WantlistTab({ username, onCountChange, onCompareAdd }) {
           Wantlist <em>{items.length > 0 ? `(${items.length})` : ""}</em>
         </h2>
         <p className="page-desc">Check marketplace prices on everything you're hunting for.</p>
-        <div className="header-actions">
-          <button className="btn-sync" onClick={syncWantlist} disabled={syncing}>
-            {syncing ? "Syncing…" : "↻ Sync from Discogs"}
-          </button>
-        </div>
+        {!isGuest && (
+          <div className="header-actions">
+            <button className="btn-sync" onClick={syncWantlist} disabled={syncing}>
+              {syncing ? "Syncing…" : "↻ Sync from Discogs"}
+            </button>
+          </div>
+        )}
       </div>
 
       {items.length === 0 ? (
@@ -1483,14 +1616,14 @@ function CompareTab({ compareItems, onRemove }) {
 
 // ─── COLLECTION TAB ──────────────────────────────────────────────────────────
 
-function CollectionTab({ username }) {
-  const [items, setItems] = useState([]);
+function CollectionTab({ username, isGuest }) {
+  const [items, setItems] = useState(() => isGuest ? GUEST_DATA.collection : []);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [toast, showToast] = useToast();
 
   useEffect(() => {
-    loadCollection();
+    if (!isGuest) loadCollection();
   }, []);
 
   async function loadCollection() {
@@ -1594,6 +1727,22 @@ export default function App() {
   const [compareItems, setCompareItems] = useState([]);
   const [oauthLoading, setOauthLoading] = useState(false);
   const [oauthError, setOauthError] = useState("");
+  const [isGuest, setIsGuest] = useState(false);
+
+  function handleGuestMode() {
+    setIsGuest(true);
+    setWantlistCount(GUEST_DATA.wantlist.length);
+    setCompareItems([
+      { item: GUEST_DATA.wantlist[0], result: GUEST_DATA.results["g1"] },
+      { item: GUEST_DATA.wantlist[1], result: GUEST_DATA.results["g2"] },
+    ]);
+  }
+
+  function handleExitGuest() {
+    setIsGuest(false);
+    setCompareItems([]);
+    setWantlistCount(0);
+  }
 
   function handleLogout() {
     localStorage.removeItem("sos_username");
@@ -1602,6 +1751,8 @@ export default function App() {
     setAuthUsername("");
     setAuthToken("");
     setCompareItems([]);
+    setIsGuest(false);
+    setWantlistCount(0);
   }
 
   // Handle OAuth callback: Discogs redirects back with ?auth=success&token=...
@@ -1654,11 +1805,11 @@ export default function App() {
   }
 
 
-  if (!authUsername || !authToken) {
+  if (!authUsername && !isGuest) {
     return (
       <>
         <style>{STYLES}</style>
-        <LoginScreen error={oauthError} loading={oauthLoading} />
+        <LoginScreen error={oauthError} loading={oauthLoading} onGuestMode={handleGuestMode} />
       </>
     );
   }
@@ -1711,21 +1862,42 @@ export default function App() {
           </nav>
 
           <div className="sidebar-footer">
-            <div className="sidebar-user-row">
-              <span className="sidebar-username">{authUsername}</span>
-              <button className="sidebar-logout" onClick={handleLogout}>Log out</button>
-            </div>
-            <p className="sidebar-status">Discogs connected</p>
+            {isGuest ? (
+              <>
+                <div className="sidebar-user-row">
+                  <span className="sidebar-username" style={{ color: "var(--accent)" }}>Guest</span>
+                  <button className="sidebar-logout" onClick={handleExitGuest}>Log in</button>
+                </div>
+                <p className="sidebar-status" style={{ color: "var(--accent)" }}>Demo mode</p>
+              </>
+            ) : (
+              <>
+                <div className="sidebar-user-row">
+                  <span className="sidebar-username">{authUsername}</span>
+                  <button className="sidebar-logout" onClick={handleLogout}>Log out</button>
+                </div>
+                <p className="sidebar-status">Discogs connected</p>
+              </>
+            )}
           </div>
         </aside>
 
         {/* ── MAIN CONTENT ── */}
         <main className="main">
+          {isGuest && (
+            <div className="guest-banner">
+              <span>Demo mode · Browsing sample data, no Discogs account needed.</span>
+              <button className="guest-banner-btn" onClick={handleExitGuest}>
+                Log in with Discogs →
+              </button>
+            </div>
+          )}
           {tab === "wantlist" && (
             <WantlistTab
               username={authUsername}
               onCountChange={setWantlistCount}
               onCompareAdd={handleCompareAdd}
+              isGuest={isGuest}
             />
           )}
           {tab === "compare" && (
@@ -1735,7 +1907,7 @@ export default function App() {
             />
           )}
           {tab === "collection" && (
-            <CollectionTab username={authUsername} />
+            <CollectionTab username={authUsername} isGuest={isGuest} />
           )}
         </main>
 

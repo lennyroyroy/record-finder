@@ -4,9 +4,13 @@ from dotenv import load_dotenv
 from requests_oauthlib import OAuth1Session, OAuth1
 from itsdangerous import URLSafeSerializer, BadSignature
 import requests
+import logging
 import os
 import re
 import secrets
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger(__name__)
 
 # Temporary store for OAuth request tokens during the OAuth dance only
 TOKEN_STORE = {}
@@ -65,18 +69,18 @@ def _load_session_token(token):
         return None
 
 def _discogs_get(url, params=None):
-    """Make an authenticated Discogs API GET request, using OAuth if available."""
+    """Make an OAuth-authenticated Discogs API GET request. Requires a valid session token."""
     raw_token = request.headers.get("X-Auth-Token", "")
     data = _load_session_token(raw_token)
-    if data:
-        auth = OAuth1(
-            DISCOGS_CONSUMER_KEY,
-            client_secret=DISCOGS_CONSUMER_SECRET,
-            resource_owner_key=data["access_token"],
-            resource_owner_secret=data["access_token_secret"]
-        )
-        return requests.get(url, auth=auth, headers={"User-Agent": "RecordFinder/1.0"}, params=params)
-    return requests.get(url, headers=DISCOGS_HEADERS, params=params)
+    if not data:
+        raise PermissionError("Authentication required")
+    auth = OAuth1(
+        DISCOGS_CONSUMER_KEY,
+        client_secret=DISCOGS_CONSUMER_SECRET,
+        resource_owner_key=data["access_token"],
+        resource_owner_secret=data["access_token_secret"]
+    )
+    return requests.get(url, auth=auth, headers={"User-Agent": "RecordFinder/1.0"}, params=params)
 
 
 # ─── OAUTH ROUTES ────────────────────────────────────────────────────────────
@@ -195,8 +199,8 @@ def get_exchange_rate(currency):
                 _rate_cache[code] = 1.0 / rate
             if currency in _rate_cache:
                 return _rate_cache[currency]
-    except Exception:
-        pass
+    except Exception as e:
+        log.warning("Exchange rate fetch failed for %s: %s — using fallback", currency, e)
     return FALLBACK_RATES.get(currency, 1.0)
 
 
@@ -216,7 +220,10 @@ def search_discogs(artist, album):
         params={"artist": artist, "release_title": album,
                 "type": "release", "format": "vinyl", "per_page": 5}
     )
+    if r.status_code == 429:
+        raise RuntimeError("rate_limited")
     if r.status_code != 200:
+        log.warning("Discogs search returned %s for artist=%r album=%r", r.status_code, artist, album)
         return []
     return r.json().get("results", [])
 
@@ -230,7 +237,10 @@ def get_discogs_listings(releases):
         country = release.get("country", "Unknown")
 
         r = _discogs_get(f"https://api.discogs.com/marketplace/stats/{release_id}")
+        if r.status_code == 429:
+            raise RuntimeError("rate_limited")
         if r.status_code != 200:
+            log.warning("Discogs marketplace/stats returned %s for release_id=%s", r.status_code, release_id)
             continue
 
         stats = r.json()
@@ -269,7 +279,13 @@ def search():
     if not artist or not album:
         return jsonify({"error": "Artist and album are required"}), 400
 
-    releases = search_discogs(artist, album)
+    try:
+        releases = search_discogs(artist, album)
+    except PermissionError:
+        return jsonify({"error": "Please log in to search prices"}), 401
+    except RuntimeError:
+        return jsonify({"error": "Discogs rate limit reached — wait a moment and try again"}), 429
+
     release_info = {}
     discogs_us = []
     discogs_intl = []
@@ -282,7 +298,12 @@ def search():
             "cover_url": first.get("cover_image"),
             "discogs_url": f"https://www.discogs.com/release/{first['id']}"
         }
-        discogs_us, discogs_intl = get_discogs_listings(releases)
+        try:
+            discogs_us, discogs_intl = get_discogs_listings(releases)
+        except PermissionError:
+            return jsonify({"error": "Please log in to search prices"}), 401
+        except RuntimeError:
+            return jsonify({"error": "Discogs rate limit reached — wait a moment and try again"}), 429
 
     best_us = min(discogs_us, key=lambda x: x["price"]) if discogs_us else None
     best_intl = min(discogs_intl, key=lambda x: x["total_low"]) if discogs_intl else None
@@ -311,13 +332,19 @@ def wantlist():
     all_items = []
     page = 1
     while True:
-        r = _discogs_get(
-            f"https://api.discogs.com/users/{username}/wants",
-            params={"page": page, "per_page": 50}
-        )
+        try:
+            r = _discogs_get(
+                f"https://api.discogs.com/users/{username}/wants",
+                params={"page": page, "per_page": 50}
+            )
+        except PermissionError:
+            return jsonify({"error": "Please log in to view your wantlist"}), 401
         if r.status_code == 404:
             return jsonify({"error": f"User '{username}' not found on Discogs"}), 404
+        if r.status_code == 429:
+            return jsonify({"error": "Discogs rate limit reached — wait a moment and try again"}), 429
         if r.status_code != 200:
+            log.error("Discogs wantlist returned %s for user=%r page=%s", r.status_code, username, page)
             return jsonify({"error": "Failed to fetch wantlist"}), 500
 
         data = r.json()
@@ -356,13 +383,19 @@ def collection():
     max_pages = 6
 
     while page <= max_pages:
-        r = _discogs_get(
-            f"https://api.discogs.com/users/{username}/collection/folders/0/releases",
-            params={"page": page, "per_page": 50, "sort": "added", "sort_order": "desc"}
-        )
+        try:
+            r = _discogs_get(
+                f"https://api.discogs.com/users/{username}/collection/folders/0/releases",
+                params={"page": page, "per_page": 50, "sort": "added", "sort_order": "desc"}
+            )
+        except PermissionError:
+            return jsonify({"error": "Please log in to view your collection"}), 401
         if r.status_code == 404:
             return jsonify({"error": "Collection not found or is private"}), 404
+        if r.status_code == 429:
+            return jsonify({"error": "Discogs rate limit reached — wait a moment and try again"}), 429
         if r.status_code != 200:
+            log.error("Discogs collection returned %s for user=%r page=%s", r.status_code, username, page)
             return jsonify({"error": "Failed to fetch collection"}), 500
 
         data = r.json()
