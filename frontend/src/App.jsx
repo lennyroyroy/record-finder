@@ -1056,7 +1056,7 @@ function LoginScreen({ error, loading }) {
       <div className="login-card">
         <p className="login-eyebrow">Discogs Price Tool</p>
         <h1 className="login-title">
-          Spin or <em>Stream</em>
+          Spin or <em>Stream v1</em>
         </h1>
         <p className="login-sub">
           Compare wantlist prices and make smarter decisions about what's worth buying on wax versus just streaming it.
@@ -1204,11 +1204,20 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
   return (
     <div className="card">
       <div className="card-header">
-        <div>
-          <div className="card-title">{item.title}</div>
-          <div className="card-artist">{item.artist}</div>
+        <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", flex: 1, minWidth: 0 }}>
+          {item.cover_url && (
+            <img
+              src={item.cover_url}
+              alt={item.title}
+              style={{ width: "52px", height: "52px", objectFit: "cover", borderRadius: "6px", border: "1px solid var(--border)", flexShrink: 0 }}
+            />
+          )}
+          <div style={{ minWidth: 0 }}>
+            <div className="card-title">{item.title}</div>
+            <div className="card-artist">{item.artist}</div>
+          </div>
         </div>
-        {item.year && <div className="chip">{item.year}</div>}
+        {item.year && <div className="chip" style={{ flexShrink: 0 }}>{item.year}</div>}
       </div>
 
       <div className="card-meta">
@@ -1344,84 +1353,126 @@ function CompareTab({ compareItems, onRemove }) {
         <h2 className="page-title">
           Compare <em>({compareItems.length})</em>
         </h2>
-        <p className="page-desc">Lowest prices across your shortlisted records.</p>
+        <p className="page-desc">All available prices and where else to find each record.</p>
       </div>
 
-      <p className="section-label">Price comparison</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        {compareItems.map((ci) => {
+          const usListings = ci.result?.discogs_us || [];
+          const intlListings = ci.result?.discogs_intl || [];
+          const allListings = [...usListings, ...intlListings];
+          const prices = allListings.map((l) => l.price).filter(Boolean);
+          const minPrice = prices.length ? Math.min(...prices) : null;
 
-      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <table className="compare-table">
-          <thead>
-            <tr>
-              <th>Record</th>
-              <th>Lowest</th>
-              <th>Best US</th>
-              <th>Listings</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {compareItems.map((ci) => {
-              const allListings = [...(ci.result?.discogs_us || []), ...(ci.result?.discogs_intl || [])];
-              const prices = allListings.map((l) => l.price).filter(Boolean);
-              const minPrice = prices.length ? Math.min(...prices) : null;
-              const usPrices = (ci.result?.discogs_us || []).map((l) => l.price).filter(Boolean);
-              const minUS = usPrices.length ? Math.min(...usPrices) : null;
+          const bestDeal = compareItems.reduce((best, curr) => {
+            const ps = [...(curr.result?.discogs_us || []), ...(curr.result?.discogs_intl || [])].map((l) => l.price).filter(Boolean);
+            const m = ps.length ? Math.min(...ps) : Infinity;
+            const bestPs = [...(best?.result?.discogs_us || []), ...(best?.result?.discogs_intl || [])].map((l) => l.price).filter(Boolean);
+            const bm = bestPs.length ? Math.min(...bestPs) : Infinity;
+            return m < bm ? curr : best;
+          }, compareItems[0]);
+          const isBest = bestDeal?.item?.id === ci.item.id && minPrice != null;
 
-              const bestDeal = compareItems.reduce((best, curr) => {
-                const ps = [...(curr.result?.discogs_us || []), ...(curr.result?.discogs_intl || [])].map((l) => l.price).filter(Boolean);
-                const m = ps.length ? Math.min(...ps) : Infinity;
-                const bestPs = [...(best?.result?.discogs_us || []), ...(best?.result?.discogs_intl || [])].map((l) => l.price).filter(Boolean);
-                const bm = bestPs.length ? Math.min(...bestPs) : Infinity;
-                return m < bm ? curr : best;
-              }, compareItems[0]);
+          const qVinyl = encodeURIComponent(`${ci.item.artist} ${ci.item.title} vinyl`);
+          const qPlain = encodeURIComponent(`${ci.item.artist} ${ci.item.title}`);
 
-              const isBest = bestDeal?.item?.id === ci.item.id && minPrice != null;
-
-              return (
-                <tr key={ci.item.id}>
-                  <td>
-                    <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 400, fontSize: "13px" }}>
-                      {ci.item.title}
-                    </div>
-                    <div style={{ fontSize: "10px", color: "var(--text-dim)", marginTop: "2px" }}>
-                      {ci.item.artist}
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`price-tag ${isBest ? "best-deal" : ""}`}>
-                      {minPrice != null ? `$${minPrice.toFixed(2)}` : "—"}
+          const listingRow = (l, i, isUS) => (
+            <a key={`${isUS ? "us" : "intl"}-${i}`} href={l.url} target="_blank" rel="noreferrer"
+              style={{ textDecoration: "none", display: "block" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "8px 12px", background: "var(--bg)", border: "1px solid var(--border)",
+                borderRadius: "var(--radius)", marginBottom: "4px" }}>
+                <div>
+                  <span style={{ fontSize: "11px", color: isUS ? "var(--teal)" : "var(--text-muted)", fontWeight: 500 }}>
+                    {isUS ? "US" : l.ships_from}
+                  </span>
+                  {l.num_for_sale > 0 && (
+                    <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "8px" }}>
+                      {l.num_for_sale} for sale
                     </span>
-                    {isBest && (
-                      <span className="chip teal" style={{ marginLeft: "6px", verticalAlign: "middle" }}>
-                        best
-                      </span>
+                  )}
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <span style={{ fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: 700, color: "var(--text)" }}>
+                    ${l.price.toFixed(2)}
+                  </span>
+                  <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "6px" }}>
+                    {isUS
+                      ? `+ $${l.shipping_low}–$${l.shipping_high} ship`
+                      : `+ est. $${l.shipping_low}–$${l.shipping_high} ship`}
+                  </span>
+                </div>
+              </div>
+            </a>
+          );
+
+          return (
+            <div key={ci.item.id} className="card">
+              {/* Header */}
+              <div className="card-header">
+                <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", flex: 1, minWidth: 0 }}>
+                  {ci.item.cover_url && (
+                    <img src={ci.item.cover_url} alt={ci.item.title}
+                      style={{ width: "56px", height: "56px", objectFit: "cover", borderRadius: "6px",
+                        border: "1px solid var(--border)", flexShrink: 0 }} />
+                  )}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                      <div className="card-title">{ci.item.title}</div>
+                      {isBest && <span className="chip teal">best deal</span>}
+                    </div>
+                    <div className="card-artist">{ci.item.artist}</div>
+                    {ci.item.year && (
+                      <span className="chip" style={{ marginTop: "5px", display: "inline-block" }}>{ci.item.year}</span>
                     )}
-                  </td>
-                  <td>
-                    <span className="price-tag" style={{ fontSize: "13px" }}>
-                      {minUS != null ? `$${minUS.toFixed(2)}` : "—"}
-                    </span>
-                  </td>
-                  <td>{allListings.length}</td>
-                  <td>
-                    <button className="btn-icon" onClick={() => handleRemove(ci.item.id)} title="Remove">
-                      ×
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  </div>
+                </div>
+                <button className="btn-icon" onClick={() => handleRemove(ci.item.id)} title="Remove">×</button>
+              </div>
+
+              {/* Discogs marketplace listings */}
+              {allListings.length > 0 ? (
+                <>
+                  <p className="section-label" style={{ marginTop: "14px" }}>Discogs marketplace</p>
+                  {usListings.map((l, i) => listingRow(l, i, true))}
+                  {intlListings.map((l, i) => listingRow(l, i, false))}
+                </>
+              ) : (
+                <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "10px 0 4px" }}>
+                  No marketplace data — check prices from Wantlist first.
+                </p>
+              )}
+
+              {/* Retail search links */}
+              <p className="section-label" style={{ marginTop: "16px" }}>Find elsewhere</p>
+              <div className="card-actions">
+                <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                  <button className="btn-secondary">Amazon ↗</button>
+                </a>
+                <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                  <button className="btn-secondary">Bandcamp ↗</button>
+                </a>
+                <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                  <button className="btn-secondary">Target ↗</button>
+                </a>
+                <a href={`https://www.walmart.com/search?q=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                  <button className="btn-secondary">Walmart ↗</button>
+                </a>
+                {ci.item.discogs_url && (
+                  <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="btn-secondary teal">Discogs ↗</button>
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="card-actions" style={{ marginTop: "16px" }}>
         <button
           className="btn-secondary danger"
-          onClick={() => {
-            compareItems.forEach((ci) => onRemove(ci.item.id));
-          }}
+          onClick={() => compareItems.forEach((ci) => onRemove(ci.item.id))}
         >
           Clear all
         </button>
@@ -1503,19 +1554,22 @@ function CollectionTab({ username }) {
           <p className="result-count">{filtered.length} record{filtered.length !== 1 ? "s" : ""}</p>
           <div className="collection-grid">
             {filtered.map((item) => (
-              <div key={item.id} className="collection-thumb">
-                <div className="thumb-cover">
-                  {item.cover_url ? (
-                    <img src={item.cover_url} alt={item.title} loading="lazy" />
-                  ) : (
-                    "◎"
-                  )}
+              <a key={item.id} href={item.discogs_url} target="_blank" rel="noreferrer"
+                style={{ textDecoration: "none" }}>
+                <div className="collection-thumb">
+                  <div className="thumb-cover">
+                    {item.cover_url ? (
+                      <img src={item.cover_url} alt={item.title} loading="lazy" />
+                    ) : (
+                      "◎"
+                    )}
+                  </div>
+                  <div className="thumb-info">
+                    <div className="thumb-title">{item.title}</div>
+                    <div className="thumb-artist">{item.artist}</div>
+                  </div>
                 </div>
-                <div className="thumb-info">
-                  <div className="thumb-title">{item.title}</div>
-                  <div className="thumb-artist">{item.artist}</div>
-                </div>
-              </div>
+              </a>
             ))}
           </div>
         </>
