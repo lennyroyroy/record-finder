@@ -1449,11 +1449,11 @@ export default function App() {
             <div className="username-field">
               <span className="username-label">Discogs</span>
               <span style={{fontSize:"13px", fontFamily:"'DM Mono', monospace"}}>{authUsername}</span>
-              <a href={`${API}/oauth/logout`}
-                style={{fontSize:"9px", color:"var(--text-3)", letterSpacing:"0.15em", textTransform:"uppercase", textDecoration:"none"}}
-                onClick={() => setAuthenticated(false)}>
+              <button
+                style={{fontSize:"9px", color:"var(--text-3)", letterSpacing:"0.15em", textTransform:"uppercase", textDecoration:"none", background:"none", border:"none", cursor:"pointer", padding:0}}
+                onClick={() => fetch(`${API}/oauth/logout`, { credentials:"include" }).then(() => setAuthenticated(false))}>
                 Log out
-              </a>
+              </button>
             </div>
           </div>
         </header>

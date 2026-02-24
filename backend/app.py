@@ -9,7 +9,11 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
-CORS(app, supports_credentials=True)
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+CORS(app, supports_credentials=True, origins=[os.getenv("FRONTEND_URL", "http://localhost:5173")])
+
 
 DISCOGS_TOKEN = os.getenv("DISCOGS_TOKEN")
 DISCOGS_HEADERS = {
