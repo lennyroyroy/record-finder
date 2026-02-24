@@ -1,28 +1,31 @@
-from flask import Flask, request, jsonify, redirect, session
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from dotenv import load_dotenv
+from requests_oauthlib import OAuth1Session, OAuth1
+from itsdangerous import URLSafeSerializer, BadSignature
 import requests
 import os
 import re
 import secrets
+
+# Temporary store for OAuth request tokens during the OAuth dance only
 TOKEN_STORE = {}
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
-app.config["SESSION_COOKIE_SECURE"] = False   # True breaks HTTP on localhost
+app.config["SESSION_COOKIE_SECURE"] = os.getenv("FLASK_ENV") == "production"
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-CORS(app, supports_credentials=True, origins=[
-    os.getenv("FRONTEND_URL", "http://localhost:5173"),
-    "http://localhost:5173"
-])
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+CORS(app, supports_credentials=True, origins=[FRONTEND_URL, "http://localhost:5173"])
 
 @app.after_request
 def add_cors_headers(response):
     origin = request.headers.get("Origin", "")
-    allowed = [os.getenv("FRONTEND_URL", "http://localhost:5173"), "http://localhost:5173"]
+    allowed = [FRONTEND_URL, "http://localhost:5173"]
     if origin in allowed:
         response.headers["Access-Control-Allow-Origin"] = origin
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Auth-Token"
@@ -38,26 +41,45 @@ DISCOGS_HEADERS = {
 }
 DISCOGS_CONSUMER_KEY = os.getenv("DISCOGS_CONSUMER_KEY")
 DISCOGS_CONSUMER_SECRET = os.getenv("DISCOGS_CONSUMER_SECRET")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-
-# Add after your constants block:
-from requests_oauthlib import OAuth1Session
 
 REQUEST_TOKEN_URL = "https://api.discogs.com/oauth/request_token"
 AUTHORIZE_URL = "https://www.discogs.com/oauth/authorize"
 ACCESS_TOKEN_URL = "https://api.discogs.com/oauth/access_token"
 
-@app.route("/oauth/start")
-def oauth_start():
-    oauth = OAuth1Session(
-        DISCOGS_CONSUMER_KEY,
-        client_secret=DISCOGS_CONSUMER_SECRET,
-        callback_uri=f"{request.host_url}oauth/callback"
-    )
-    tokens = oauth.fetch_request_token(REQUEST_TOKEN_URL)
-    TOKEN_STORE[tokens["oauth_token"]] = {"oauth_token_secret": tokens["oauth_token_secret"]}
 
-    return redirect(f"{AUTHORIZE_URL}?oauth_token={tokens['oauth_token']}")
+# ─── SESSION TOKEN HELPERS ───────────────────────────────────────────────────
+# Tokens are signed with FLASK_SECRET_KEY, so sessions survive server restarts
+# without needing a database or cache.
+
+def _make_session_token(data):
+    s = URLSafeSerializer(app.secret_key)
+    return s.dumps(data)
+
+def _load_session_token(token):
+    if not token:
+        return None
+    s = URLSafeSerializer(app.secret_key)
+    try:
+        return s.loads(token)
+    except (BadSignature, Exception):
+        return None
+
+def _discogs_get(url, params=None):
+    """Make an authenticated Discogs API GET request, using OAuth if available."""
+    raw_token = request.headers.get("X-Auth-Token", "")
+    data = _load_session_token(raw_token)
+    if data:
+        auth = OAuth1(
+            DISCOGS_CONSUMER_KEY,
+            client_secret=DISCOGS_CONSUMER_SECRET,
+            resource_owner_key=data["access_token"],
+            resource_owner_secret=data["access_token_secret"]
+        )
+        return requests.get(url, auth=auth, headers={"User-Agent": "RecordFinder/1.0"}, params=params)
+    return requests.get(url, headers=DISCOGS_HEADERS, params=params)
+
+
+# ─── OAUTH ROUTES ────────────────────────────────────────────────────────────
 
 @app.route("/auth/start")
 def auth_start():
@@ -71,21 +93,14 @@ def auth_start():
     return jsonify({"auth_url": f"{AUTHORIZE_URL}?oauth_token={tokens['oauth_token']}"})
 
 @app.route("/oauth/callback")
-@app.route("/oauth/callback")
 def oauth_callback():
     oauth_token = request.args.get("oauth_token")
     oauth_verifier = request.args.get("oauth_verifier")
 
-    # Retrieve and remove the stored secret
     stored = TOKEN_STORE.pop(oauth_token, None)
     if not stored:
         return "OAuth session expired or not found. Please try again.", 400
     oauth_token_secret = stored.get("oauth_token_secret", "")
-
-    print(f"DEBUG consumer_key={DISCOGS_CONSUMER_KEY!r}")
-    print(f"DEBUG oauth_token={oauth_token!r}")
-    print(f"DEBUG oauth_token_secret={oauth_token_secret!r}")
-    print(f"DEBUG oauth_verifier={oauth_verifier!r}")
 
     oauth = OAuth1Session(
         DISCOGS_CONSUMER_KEY,
@@ -104,31 +119,28 @@ def oauth_callback():
     identity = authed.get("https://api.discogs.com/oauth/identity").json()
     username = identity.get("username")
 
-    token = secrets.token_hex(32)
-    TOKEN_STORE[token] = {
+    token = _make_session_token({
         "access_token": tokens["oauth_token"],
         "access_token_secret": tokens["oauth_token_secret"],
         "username": username
-    }
-
+    })
     return redirect(f"{FRONTEND_URL}?auth=success&token={token}")
 
 @app.route("/oauth/logout")
 def oauth_logout():
-    token = request.headers.get("X-Auth-Token")
-    if token and token in TOKEN_STORE:
-        del TOKEN_STORE[token]
+    # Tokens are stateless (signed), so logout is handled client-side by clearing localStorage
     return jsonify({"ok": True})
 
 @app.route("/oauth/me")
 def oauth_me():
     token = request.headers.get("X-Auth-Token")
-    if not token or token not in TOKEN_STORE:
+    data = _load_session_token(token)
+    if not data:
         return jsonify({"authenticated": False}), 401
-    return jsonify({
-        "authenticated": True,
-        "username": TOKEN_STORE[token]["username"]
-    })
+    return jsonify({"authenticated": True, "username": data["username"]})
+
+
+# ─── EXCHANGE RATES & SHIPPING ───────────────────────────────────────────────
 
 FALLBACK_RATES = {
     "USD": 1.0, "GBP": 1.27, "EUR": 1.08, "CAD": 0.74,
@@ -163,7 +175,7 @@ SHIPPING_ESTIMATES = {
 }
 
 US_SHIPPING_LOW = 4
-US_SHIPPING_HIGH = 8 # typical US domestic media mail range
+US_SHIPPING_HIGH = 8
 
 DEFAULT_SHIPPING = (15, 32)
 
@@ -183,8 +195,8 @@ def get_exchange_rate(currency):
                 _rate_cache[code] = 1.0 / rate
             if currency in _rate_cache:
                 return _rate_cache[currency]
-    except Exception as e:
-        print(f"Exchange rate fetch failed: {e}")
+    except Exception:
+        pass
     return FALLBACK_RATES.get(currency, 1.0)
 
 
@@ -196,19 +208,17 @@ def shipping_for(country):
     return SHIPPING_ESTIMATES.get(country, DEFAULT_SHIPPING)
 
 
+# ─── DISCOGS SEARCH ──────────────────────────────────────────────────────────
+
 def search_discogs(artist, album):
-    r = requests.get(
+    r = _discogs_get(
         "https://api.discogs.com/database/search",
-        headers=DISCOGS_HEADERS,
         params={"artist": artist, "release_title": album,
                 "type": "release", "format": "vinyl", "per_page": 5}
     )
     if r.status_code != 200:
-        print(f"Discogs search error: {r.status_code}")
         return []
-    results = r.json().get("results", [])
-    print(f"Discogs: {len(results)} results for '{artist} - {album}'")
-    return results
+    return r.json().get("results", [])
 
 
 def get_discogs_listings(releases):
@@ -219,10 +229,7 @@ def get_discogs_listings(releases):
         release_id = release["id"]
         country = release.get("country", "Unknown")
 
-        r = requests.get(
-            f"https://api.discogs.com/marketplace/stats/{release_id}",
-            headers=DISCOGS_HEADERS
-        )
+        r = _discogs_get(f"https://api.discogs.com/marketplace/stats/{release_id}")
         if r.status_code != 200:
             continue
 
@@ -272,7 +279,7 @@ def search():
         release_info = {
             "title": first.get("title"),
             "year": first.get("year"),
-            "cover": first.get("cover_image"),
+            "cover_url": first.get("cover_image"),
             "discogs_url": f"https://www.discogs.com/release/{first['id']}"
         }
         discogs_us, discogs_intl = get_discogs_listings(releases)
@@ -290,30 +297,22 @@ def search():
         "us_shipping_estimate": f"${US_SHIPPING_LOW}–${US_SHIPPING_HIGH}",
     })
 
-def _auth_headers():
-    token = request.headers.get("X-Auth-Token")
-    if token and token in TOKEN_STORE:
-        data = TOKEN_STORE[token]
-        return {
-            "Authorization": f"OAuth oauth_token={data['access_token']}, oauth_consumer_key={DISCOGS_CONSUMER_KEY}",
-            "User-Agent": "RecordFinder/1.0"
-        }
-    return DISCOGS_HEADERS
+
+# ─── WANTLIST ─────────────────────────────────────────────────────────────────
 
 @app.route("/wantlist", methods=["GET"])
 def wantlist():
-    token = request.headers.get("X-Auth-Token")
-    username = (TOKEN_STORE.get(token) or {}).get("username") or request.args.get("username", "").strip()
+    raw_token = request.headers.get("X-Auth-Token")
+    token_data = _load_session_token(raw_token)
+    username = (token_data or {}).get("username") or request.args.get("username", "").strip()
     if not username:
         return jsonify({"error": "Username is required"}), 400
-    headers = _auth_headers()
 
-    all_wants = []
+    all_items = []
     page = 1
     while True:
-        r = requests.get(
+        r = _discogs_get(
             f"https://api.discogs.com/users/{username}/wants",
-            headers=headers,
             params={"page": page, "per_page": 50}
         )
         if r.status_code == 404:
@@ -325,12 +324,12 @@ def wantlist():
         for want in data.get("wants", []):
             basic = want.get("basic_information", {})
             artists = basic.get("artists", [])
-            all_wants.append({
+            all_items.append({
+                "id": str(basic.get("id", "")),
                 "artist": clean_artist(artists[0]["name"]) if artists else "Unknown",
-                "album": basic.get("title", ""),
+                "title": basic.get("title", ""),
                 "year": basic.get("year", ""),
-                "cover": basic.get("cover_image", ""),
-                "discogs_release_id": str(basic.get("id", "")),
+                "cover_url": basic.get("cover_image", ""),
                 "discogs_url": f"https://www.discogs.com/release/{basic.get('id', '')}"
             })
 
@@ -339,29 +338,30 @@ def wantlist():
             break
         page += 1
 
-    return jsonify({"wants": all_wants, "total": len(all_wants)})
+    return jsonify({"items": all_items, "total": len(all_items)})
 
+
+# ─── COLLECTION ───────────────────────────────────────────────────────────────
 
 @app.route("/collection", methods=["GET"])
 def collection():
-    token = request.headers.get("X-Auth-Token")
-    username = (TOKEN_STORE.get(token) or {}).get("username") or request.args.get("username", "").strip()
+    raw_token = request.headers.get("X-Auth-Token")
+    token_data = _load_session_token(raw_token)
+    username = (token_data or {}).get("username") or request.args.get("username", "").strip()
     if not username:
         return jsonify({"error": "Username is required"}), 400
-    headers = _auth_headers()
 
-    all_releases = []
+    all_items = []
     page = 1
     max_pages = 6
 
     while page <= max_pages:
-        r = requests.get(
+        r = _discogs_get(
             f"https://api.discogs.com/users/{username}/collection/folders/0/releases",
-            headers=headers,           
             params={"page": page, "per_page": 50, "sort": "added", "sort_order": "desc"}
         )
         if r.status_code == 404:
-            return jsonify({"error": f"Collection not found or is private"}), 404
+            return jsonify({"error": "Collection not found or is private"}), 404
         if r.status_code != 200:
             return jsonify({"error": "Failed to fetch collection"}), 500
 
@@ -369,12 +369,12 @@ def collection():
         for item in data.get("releases", []):
             basic = item.get("basic_information", {})
             artists = basic.get("artists", [])
-            all_releases.append({
+            all_items.append({
+                "id": str(basic.get("id", "")),
                 "artist": clean_artist(artists[0]["name"]) if artists else "Unknown",
-                "album": basic.get("title", ""),
+                "title": basic.get("title", ""),
                 "year": basic.get("year", ""),
-                "cover": basic.get("cover_image", ""),
-                "discogs_release_id": str(basic.get("id", "")),
+                "cover_url": basic.get("cover_image", ""),
                 "discogs_url": f"https://www.discogs.com/release/{basic.get('id', '')}",
                 "date_added": item.get("date_added", ""),
             })
@@ -384,7 +384,7 @@ def collection():
             break
         page += 1
 
-    return jsonify({"releases": all_releases, "total": len(all_releases)})
+    return jsonify({"items": all_items, "total": len(all_items)})
 
 
 @app.route("/health", methods=["GET"])

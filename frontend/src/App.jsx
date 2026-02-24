@@ -1006,7 +1006,7 @@ const STYLES = `
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 async function fetchAPI(path, options = {}) {
   const token = localStorage.getItem("sos_token") || "";
@@ -1086,7 +1086,7 @@ function LoginScreen({ error, loading }) {
 
 // ─── WANTLIST TAB ────────────────────────────────────────────────────────────
 
-function WantlistTab({ username, token, onCountChange, onCompareAdd }) {
+function WantlistTab({ username, onCountChange, onCompareAdd }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -1101,7 +1101,7 @@ function WantlistTab({ username, token, onCountChange, onCompareAdd }) {
   async function loadWantlist() {
     setLoading(true);
     try {
-      const data = await fetchAPI(`/wantlist?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`);
+      const data = await fetchAPI(`/wantlist?username=${encodeURIComponent(username)}`);
       setItems(data.items || []);
       onCountChange?.(data.items?.length || 0);
     } catch (err) {
@@ -1125,7 +1125,7 @@ function WantlistTab({ username, token, onCountChange, onCompareAdd }) {
     setSearching((s) => ({ ...s, [item.id]: true }));
     try {
       const data = await fetchAPI(
-        `/search?query=${encodeURIComponent(item.title + " " + item.artist)}&token=${encodeURIComponent(token)}`
+        `/search?artist=${encodeURIComponent(item.artist)}&album=${encodeURIComponent(item.title)}`
       );
       setResults((r) => ({ ...r, [item.id]: data }));
     } catch (err) {
@@ -1192,14 +1192,13 @@ function WantlistTab({ username, token, onCountChange, onCompareAdd }) {
 }
 
 function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
-  const listings = result?.listings || [];
-  const prices = listings.map((l) => parseFloat(l.price)).filter(Boolean);
+  const usListings = result?.discogs_us || [];
+  const intlListings = result?.discogs_intl || [];
+  const allListings = [...usListings, ...intlListings];
+  const prices = allListings.map((l) => l.price).filter(Boolean);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const avgPrice = prices.length ? prices.reduce((a, b) => a + b) / prices.length : null;
-  const usPrices = listings
-    .filter((l) => l.ships_from === "United States")
-    .map((l) => parseFloat(l.price))
-    .filter(Boolean);
+  const usPrices = usListings.map((l) => l.price).filter(Boolean);
   const minUS = usPrices.length ? Math.min(...usPrices) : null;
 
   return (
@@ -1216,7 +1215,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
         {item.format && <span className="chip">{item.format}</span>}
         {item.label && <span className="chip">{item.label}</span>}
         {result && (
-          <span className="chip teal">{listings.length} listings</span>
+          <span className="chip teal">{allListings.length} listings</span>
         )}
       </div>
 
@@ -1227,7 +1226,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
         </div>
       )}
 
-      {result && listings.length > 0 && (
+      {result && allListings.length > 0 && (
         <>
           <div className="price-grid">
             {minPrice != null && (
@@ -1248,7 +1247,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
               <div className="price-cell">
                 <div className="price-label">Avg</div>
                 <div className="price-value high">${avgPrice.toFixed(2)}</div>
-                <div className="price-sub">{listings.length} listings</div>
+                <div className="price-sub">{allListings.length} listings</div>
               </div>
             )}
           </div>
@@ -1270,7 +1269,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
         </>
       )}
 
-      {result && listings.length === 0 && (
+      {result && allListings.length === 0 && (
         <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "8px 0" }}>
           No listings found on the marketplace right now.
         </p>
@@ -1287,7 +1286,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
             Refresh
           </button>
         )}
-        {result && listings.length > 0 && (
+        {result && allListings.length > 0 && (
           <button className="btn-secondary teal" onClick={onCompareAdd}>
             + Compare
           </button>
@@ -1309,12 +1308,8 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
 
 // ─── COMPARE TAB ─────────────────────────────────────────────────────────────
 
-function CompareTab({ compareItems, onCountChange, onRemove }) {
+function CompareTab({ compareItems, onRemove }) {
   const [toast, showToast] = useToast();
-
-  useEffect(() => {
-    onCountChange?.(compareItems.length);
-  }, [compareItems.length]);
 
   function handleRemove(id) {
     onRemove(id);
@@ -1367,20 +1362,17 @@ function CompareTab({ compareItems, onCountChange, onRemove }) {
           </thead>
           <tbody>
             {compareItems.map((ci) => {
-              const listings = ci.result?.listings || [];
-              const prices = listings.map((l) => parseFloat(l.price)).filter(Boolean);
+              const allListings = [...(ci.result?.discogs_us || []), ...(ci.result?.discogs_intl || [])];
+              const prices = allListings.map((l) => l.price).filter(Boolean);
               const minPrice = prices.length ? Math.min(...prices) : null;
-              const usPrices = listings
-                .filter((l) => l.ships_from === "United States")
-                .map((l) => parseFloat(l.price))
-                .filter(Boolean);
+              const usPrices = (ci.result?.discogs_us || []).map((l) => l.price).filter(Boolean);
               const minUS = usPrices.length ? Math.min(...usPrices) : null;
 
               const bestDeal = compareItems.reduce((best, curr) => {
-                const ps = (curr.result?.listings || []).map((l) => parseFloat(l.price)).filter(Boolean);
+                const ps = [...(curr.result?.discogs_us || []), ...(curr.result?.discogs_intl || [])].map((l) => l.price).filter(Boolean);
                 const m = ps.length ? Math.min(...ps) : Infinity;
-                const bestPs = (best?.result?.listings || []).map((l) => parseFloat(l.price)).filter(Boolean);
-                const bm = bestPs?.length ? Math.min(...bestPs) : Infinity;
+                const bestPs = [...(best?.result?.discogs_us || []), ...(best?.result?.discogs_intl || [])].map((l) => l.price).filter(Boolean);
+                const bm = bestPs.length ? Math.min(...bestPs) : Infinity;
                 return m < bm ? curr : best;
               }, compareItems[0]);
 
@@ -1411,7 +1403,7 @@ function CompareTab({ compareItems, onCountChange, onRemove }) {
                       {minUS != null ? `$${minUS.toFixed(2)}` : "—"}
                     </span>
                   </td>
-                  <td>{listings.length}</td>
+                  <td>{allListings.length}</td>
                   <td>
                     <button className="btn-icon" onClick={() => handleRemove(ci.item.id)} title="Remove">
                       ×
@@ -1440,7 +1432,7 @@ function CompareTab({ compareItems, onCountChange, onRemove }) {
 
 // ─── COLLECTION TAB ──────────────────────────────────────────────────────────
 
-function CollectionTab({ username, token }) {
+function CollectionTab({ username }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
@@ -1454,7 +1446,7 @@ function CollectionTab({ username, token }) {
     setLoading(true);
     try {
       const data = await fetchAPI(
-        `/collection?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`
+        `/collection?username=${encodeURIComponent(username)}`
       );
       setItems(data.items || []);
     } catch (err) {
@@ -1545,42 +1537,9 @@ export default function App() {
   const [authToken, setAuthToken] = useState(() => localStorage.getItem("sos_token") || "");
   const [tab, setTab] = useState("wantlist");
   const [wantlistCount, setWantlistCount] = useState(0);
-  const [compareCount, setCompareCount] = useState(0);
   const [compareItems, setCompareItems] = useState([]);
   const [oauthLoading, setOauthLoading] = useState(false);
   const [oauthError, setOauthError] = useState("");
-
-  // Handle OAuth callback: Discogs redirects back with ?oauth_token=...&oauth_verifier=...
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const authStatus = params.get("auth");
-  const token = params.get("token");
-  if (authStatus !== "success" || !token) return;
-
-  window.history.replaceState({}, "", window.location.pathname);
-  setOauthLoading(true);
-
-  fetchAPI("/oauth/me", { headers: { "X-Auth-Token": token } })
-    .then((data) => {
-      localStorage.setItem("sos_username", data.username);
-      localStorage.setItem("sos_token", token);
-      setAuthUsername(data.username);
-      setAuthToken(token);
-    })
-    .catch((err) => setOauthError(err.message || "Authorization failed. Please try again."))
-    .finally(() => setOauthLoading(false));
-}, []);
-
-useEffect(() => {
-  if (!authUsername || !authToken) return;
-  fetchAPI("/oauth/me")
-    .then((data) => {
-      if (!data.authenticated) {
-        handleLogout();
-      }
-    })
-    .catch(() => handleLogout());
-}, []);
 
   function handleLogout() {
     localStorage.removeItem("sos_username");
@@ -1590,6 +1549,44 @@ useEffect(() => {
     setAuthToken("");
     setCompareItems([]);
   }
+
+  // Handle OAuth callback: Discogs redirects back with ?auth=success&token=...
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const authStatus = params.get("auth");
+    const token = params.get("token");
+    if (authStatus !== "success" || !token) return;
+
+    window.history.replaceState({}, "", window.location.pathname);
+
+    async function completeAuth() {
+      setOauthLoading(true);
+      try {
+        const data = await fetchAPI("/oauth/me", { headers: { "X-Auth-Token": token } });
+        localStorage.setItem("sos_username", data.username);
+        localStorage.setItem("sos_token", token);
+        setAuthUsername(data.username);
+        setAuthToken(token);
+      } catch (err) {
+        setOauthError(err.message || "Authorization failed. Please try again.");
+      } finally {
+        setOauthLoading(false);
+      }
+    }
+    completeAuth();
+  }, []);
+
+  // Validate stored session on mount
+  useEffect(() => {
+    if (!authUsername || !authToken) return;
+    fetchAPI("/oauth/me")
+      .then((data) => {
+        if (!data.authenticated) {
+          handleLogout();
+        }
+      })
+      .catch(() => handleLogout());
+  }, []);
 
   function handleCompareAdd(item, result) {
     setCompareItems((prev) => {
@@ -1602,9 +1599,6 @@ useEffect(() => {
     setCompareItems((prev) => prev.filter((ci) => ci.item.id !== id));
   }
 
-  useEffect(() => {
-    setCompareCount(compareItems.length);
-  }, [compareItems.length]);
 
   if (!authUsername || !authToken) {
     return (
@@ -1648,7 +1642,7 @@ useEffect(() => {
             >
               <span className="nav-icon">⊙</span>
               Compare
-              {compareCount > 0 && <span className="nav-badge teal">{compareCount}</span>}
+              {compareItems.length > 0 && <span className="nav-badge teal">{compareItems.length}</span>}
             </button>
 
             <button
@@ -1676,7 +1670,6 @@ useEffect(() => {
           {tab === "wantlist" && (
             <WantlistTab
               username={authUsername}
-              token={authToken}
               onCountChange={setWantlistCount}
               onCompareAdd={handleCompareAdd}
             />
@@ -1684,12 +1677,11 @@ useEffect(() => {
           {tab === "compare" && (
             <CompareTab
               compareItems={compareItems}
-              onCountChange={setCompareCount}
               onRemove={handleCompareRemove}
             />
           )}
           {tab === "collection" && (
-            <CollectionTab username={authUsername} token={authToken} />
+            <CollectionTab username={authUsername} />
           )}
         </main>
 
@@ -1710,7 +1702,7 @@ useEffect(() => {
               onClick={() => setTab("compare")}
             >
               <span className="mobile-tab-icon">⊙</span>
-              {compareCount > 0 && <span className="mobile-tab-badge teal">{compareCount}</span>}
+              {compareItems.length > 0 && <span className="mobile-tab-badge teal">{compareItems.length}</span>}
               Compare
             </button>
 

@@ -8,3 +8,13 @@ services:
     envVars:
       - key: DISCOGS_TOKEN
         sync: false
+      - key: DISCOGS_CONSUMER_KEY
+        sync: false
+      - key: DISCOGS_CONSUMER_SECRET
+        sync: false
+      - key: FLASK_SECRET_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: FLASK_ENV
+        value: production
