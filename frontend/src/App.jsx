@@ -100,6 +100,20 @@ const STYLES = `
     opacity: 0.6;
   }
 
+  .sidebar-attrib {
+    padding: 12px 24px 0;
+    font-size: 9px;
+    color: var(--text-dim);
+    opacity: 0.5;
+    line-height: 1.5;
+  }
+
+  .sidebar-attrib a {
+    color: var(--text-dim);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
   .sidebar-nav {
     flex: 1;
     padding: 4px 12px;
@@ -2084,6 +2098,10 @@ export default function App() {
                 <p className="sidebar-status">Discogs connected</p>
               </>
             )}
+          </div>
+          <div className="sidebar-attrib">
+            Data by <a href="https://www.discogs.com" target="_blank" rel="noreferrer">Discogs</a>.
+            Cover art © respective rights holders.
           </div>
         </aside>
 

@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 from requests_oauthlib import OAuth1Session, OAuth1
 from itsdangerous import URLSafeSerializer, BadSignature
@@ -22,6 +24,14 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
 app.config["SESSION_COOKIE_SECURE"] = os.getenv("FLASK_ENV") == "production"
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024  # 1MB max request size
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://",
+)
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 DEV_FRONTEND_URL = os.getenv("DEV_FRONTEND_URL", "")
@@ -37,14 +47,12 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Auth-Token"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
 
 
-DISCOGS_TOKEN = os.getenv("DISCOGS_TOKEN")
-DISCOGS_HEADERS = {
-    "Authorization": f"Discogs token={DISCOGS_TOKEN}",
-    "User-Agent": "RecordFinder/1.0"
-}
 DISCOGS_CONSUMER_KEY = os.getenv("DISCOGS_CONSUMER_KEY")
 DISCOGS_CONSUMER_SECRET = os.getenv("DISCOGS_CONSUMER_SECRET")
 
@@ -88,6 +96,7 @@ def _discogs_get(url, params=None):
 # ─── OAUTH ROUTES ────────────────────────────────────────────────────────────
 
 @app.route("/auth/start")
+@limiter.limit("10 per minute")
 def auth_start():
     oauth = OAuth1Session(
         DISCOGS_CONSUMER_KEY,
@@ -275,6 +284,7 @@ def get_discogs_listings(releases):
 
 
 @app.route("/search", methods=["GET"])
+@limiter.limit("20 per minute")
 def search():
     artist = request.args.get("artist", "").strip()
     album = request.args.get("album", "").strip()
@@ -324,6 +334,7 @@ def search():
 # ─── WANTLIST ─────────────────────────────────────────────────────────────────
 
 @app.route("/wantlist", methods=["GET"])
+@limiter.limit("10 per minute")
 def wantlist():
     raw_token = request.headers.get("X-Auth-Token")
     token_data = _load_session_token(raw_token)
@@ -373,6 +384,7 @@ def wantlist():
 # ─── COLLECTION ───────────────────────────────────────────────────────────────
 
 @app.route("/collection", methods=["GET"])
+@limiter.limit("10 per minute")
 def collection():
     raw_token = request.headers.get("X-Auth-Token")
     token_data = _load_session_token(raw_token)
