@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&display=swap');
@@ -39,7 +39,6 @@ const STYLES = `
     padding: 52px 28px 120px;
   }
 
-  /* ── HEADER ── */
   .header {
     margin-bottom: 36px;
     padding-bottom: 28px;
@@ -110,7 +109,6 @@ const STYLES = `
 
   .username-input:focus { border-color: var(--accent); }
 
-  /* ── TAB NAV ── */
   .tab-nav {
     display: flex;
     gap: 0;
@@ -156,7 +154,6 @@ const STYLES = `
 
   .tab-badge.teal { background: var(--teal); }
 
-  /* ── BUTTONS ── */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -175,25 +172,23 @@ const STYLES = `
   }
 
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
+  .btn:focus-visible, .tab-btn:focus-visible, input:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
   .btn-primary { background: var(--text); color: var(--surface); border-color: var(--text); }
   .btn-primary:hover:not(:disabled) { background: #333; border-color: #333; }
-
   .btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
   .btn-accent:hover:not(:disabled) { background: var(--accent-dark); border-color: var(--accent-dark); }
-
   .btn-teal { background: var(--teal); color: #fff; border-color: var(--teal); }
   .btn-teal:hover:not(:disabled) { background: #2e5c52; border-color: #2e5c52; }
-
   .btn-ghost { background: transparent; color: var(--text-2); border-color: var(--border); }
   .btn-ghost:hover:not(:disabled) { border-color: var(--text-2); color: var(--text); }
-
+  .btn-ghost.filter-active { background: var(--text); color: var(--surface); border-color: var(--text); }
   .btn-danger-ghost { background: transparent; color: var(--text-3); border-color: transparent; }
   .btn-danger-ghost:hover:not(:disabled) { color: #c0392b; }
-
   .btn-sm { padding: 7px 12px; font-size: 9px; }
 
-  /* ── CHIPS ── */
   .chip {
     display: inline-block;
     font-size: 9px;
@@ -213,14 +208,12 @@ const STYLES = `
   .chip-error { background: var(--red-bg); color: #c0392b; border: 1px solid #f0c0b8; }
   .chip-purchased { background: var(--teal); color: #fff; }
   .chip-free { background: var(--gold-bg); color: var(--gold); border: 1px solid #e8d090; }
-  .chip-teal { background: var(--teal-bg); color: var(--teal); border: 1px solid #c0ddd8; }
 
   @keyframes chipPulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
   }
 
-  /* ── CARDS (shared) ── */
   .card {
     background: var(--surface-raised);
     border: 1.5px solid var(--border);
@@ -233,7 +226,7 @@ const STYLES = `
 
   .card-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 14px;
     padding: 16px 18px;
   }
@@ -256,9 +249,8 @@ const STYLES = `
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
+    font-size: 20px;
     color: var(--text-3);
-    letter-spacing: 0.1em;
   }
 
   .card-info { flex: 1; min-width: 0; }
@@ -283,18 +275,6 @@ const STYLES = `
     text-overflow: ellipsis;
   }
 
-  .card-price-inline {
-    font-size: 13px;
-    color: var(--text);
-    font-weight: 500;
-    margin-top: 5px;
-  }
-
-  .card-price-note {
-    font-size: 11px;
-    color: var(--text-3);
-  }
-
   .card-controls {
     display: flex;
     align-items: center;
@@ -302,18 +282,6 @@ const STYLES = `
     flex-shrink: 0;
   }
 
-  .card-body {
-    padding: 0 18px 16px;
-    border-top: 1px solid var(--border);
-    animation: fadeUp 0.2s ease forwards;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── WANTLIST ── */
   .wl-toolbar {
     display: flex;
     align-items: center;
@@ -323,7 +291,7 @@ const STYLES = `
     flex-wrap: wrap;
   }
 
-  .wl-toolbar-left { display: flex; align-items: center; gap: 10px; }
+  .wl-toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .wl-toolbar-right { display: flex; gap: 8px; }
 
   .wl-count {
@@ -374,8 +342,7 @@ const STYLES = `
   }
 
   .empty-icon {
-    font-family: 'Fraunces', serif;
-    font-size: 40px;
+    font-size: 36px;
     color: var(--border-strong);
     margin-bottom: 14px;
   }
@@ -394,7 +361,6 @@ const STYLES = `
     letter-spacing: 0.03em;
   }
 
-  /* Wantlist manual add */
   .manual-add-form {
     margin-bottom: 24px;
     padding: 18px;
@@ -443,7 +409,6 @@ const STYLES = `
   .field input:focus, .field textarea:focus { border-color: var(--accent); }
   .field input::placeholder, .field textarea::placeholder { color: var(--border-strong); }
 
-  /* Price display in wantlist cards */
   .price-row {
     display: flex;
     gap: 16px;
@@ -459,24 +424,11 @@ const STYLES = `
   .price-value.intl { color: #2c6e5c; }
   .price-sub { font-size: 10px; color: var(--text-3); margin-top: 2px; }
 
- .warning-intl {
-    display: inline-block;
+  .warning-intl {
     font-size: 9px;
     color: var(--accent);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-top: 8px;
-    background: #fdf0ee;
-    border: 1px solid #f0c0b0;
-    padding: 3px 8px;
-    border-radius: 3px;
-  }
-
-  /* ── COMPARE TAB ── */
-  .cmp-empty-note {
-    font-size: 11px;
-    color: var(--text-3);
-    line-height: 1.8;
     margin-top: 6px;
   }
 
@@ -519,7 +471,6 @@ const STYLES = `
   }
 
   .cmp-grid { display: flex; flex-direction: column; gap: 16px; }
-
   .cmp-card { background: var(--surface-raised); border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
 
   .cmp-section {
@@ -535,7 +486,6 @@ const STYLES = `
     margin-bottom: 10px;
   }
 
-  /* Budget indicator */
   .budget-indicator {
     display: inline-flex;
     align-items: center;
@@ -552,14 +502,13 @@ const STYLES = `
   .budget-maybe { background: var(--gold-bg); color: var(--gold); }
   .budget-over { background: var(--red-bg); color: #c0392b; }
 
-  /* Retail links */
   .retail-links { display: flex; flex-direction: column; gap: 6px; }
 
   .retail-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 7px 12px;
+    padding: 10px 14px;
     background: var(--surface);
     border: 1.5px solid var(--border);
     border-radius: 4px;
@@ -571,12 +520,7 @@ const STYLES = `
   .retail-link-name { font-size: 13px; color: var(--text); font-weight: 500; }
   .retail-link-action { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
 
-  /* Bandcamp compare section */
-  .bc-compare {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .bc-compare { display: flex; flex-direction: column; gap: 10px; }
 
   .bc-fields-row {
     display: grid;
@@ -595,7 +539,6 @@ const STYLES = `
   .bc-result-value { font-size: 16px; font-weight: 500; color: var(--text); }
   .bc-result-note { font-size: 10px; color: var(--text-3); margin-top: 2px; }
 
-  /* Compare card actions */
   .cmp-actions {
     padding: 12px 18px;
     border-top: 1px solid var(--border);
@@ -607,7 +550,6 @@ const STYLES = `
 
   .cmp-actions-spacer { flex: 1; }
 
-  /* ── COLLECTION TAB ── */
   .coll-toolbar {
     display: flex;
     align-items: center;
@@ -640,29 +582,7 @@ const STYLES = `
     flex-shrink: 0;
   }
 
-  .coll-date {
-    font-size: 10px;
-    color: var(--text-3);
-  }
-
-  /* ── LOADING / ERROR ── */
-  .loading-state {
-    text-align: center;
-    padding: 52px 0;
-    font-size: 11px;
-    color: var(--text-3);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  .loading-dot { display: inline-block; animation: pulse 1.2s ease-in-out infinite; }
-  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes pulse {
-    0%, 80%, 100% { opacity: 0.2; }
-    40% { opacity: 1; }
-  }
+  .coll-date { font-size: 10px; color: var(--text-3); }
 
   .error-msg {
     padding: 13px 16px;
@@ -674,32 +594,17 @@ const STYLES = `
     margin-bottom: 20px;
   }
 
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 20px 0;
-  }
-
   @media (max-width: 540px) {
-    .app { padding: 24px 14px 80px; }
+    .app { padding: 32px 16px 80px; }
+    .field input, .field textarea, .username-input { font-size: 16px; }
     .fields-row { grid-template-columns: 1fr; }
     .bc-fields-row { grid-template-columns: 1fr; }
-    .wl-toolbar { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .wl-toolbar-right { flex-wrap: wrap; gap: 6px; }
-    .price-row { gap: 10px; flex-wrap: wrap; }
-    .card-row { gap: 10px; }
-    .card-title { font-size: 14px; }
-    .cmp-actions { flex-wrap: wrap; gap: 6px; }
-    .cmp-actions-spacer { display: none; }
-    .tab-btn { padding: 10px 12px; font-size: 9px; }
-    .header h1 { font-size: clamp(26px, 7vw, 38px); }
-    .thumb { width: 44px; height: 44px; }
-    .thumb-placeholder { width: 44px; height: 44px; }
-    .price-value { font-size: 18px; }
+    .wl-toolbar { flex-direction: column; align-items: flex-start; }
+    .price-row { gap: 12px; }
   }
 `;
 
-// ── Storage ──────────────────────────────────────────────────────────────────
+// ── Storage ──────────────────────────────────────────────────────────────
 
 const KEYS = {
   wantlist: "rf_wantlist_v2",
@@ -712,25 +617,20 @@ function load(key) {
   try { return JSON.parse(localStorage.getItem(key) || "[]"); }
   catch { return []; }
 }
-function loadStr(key, def = "") {
-  return localStorage.getItem(key) || def;
-}
+function loadStr(key, def = "") { return localStorage.getItem(key) || def; }
+
+// FIX: save() now has try/catch wrapper
 function save(key, val) {
-  localStorage.setItem(key, JSON.stringify(val));
+  try { localStorage.setItem(key, JSON.stringify(val)); }
+  catch(e) { console.error("localStorage write failed:", e); }
 }
-function saveStr(key, val) {
-  localStorage.setItem(key, val);
-}
-function genId() {
-  return Math.random().toString(36).slice(2, 9);
-}
+function saveStr(key, val) { localStorage.setItem(key, val); }
+function genId() { return Math.random().toString(36).slice(2, 9); }
 
-// ── WantlistTab ───────────────────────────────────────────────────────────────
+// ── WantlistCard ──────────────────────────────────────────────────────────
 
-function WishlistCard({ item, onMoveToCompare, onRemove, onToggleLimited }) {
-  const { artist, album, year, cover, status, result, error, limited } = item;
-  const usListings = result?.discogs_us || [];
-  const intlListings = result?.discogs_intl || [];
+function WantlistCard({ item, onMoveToCompare, onRemove }) {
+  const { artist, album, year, cover, status, result, error } = item;
   const bestUs = result?.best_us;
   const bestIntl = result?.best_intl;
   const usOnlyWarning = result?.us_only_warning;
@@ -740,54 +640,42 @@ function WishlistCard({ item, onMoveToCompare, onRemove, onToggleLimited }) {
       <div className="card-row">
         {cover
           ? <img className="thumb" src={cover} alt={album} />
-          : <div className="thumb-placeholder">No Art</div>}
+          : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
         <div className="card-info">
-          <div style={{display:"flex", alignItems:"center", gap:"8px", flexWrap:"wrap"}}>
-            <div className="card-title">{album}</div>
-            {limited && (
-              <span style={{fontSize:"8px", letterSpacing:"0.15em", textTransform:"uppercase",
-                background:"#f0e8d0", color:"#8a6a20", border:"1px solid #e0c878",
-                padding:"2px 7px", borderRadius:"10px", whiteSpace:"nowrap"}}>
-                Limited
-              </span>
-            )}
-          </div>
+          <div className="card-title">{album}</div>
           <div className="card-artist">{artist}{year ? ` · ${year}` : ""}</div>
-
           {status === "done" && (
-            <>
+            <div className="price-row">
               {bestUs && (
-                <div className="price-row">
-                  <div className="price-block">
-                    <span className="price-label">Best US · {bestUs.num_for_sale} for sale</span>
-                    <span className="price-value us">${bestUs.price.toFixed(2)}</span>
-                  </div>
+                <div className="price-block">
+                  <span className="price-label">Best US</span>
+                  <span className="price-value us">${bestUs.price.toFixed(2)}</span>
+                  <span className="price-sub">{bestUs.num_for_sale} for sale · est. {result?.us_shipping_estimate || "$4–8"} shipping</span>
                 </div>
               )}
-              {bestIntl && !bestUs && (
-                <div className="price-row">
-                  <div className="price-block">
-                    <span className="price-label">Best Intl · {bestIntl.ships_from}</span>
-                    <span className="price-value intl">${bestIntl.total_low}–${bestIntl.total_high}</span>
-                    <span className="price-sub">${bestIntl.price.toFixed(2)} + est. ${bestIntl.shipping_low}–${bestIntl.shipping_high} shipping</span>
-                  </div>
+              {bestIntl && (
+                <div className="price-block">
+                  <span className="price-label">Best Intl</span>
+                  <span className="price-value intl" aria-label={`$${bestIntl.total_low} to $${bestIntl.total_high}`}>
+                    ${bestIntl.total_low}–${bestIntl.total_high}
+                  </span>
+                  <span className="price-sub">incl. est. shipping · {bestIntl.ships_from}</span>
                 </div>
               )}
               {!bestUs && !bestIntl && (
-                <div style={{fontSize:"11px", color:"var(--text-3)", marginTop:"4px", fontStyle:"italic"}}>
-                  No Discogs listings found
+                <div className="price-block">
+                  <span className="price-sub" style={{fontStyle:"italic"}}>No Discogs listings found</span>
                 </div>
               )}
-              {usOnlyWarning && (
-                <div className="warning-intl">⚠ No US sellers — international only</div>
-              )}
-            </>
+            </div>
+          )}
+          {status === "done" && usOnlyWarning && (
+            <div className="warning-intl">⚠ No US sellers — international only</div>
           )}
           {status === "error" && (
             <div style={{fontSize:"11px", color:"#c0392b", marginTop:"4px", fontStyle:"italic"}}>{error}</div>
           )}
         </div>
-
         <div className="card-controls">
           {status === "pending" && <span className="chip chip-pending">Pending</span>}
           {status === "loading" && <span className="chip chip-loading">Searching</span>}
@@ -800,186 +688,40 @@ function WishlistCard({ item, onMoveToCompare, onRemove, onToggleLimited }) {
             <span className="chip chip-none">No Listings</span>
           )}
           {status === "error" && <span className="chip chip-error">Error</span>}
-          <button className="btn btn-sm btn-danger-ghost"
-            onClick={() => onRemove(item.id)} title="Remove">×</button>
+          <button
+            className="btn btn-sm btn-danger-ghost"
+            onClick={() => onRemove(item.id)}
+            aria-label={`Remove ${album} from wantlist`}
+          >×</button>
         </div>
       </div>
-
-      {/* Expanded US/Intl sections when searched */}
-      {status === "done" && (usListings.length > 0 || intlListings.length > 0) && (
-        <div className="card-body" style={{paddingTop:"12px"}}>
-
-          {bestUs && (
-            <div style={{marginBottom: bestIntl ? "14px" : "0"}}>
-              <div style={{fontSize:"9px", letterSpacing:"0.2em", textTransform:"uppercase",
-                color:"var(--text-3)", marginBottom:"8px"}}>
-                Best US · {usListings.length} listing{usListings.length !== 1 ? "s" : ""} available
-              </div>
-              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:"10px"}}>
-                <div>
-                  <span style={{fontSize:"11px", color:"var(--text-2)"}}>
-                    {bestUs.year || "—"} · {bestUs.num_for_sale} for sale
-                  </span>
-                  <div style={{fontSize:"11px", color:"var(--text-3)", marginTop:"2px"}}>
-                    ${bestUs.price.toFixed(2)} + est. $4–8 shipping
-                  </div>
-                  <div style={{fontSize:"12px", color:"var(--text-2)", marginTop:"2px", fontWeight:"500"}}>
-                    Total est. ${(bestUs.price + 4).toFixed(2)}–${(bestUs.price + 8).toFixed(2)}
-                  </div>
-                </div>
-                <a href={bestUs.url} target="_blank" rel="noreferrer"
-                  style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none",
-                    letterSpacing:"0.08em", textTransform:"uppercase", flexShrink:0}}>
-                  View ↗
-                </a>
-              </div>
-            </div>
-          )}
-
-          {bestIntl && (
-            <div>
-              <div style={{fontSize:"9px", letterSpacing:"0.2em", textTransform:"uppercase",
-                color:"var(--text-3)", marginBottom:"8px"}}>
-                Best International · {intlListings.length} listing{intlListings.length !== 1 ? "s" : ""} available
-              </div>
-              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:"10px"}}>
-                <div>
-                  <span style={{fontSize:"11px", color:"var(--text-2)"}}>
-                    {bestIntl.ships_from} · {bestIntl.year || "—"} · {bestIntl.num_for_sale} for sale
-                  </span>
-                  <div style={{fontSize:"11px", color:"var(--text-3)", marginTop:"2px"}}>
-                    ${bestIntl.price.toFixed(2)} + est. ${bestIntl.shipping_low}–${bestIntl.shipping_high} shipping
-                  </div>
-                  <div style={{fontSize:"12px", color:"var(--text-2)", marginTop:"2px", fontWeight:"500"}}>
-                    Total est. ${bestIntl.total_low.toFixed(2)}–${bestIntl.total_high.toFixed(2)}
-                  </div>
-                </div>
-                <a href={bestIntl.url} target="_blank" rel="noreferrer"
-                  style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none",
-                    letterSpacing:"0.08em", textTransform:"uppercase", flexShrink:0}}>
-                  View ↗
-                </a>
-              </div>
-            </div>
-          )}
-
-          {(bestUs || bestIntl) && (
-            <div style={{marginTop:"12px", paddingTop:"10px", borderTop:"1px solid var(--border)",
-              fontSize:"10px", color:"var(--text-3)"}}>
-              Full range: ${bestUs ? (bestUs.price + 4).toFixed(2) : bestIntl.total_low.toFixed(2)} (cheapest US all-in)
-              {" "}→ ${bestIntl ? bestIntl.total_high.toFixed(2) : (bestUs.price + 8).toFixed(2)} (most expensive intl all-in)
-            </div>
-          )}
-
-        </div>
-      )}
     </div>
   );
 }
 
-function WantlistTab({ username, onCountChange }) {
+// ── WantlistTab ───────────────────────────────────────────────────────────
+
+// FIX 3: receives onCompareAdd to sync compare badge count in real time
+function WantlistTab({ username, onCountChange, onCompareAdd }) {
   const [wantlist, setWantlist] = useState(() => load(KEYS.wantlist));
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
+  const [currentAlbum, setCurrentAlbum] = useState("");
   const [importLoading, setImportLoading] = useState(false);
   const [error, setError] = useState(null);
   const [addArtist, setAddArtist] = useState("");
   const [addAlbum, setAddAlbum] = useState("");
   const [addBcUrl, setAddBcUrl] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [parseUrl, setParseUrl] = useState("");
-  const [parseError, setParseError] = useState(null);
-  const cancelRef = { current: false };
-  const parseUrlHelper = (url) => {
-  setParseError(null);
-  if (!url.trim()) return;
-  try {
-    const u = new URL(url.trim());
-    const host = u.hostname.replace("www.", "");
-    const parts = u.pathname.split("/").filter(Boolean);
-
-    // Amazon: /Artist-Album-Title/dp/...
-    if (host.includes("amazon.")) {
-      const slug = parts[0] || "";
-      const words = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-      // Try to split artist from album — Amazon slugs often run them together
-      // Best we can do is pre-fill the album field and let user fix artist
-      setAddAlbum(words);
-      setAddArtist("");
-      setParseError("Amazon URLs don't always contain the artist — please fill that in manually.");
-      return;
-    }
-
-    // Pitchfork reviews: /reviews/albums/artist-name-album-title/
-    if (host.includes("pitchfork.")) {
-      const slug = parts[parts.indexOf("albums") + 1] || parts[parts.length - 1] || "";
-      const words = slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1));
-      // Pitchfork slugs are "artist-name-album-title" — hard to split perfectly
-      // Put full slug in album, let user split
-      setAddAlbum(words.join(" "));
-      setAddArtist("");
-      setParseError("Pitchfork URLs combine artist and album — split them manually above.");
-      return;
-    }
-
-    // Bandcamp: artist.bandcamp.com/album/album-name
-    if (host.includes("bandcamp.")) {
-      const artistName = u.hostname.split(".")[0].replace(/-/g, " ")
-        .replace(/\b\w/g, c => c.toUpperCase());
-      const albumSlug = parts[parts.indexOf("album") + 1] || "";
-      const albumName = albumSlug.replace(/-/g, " ")
-        .replace(/\b\w/g, c => c.toUpperCase());
-      setAddArtist(artistName);
-      setAddAlbum(albumName);
-      setAddBcUrl(url.trim());
-      return;
-    }
-
-    // Discogs: discogs.com/artist-name-album-title/release/...
-    if (host.includes("discogs.")) {
-      const slug = parts[0] || "";
-      const words = slug.replace(/-/g, " ")
-        .replace(/\b\w/g, c => c.toUpperCase());
-      setAddAlbum(words);
-      setAddArtist("");
-      setParseError("Discogs URLs combine artist and album — split them manually above.");
-      return;
-    }
-
-    // Generic fallback — use last path segment
-    const slug = parts[parts.length - 1] || "";
-    const words = slug.replace(/[-_]/g, " ")
-      .replace(/\b\w/g, c => c.toUpperCase());
-    setAddAlbum(words);
-    setAddArtist("");
-    setParseError("Couldn't fully parse this URL — please review and fill in the artist.");
-
-  } catch {
-    setParseError("That doesn't look like a valid URL.");
-  }
-};
-
-  const [sortBy, setSortBy] = useState("price");
-  const [sortDir, setSortDir] = useState("asc");
+  // FIX 4: US-only filter — pending/loading always visible regardless
   const [filterUs, setFilterUs] = useState(false);
+  const [scanTotal, setScanTotal] = useState(0);
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // FIX 1: useRef instead of plain object literal (stable across renders)
+  const cancelRef = useRef(false);
 
   useEffect(() => { onCountChange(wantlist.length); }, [wantlist.length]);
 
-  const sortListings = (items, by, dir) => {
-    const sorted = [...items].sort((a, b) => {
-      if (by === "price") {
-        const aPrice = a.result?.best_us?.price ?? a.result?.best_intl?.total_low ?? 9999;
-        const bPrice = b.result?.best_us?.price ?? b.result?.best_intl?.total_low ?? 9999;
-        return aPrice - bPrice;
-      }
-      if (by === "year") return (a.year || 0) - (b.year || 0);
-      if (by === "artist") return (a.artist || "").localeCompare(b.artist || "");
-      return 0;
-    });
-    return dir === "desc" ? sorted.reverse() : sorted;
-  };
-
-  
   const persist = (list) => {
     setWantlist(list);
     save(KEYS.wantlist, list);
@@ -1004,7 +746,6 @@ function WantlistTab({ username, onCountChange }) {
       const collectionIds = new Set(collection.map(i => i.discogs_release_id).filter(Boolean));
       const newDiscogsIds = new Set(data.wants.map(w => w.discogs_release_id).filter(Boolean));
 
-      // On update: move items removed from Discogs wantlist to collection
       if (isUpdate) {
         const removed = existing.filter(
           i => i.source === "discogs" && i.discogs_release_id && !newDiscogsIds.has(i.discogs_release_id)
@@ -1014,16 +755,10 @@ function WantlistTab({ username, onCountChange }) {
           removed.forEach(item => {
             if (!collectionIds.has(item.discogs_release_id)) {
               updatedCollection.push({
-                id: item.id,
-                artist: item.artist,
-                album: item.album,
-                year: item.year,
-                cover: item.cover || null,
-                discogs_release_id: item.discogs_release_id,
-                discogs_url: item.discogs_url,
-                source: "discogs_app",
-                obtained_via: "purchased",
-                addedAt: Date.now(),
+                id: item.id, artist: item.artist, album: item.album, year: item.year,
+                cover: item.cover || null, discogs_release_id: item.discogs_release_id,
+                discogs_url: item.discogs_url, source: "discogs_app",
+                obtained_via: "purchased", addedAt: Date.now(),
               });
             }
           });
@@ -1031,24 +766,15 @@ function WantlistTab({ username, onCountChange }) {
         }
       }
 
-      // Add new items not already in wantlist, compare, or collection
       const newItems = data.wants
         .filter(w => !existingIds.has(w.discogs_release_id)
           && !compareIds.has(w.discogs_release_id)
           && !collectionIds.has(w.discogs_release_id))
         .map(w => ({
-          id: genId(),
-          artist: w.artist,
-          album: w.album,
-          year: w.year,
-          cover: w.cover || null,
-          discogs_release_id: w.discogs_release_id,
-          discogs_url: w.discogs_url,
-          source: "discogs",
-          bandcamp_url: null,
-          status: "pending",
-          result: null,
-          error: null,
+          id: genId(), artist: w.artist, album: w.album, year: w.year,
+          cover: w.cover || null, discogs_release_id: w.discogs_release_id,
+          discogs_url: w.discogs_url, source: "discogs", bandcamp_url: null,
+          status: "pending", result: null, error: null,
         }));
 
       const kept = isUpdate
@@ -1069,6 +795,8 @@ function WantlistTab({ username, onCountChange }) {
     setScanning(true);
     cancelRef.current = false;
     setScanProgress(0);
+    setCurrentAlbum("");
+    setScanTotal(pending.length);
 
     setWantlist(prev => {
       const updated = prev.map(i =>
@@ -1083,21 +811,13 @@ function WantlistTab({ username, onCountChange }) {
 
     for (const item of pending) {
       if (cancelRef.current) break;
+      // Show current album in progress bar
+      setCurrentAlbum(`${item.artist} — ${item.album}`);
       try {
         const params = new URLSearchParams({ artist: item.artist, album: item.album });
-        let res, data;
-        for (let attempt = 0; attempt < 3; attempt++) {
-          res = await fetch(`${API}/search?${params}`);
-          data = await res.json();
-          if (res.status === 429) {
-            console.log(`Rate limited, waiting ${8 + attempt * 4}s...`);
-            await new Promise(r => setTimeout(r, (8 + attempt * 4) * 1000));
-            continue;
-          }
-          break;
-        }
+        const res = await fetch(`${API}/search?${params}`);
+        const data = await res.json();
         if (data.error) throw new Error(data.error);
-
         setWantlist(prev => {
           const updated = prev.map(i => i.id === item.id
             ? { ...i, status: "done", result: data, error: null } : i);
@@ -1114,93 +834,101 @@ function WantlistTab({ username, onCountChange }) {
       }
       completed++;
       setScanProgress(Math.round((completed / pending.length) * 100));
-      if (completed < pending.length) await new Promise(r => setTimeout(r, 5000));
+      if (completed < pending.length) await new Promise(r => setTimeout(r, 3500));
     }
 
+    setCurrentAlbum("");
     setScanning(false);
   };
 
-  const cancelScan = () => { cancelRef.current = true; setScanning(false); };
+  // FIX 2: cancel resets still-loading items back to pending
+  const cancelScan = () => {
+    cancelRef.current = true;
+    setScanning(false);
+    setCurrentAlbum("");
+    setWantlist(prev => {
+      const updated = prev.map(i =>
+        i.status === "loading" ? { ...i, status: "pending" } : i
+      );
+      save(KEYS.wantlist, updated);
+      return updated;
+    });
+  };
 
   const removeItem = (id) => persist(wantlist.filter(i => i.id !== id));
 
   const addManual = () => {
     if (!addArtist.trim() || !addAlbum.trim()) return;
     const item = {
-      id: genId(),
-      artist: addArtist.trim(),
-      album: addAlbum.trim(),
-      year: "",
-      cover: null,
-      discogs_release_id: null,
-      discogs_url: null,
+      id: genId(), artist: addArtist.trim(), album: addAlbum.trim(), year: "",
+      cover: null, discogs_release_id: null, discogs_url: null,
       source: addBcUrl.trim() ? "bandcamp" : "manual",
       bandcamp_url: addBcUrl.trim() || null,
-      status: "pending",
-      result: null,
-      error: null,
+      status: "pending", result: null, error: null,
     };
     persist([...wantlist, item]);
     setAddArtist(""); setAddAlbum(""); setAddBcUrl("");
   };
 
+  // FIX 3: call onCompareAdd so App updates compare badge without refresh
   const moveToCompare = (item) => {
     const compare = load(KEYS.compare);
     if (compare.find(c => c.id === item.id)) return;
     save(KEYS.compare, [...compare, { ...item, bandcamp_price: null }]);
     persist(wantlist.filter(i => i.id !== item.id));
+    onCompareAdd();
   };
 
   const pendingCount = wantlist.filter(i => i.status === "pending" || i.status === "error").length;
-  const isFirstSync = wantlist.filter(i => i.source === "discogs").length === 0;
+
+  // FIX 4: US filter — pending and loading are always shown regardless
+  const visibleItems = filterUs
+    ? wantlist.filter(i =>
+        i.status === "pending" ||
+        i.status === "loading" ||
+        (i.status === "done" && i.result?.best_us)
+      )
+    : wantlist;
 
   return (
     <div>
       {error && <div className="error-msg">{error}</div>}
 
       <div className="manual-add-form">
-        <div className="form-section-label">Add Manually</div>
-        <div className="field" style={{marginBottom:"12px"}}>
-          <label>Paste a URL to parse (Bandcamp, Pitchfork, Amazon, Discogs…)</label>
-          <div style={{display:"flex", gap:"8px"}}>
-            <input type="text" placeholder="https://..."
-              value={parseUrl}
-              onChange={e => setParseUrl(e.target.value)} />
-            <button className="btn btn-ghost"
-              style={{flexShrink:0, whiteSpace:"nowrap"}}
-              onClick={() => { parseUrlHelper(parseUrl); setParseUrl(""); }}
-              disabled={!parseUrl.trim()}>
-              Parse ↗
-            </button>
-          </div>
-          {parseError && (
-            <div style={{fontSize:"11px", color:"var(--accent)", marginTop:"4px"}}>{parseError}</div>
-          )}
+        <div
+          className="form-section-label"
+          style={{display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", marginBottom: showAddForm ? "12px" : "0"}}
+          onClick={() => setShowAddForm(f => !f)}
+        >
+          <span>Add Manually</span>
+          <span>{showAddForm ? "−" : "+"}</span>
         </div>
+        {showAddForm && <>
         <div className="fields-row">
           <div className="field">
-            <label>Artist</label>
-            <input type="text" placeholder="Artist name" value={addArtist}
+            <label htmlFor="wl-artist">Artist</label>
+            <input id="wl-artist" type="text" placeholder="Artist name" value={addArtist}
               onChange={e => setAddArtist(e.target.value)}
               onKeyDown={e => e.key === "Enter" && addManual()} />
           </div>
           <div className="field">
-            <label>Album</label>
-            <input type="text" placeholder="Album title" value={addAlbum}
+            <label htmlFor="wl-album">Album</label>
+            <input id="wl-album" type="text" placeholder="Album title" value={addAlbum}
               onChange={e => setAddAlbum(e.target.value)}
               onKeyDown={e => e.key === "Enter" && addManual()} />
           </div>
         </div>
         <div className="field" style={{marginBottom:"10px"}}>
-          <label>Bandcamp URL (optional — for Bandcamp-only albums)</label>
-          <input type="text" placeholder="https://artist.bandcamp.com/album/..."
+          <label htmlFor="wl-bc-url">Bandcamp URL (optional — for Bandcamp-only albums)</label>
+          <input id="wl-bc-url" type="text" placeholder="https://artist.bandcamp.com/album/..."
             value={addBcUrl} onChange={e => setAddBcUrl(e.target.value)} />
         </div>
         <button className="btn btn-primary"
-          onClick={addManual} disabled={!addArtist.trim() || !addAlbum.trim()}>
-          + Add to Wantlist
-        </button>
-      </div>
+                  onClick={addManual} disabled={!addArtist.trim() || !addAlbum.trim()}>
+                  + Add to Wantlist
+                </button>
+                </>}
+              </div>
 
       {wantlist.length === 0 ? (
         <div className="empty-state">
@@ -1225,104 +953,62 @@ function WantlistTab({ username, onCountChange }) {
                 {wantlist.length} album{wantlist.length !== 1 ? "s" : ""}
                 {pendingCount > 0 ? ` · ${pendingCount} unsearched` : ""}
               </span>
+              {/* FIX 4: US-only toggle — pending/loading always visible */}
+              <button
+                className={`btn btn-ghost btn-sm${filterUs ? " filter-active" : ""}`}
+                onClick={() => setFilterUs(f => !f)}
+                aria-pressed={filterUs}
+              >
+                {filterUs ? "US Only ✓" : "US Only"}
+              </button>
             </div>
             <div className="wl-toolbar-right">
-              {scanning && (
-                <button className="btn btn-ghost btn-sm" onClick={cancelScan}>Cancel Scan</button>
-              )}
-              <button className="btn btn-ghost btn-sm"
-                onClick={() => syncWantlist(true)} disabled={importLoading || scanning}>
-                {importLoading ? "Updating…" : "↻ Update"}
-              </button>
-              <button className="btn btn-accent btn-sm"
-                onClick={scanAll} disabled={pendingCount === 0 || scanning}>
-                {scanning ? "Scanning…" : `Scan Prices${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
-              </button>
+              {scanning
+                ? <button className="btn btn-ghost btn-sm" onClick={cancelScan}>Cancel Scan</button>
+                : <>
+                    <button className="btn btn-ghost btn-sm"
+                      onClick={() => syncWantlist(true)} disabled={importLoading}>
+                      {importLoading ? "Updating…" : "↻ Update from Discogs"}
+                    </button>
+                    <button className="btn btn-accent btn-sm"
+                      onClick={scanAll} disabled={pendingCount === 0}>
+                      {`Scan Prices${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
+                    </button>
+                  </>
+              }
             </div>
           </div>
 
           {scanning && (
             <div className="progress-bar-wrap">
               <div className="progress-bar-label">
-                <span>Scanning Discogs</span>
-                <span>{scanProgress}%</span>
+                {/* Shows current album name while scanning */}
+                <span style={{overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"70%"}}>
+                  {currentAlbum || "Scanning…"}
+                </span>
+                <span>
+                  {scanProgress}%{scanTotal > 1 && scanProgress < 100 ? ` · ~${Math.max(1, Math.ceil((scanTotal - Math.round(scanProgress / 100 * scanTotal)) * 3.5 / 60))}m left` : ""}
+                </span>                
               </div>
               <div className="progress-bar-track">
                 <div className="progress-bar-fill" style={{width: scanProgress + "%"}} />
               </div>
             </div>
           )}
-        <div style={{marginBottom:"12px"}}>
-          <input
-            type="text"
-            placeholder="Filter by artist or album…"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            style={{width:"100%", background:"var(--surface-raised)", border:"1.5px solid var(--border)",
-              color:"var(--text)", fontFamily:"'DM Mono', monospace", fontSize:"13px",
-              padding:"10px 14px", outline:"none", borderRadius:"4px", transition:"border-color 0.15s"}}
-          />
-        </div>
 
-      <div style={{display:"flex", alignItems:"center", gap:"8px", marginBottom:"16px", flexWrap:"wrap"}}>
-        <span style={{fontSize:"9px", letterSpacing:"0.2em", textTransform:"uppercase", color:"var(--text-3)"}}>
-          Sort
-        </span>
-        {["price","year","artist"].map(opt => (
-          <button key={opt}
-            onClick={() => setSortBy(opt)}
-            style={{fontSize:"9px", letterSpacing:"0.15em", textTransform:"uppercase",
-              padding:"4px 10px", borderRadius:"4px", cursor:"pointer", border:"1.5px solid",
-              background: sortBy === opt ? "var(--text)" : "transparent",
-              color: sortBy === opt ? "var(--surface)" : "var(--text-3)",
-              borderColor: sortBy === opt ? "var(--text)" : "var(--border)",
-              fontFamily:"'DM Mono', monospace", transition:"all 0.15s"}}>
-            {opt}
-          </button>
-        ))}
-        <button
-          onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
-          style={{fontSize:"9px", letterSpacing:"0.15em", textTransform:"uppercase",
-            padding:"4px 10px", borderRadius:"4px", cursor:"pointer", border:"1.5px solid",
-            background:"transparent", color:"var(--text-3)", borderColor:"var(--border)",
-            fontFamily:"'DM Mono', monospace", transition:"all 0.15s"}}>
-          {sortDir === "asc" ? "↑ Asc" : "↓ Desc"}
-        </button>
-        <div style={{marginLeft:"auto"}}>
-          <button
-            onClick={() => setFilterUs(f => !f)}
-            style={{fontSize:"9px", letterSpacing:"0.15em", textTransform:"uppercase",
-              padding:"4px 10px", borderRadius:"4px", cursor:"pointer", border:"1.5px solid",
-              background: filterUs ? "var(--teal)" : "transparent",
-              color: filterUs ? "#fff" : "var(--text-3)",
-              borderColor: filterUs ? "var(--teal)" : "var(--border)",
-              fontFamily:"'DM Mono', monospace", transition:"all 0.15s"}}>
-            {filterUs ? "US Only" : "All Regions"}
-          </button>
-        </div>
-      </div>
           <div className="wl-grid">
-          {sortListings(
-            (filterUs ? wantlist.filter(i => !i.result || i.result.best_us) : wantlist)
-              .filter(i => {
-                if (!searchQuery.trim()) return true;
-                const q = searchQuery.toLowerCase();
-                return i.artist.toLowerCase().includes(q) || i.album.toLowerCase().includes(q);
-              }),
-            sortBy, sortDir
-          ).map(item => (
-            <WishlistCard key={item.id} item={item}
-              onMoveToCompare={moveToCompare}
-              onRemove={removeItem}/>
-          ))}
-        </div>
+            {visibleItems.map(item => (
+              <WantlistCard key={item.id} item={item}
+                onMoveToCompare={moveToCompare} onRemove={removeItem} />
+            ))}
+          </div>
         </>
       )}
     </div>
   );
 }
 
-// ── CompareTab ────────────────────────────────────────────────────────────────
+// ── CompareCard ───────────────────────────────────────────────────────────
 
 function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) {
   const [bcUrl, setBcUrl] = useState(item.bandcamp_url || "");
@@ -1330,35 +1016,20 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
 
   const bestUs = item.result?.best_us;
   const bestIntl = item.result?.best_intl;
-
   const bcPriceNum = parseFloat(bcPrice) || null;
 
-  // Budget checks
-  const usBudget = bestUs
-    ? bestUs.price <= threshold ? "ok" : "over"
-    : null;
-
+  const usBudget = bestUs ? (bestUs.price <= threshold ? "ok" : "over") : null;
   const intlBudget = bestIntl
     ? bestIntl.total_low <= threshold && bestIntl.total_high <= threshold ? "ok"
-      : bestIntl.total_low <= threshold ? "maybe"
-      : "over"
+      : bestIntl.total_low <= threshold ? "maybe" : "over"
     : null;
 
-  // Vinyl vs digital comparison
-  let vinylVsDigital = null;
-  if (bcPriceNum && bestUs) {
-    const diff = bestUs.price - bcPriceNum;
-    vinylVsDigital = { source: "US vinyl vs Bandcamp", diff, total: bestUs.price };
-  }
-
   const q = encodeURIComponent(`${item.artist} ${item.album} vinyl`);
-  const bcQ = encodeURIComponent(`${item.artist} ${item.album}`);
-  const bcSearch = `https://bandcamp.com/search?q=${bcQ}&item_type=a`;
   const retailLinks = [
     { name: "Amazon", url: `https://www.amazon.com/s?k=${q}` },
     { name: "Target", url: `https://www.target.com/s?searchTerm=${q}` },
     { name: "Walmart", url: `https://www.walmart.com/search?q=${q}` },
-    { name: "Bandcamp — Digital", url: bcSearch },
+    { name: "Discogs", url: item.discogs_url || `https://www.discogs.com/search/?q=${encodeURIComponent(item.artist + " " + item.album)}&type=release` },
   ];
 
   const saveBcData = () => {
@@ -1373,23 +1044,19 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
       <div className="card-row">
         {item.cover
           ? <img className="thumb" src={item.cover} alt={item.album} />
-          : <div className="thumb-placeholder">No Art</div>}
+          : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
         <div className="card-info">
           <div className="card-title">{item.album}</div>
           <div className="card-artist">{item.artist}{item.year ? ` · ${item.year}` : ""}</div>
         </div>
         {item.discogs_url && (
           <a href={item.discogs_url} target="_blank" rel="noreferrer"
-            style={{fontSize:"10px", color:"#fff", textDecoration:"none", letterSpacing:"0.12em",
-              textTransform:"uppercase", flexShrink:0, background:"var(--accent)",
-              padding:"6px 12px", borderRadius:"4px", fontWeight:"500",
-              fontFamily:"'DM Mono', monospace", transition:"background 0.15s"}}>
-            Discogs ↗
+            className="btn btn-sm btn-accent" style={{flexShrink:0}}>
+            Buy on Discogs ↗
           </a>
         )}
       </div>
 
-      {/* Pricing */}
       <div className="cmp-section">
         <div className="cmp-section-title">Discogs Pricing</div>
         <div className="price-row">
@@ -1397,8 +1064,6 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
             <div className="price-block">
               <span className="price-label">Best US · {bestUs.num_for_sale} for sale</span>
               <span className="price-value us">${bestUs.price.toFixed(2)}</span>
-              <span className="price-sub">+ est. $4–8 domestic shipping</span>
-              <span className="price-sub">Total est. ${(bestUs.price + 4).toFixed(2)}–${(bestUs.price + 8).toFixed(2)}</span>
               {usBudget && (
                 <div className={`budget-indicator budget-${usBudget}`}>
                   {usBudget === "ok" ? "✓ Within budget" : "✗ Over budget"}
@@ -1411,7 +1076,7 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
               <span className="price-label">Best Intl · {bestIntl.ships_from}</span>
               <span className="price-value intl">${bestIntl.price.toFixed(2)}</span>
               <span className="price-sub">+ est. ${bestIntl.shipping_low}–${bestIntl.shipping_high} shipping</span>
-              <span className="price-sub">Total: ${bestIntl.total_low.toFixed(2)}–${bestIntl.total_high.toFixed(2)}</span>
+              <span className="price-sub">Total: ${bestIntl.total_low}–${bestIntl.total_high}</span>
               {intlBudget && (
                 <div className={`budget-indicator budget-${intlBudget}`}>
                   {intlBudget === "ok" ? "✓ Within budget"
@@ -1427,7 +1092,6 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
         </div>
       </div>
 
-      {/* Retail + Bandcamp links */}
       <div className="cmp-section">
         <div className="cmp-section-title">Find It Elsewhere</div>
         <div className="retail-links">
@@ -1446,10 +1110,37 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
         </div>
       </div>
 
-      {/* Compare with any listing */}
+      <div className="cmp-section">
+        <div className="cmp-section-title">Compare with Bandcamp (manual)</div>
+        <div className="bc-compare">
+          <div className="bc-fields-row">
+            <div className="field">
+              <label>Bandcamp URL</label>
+              <input type="text" placeholder="https://artist.bandcamp.com/album/..."
+                value={bcUrl} onChange={e => setBcUrl(e.target.value)} onBlur={saveBcData} />
+            </div>
+            <div className="field">
+              <label>Price you see ($)</label>
+              <input type="number" placeholder="e.g. 7.00" min="0" step="0.01"
+                value={bcPrice} onChange={e => setBcPrice(e.target.value)} onBlur={saveBcData} />
+            </div>
+          </div>
 
+          {bcPriceNum && bestUs && (
+            <div className="bc-result">
+              <div className="bc-result-label">Vinyl vs Digital</div>
+              <div className="bc-result-value">
+                ${Math.abs(bestUs.price - bcPriceNum).toFixed(2)} {bestUs.price > bcPriceNum ? "more for vinyl" : "cheaper for vinyl"}
+              </div>
+              <div className="bc-result-note">
+                US vinyl ${bestUs.price.toFixed(2)} vs Bandcamp ${bcPriceNum.toFixed(2)}
+                {bestUs.price - bcPriceNum <= threshold ? " — within your budget" : " — over your budget"}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
-      {/* Actions */}
       <div className="cmp-actions">
         <button className="btn btn-ghost btn-sm" onClick={() => onBackToWantlist(item)}>
           ← Back to Wantlist
@@ -1460,22 +1151,16 @@ function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) 
           onClick={() => onMoveToCollection(item, "free")}>
           Obtained Free
         </button>
-        <button className="btn btn-sm btn-ghost"
-          style={{color:"var(--teal)", borderColor:"var(--teal)"}}
-          onClick={() => onMoveToCollection(item, "digital")}>
-          ✓ Bought Digital
+        <button className="btn btn-sm btn-teal"
+          onClick={() => onMoveToCollection(item, "purchased")}>
+          ✓ Purchased
         </button>
-        {item.discogs_url && (
-          <a href={item.discogs_url} target="_blank" rel="noreferrer"
-            className="btn btn-sm btn-teal"
-            style={{textDecoration:"none"}}>
-            Buy on Discogs ↗
-          </a>
-        )}
       </div>
     </div>
   );
 }
+
+// ── CompareTab ────────────────────────────────────────────────────────────
 
 function CompareTab({ onCountChange }) {
   const [compare, setCompare] = useState(() => load(KEYS.compare));
@@ -1487,20 +1172,12 @@ function CompareTab({ onCountChange }) {
 
   const moveToCollection = (item, obtained_via) => {
     const collection = load(KEYS.collection);
-    const alreadyThere = collection.find(c => c.id === item.id);
-    if (!alreadyThere) {
+    if (!collection.find(c => c.id === item.id)) {
       save(KEYS.collection, [...collection, {
-        id: item.id,
-        artist: item.artist,
-        album: item.album,
-        year: item.year,
-        cover: item.cover || null,
-        discogs_release_id: item.discogs_release_id || null,
-        discogs_url: item.discogs_url || null,
-        bandcamp_url: item.bandcamp_url || null,
-        source: item.source,
-        obtained_via,
-        addedAt: Date.now(),
+        id: item.id, artist: item.artist, album: item.album, year: item.year,
+        cover: item.cover || null, discogs_release_id: item.discogs_release_id || null,
+        discogs_url: item.discogs_url || null, bandcamp_url: item.bandcamp_url || null,
+        source: item.source, obtained_via, addedAt: Date.now(),
       }]);
     }
     persist(compare.filter(c => c.id !== item.id));
@@ -1520,10 +1197,9 @@ function CompareTab({ onCountChange }) {
           <span className="slider-value">${threshold}</span>
         </div>
         <input type="range" min={0} max={200} step={5} value={threshold}
-          onChange={e => setThreshold(Number(e.target.value))} />
-        <div className="slider-sub">
-          Max you'll pay all-in, including estimated shipping
-        </div>
+          onChange={e => setThreshold(Number(e.target.value))}
+          aria-label="Budget threshold in dollars" />
+        <div className="slider-sub">Max you'll pay all-in, including estimated shipping</div>
       </div>
 
       {compare.length === 0 ? (
@@ -1548,15 +1224,14 @@ function CompareTab({ onCountChange }) {
   );
 }
 
-// ── CollectionTab ─────────────────────────────────────────────────────────────
+// ── CollectionTab ─────────────────────────────────────────────────────────
 
-function CollectionTab({ username, onCountChange }) {
+function CollectionTab({ username }) {
   const [appItems, setAppItems] = useState(() => load(KEYS.collection));
-  const [discogsItems, setDiscogsItems] = useState(() => load("rf_discogs_collection"));
+  const [discogsItems, setDiscogsItems] = useState([]);
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncError, setSyncError] = useState(null);
   const [synced, setSynced] = useState(false);
-  useEffect(() => { onCountChange(appItems.length); }, [appItems.length]);
 
   const syncCollection = async () => {
     if (!username.trim()) { setSyncError("Enter your Discogs username in the header."); return; }
@@ -1567,9 +1242,7 @@ function CollectionTab({ username, onCountChange }) {
       const res = await fetch(`${API}/collection?username=${encodeURIComponent(username)}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      const releases = data.releases || [];
-      setDiscogsItems(releases);
-      save("rf_discogs_collection", releases);
+      setDiscogsItems(data.releases || []);
       setSynced(true);
     } catch (err) {
       setSyncError(err.message || "Failed to fetch collection");
@@ -1584,15 +1257,12 @@ function CollectionTab({ username, onCountChange }) {
     save(KEYS.collection, updated);
   };
 
-  // Dedup: don't show Discogs sync items that are already in app collection
   const appIds = new Set(appItems.map(i => i.discogs_release_id).filter(Boolean));
   const filteredDiscogs = discogsItems.filter(i => !appIds.has(i.discogs_release_id));
 
   const obtainedLabel = (via) => {
-    if (via === "vinyl") return { label: "Vinyl", className: "chip chip-purchased" };
-    if (via === "digital") return { label: "Digital", className: "chip chip-teal" };
-    if (via === "free") return { label: "Obtained Free", className: "chip chip-free" };
     if (via === "purchased") return { label: "Purchased", className: "chip chip-purchased" };
+    if (via === "free") return { label: "Obtained Free", className: "chip chip-free" };
     return { label: "In Collection", className: "chip chip-pending" };
   };
 
@@ -1613,8 +1283,7 @@ function CollectionTab({ username, onCountChange }) {
           {totalCount} item{totalCount !== 1 ? "s" : ""}
           {synced ? ` · Discogs synced` : ""}
         </span>
-        <button className="btn btn-ghost btn-sm"
-          onClick={syncCollection} disabled={syncLoading}>
+        <button className="btn btn-ghost btn-sm" onClick={syncCollection} disabled={syncLoading}>
           {syncLoading ? "Syncing…" : "↻ Sync Discogs Collection"}
         </button>
       </div>
@@ -1643,7 +1312,7 @@ function CollectionTab({ username, onCountChange }) {
                   <div className="coll-card-row">
                     {item.cover
                       ? <img className="thumb" src={item.cover} alt={item.album} />
-                      : <div className="thumb-placeholder">No Art</div>}
+                      : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
                     <div className="card-info">
                       <div className="card-title">{item.album}</div>
                       <div className="card-artist">{item.artist}{item.year ? ` · ${item.year}` : ""}</div>
@@ -1657,7 +1326,8 @@ function CollectionTab({ username, onCountChange }) {
                     <div className="coll-obtained">
                       <span className={ob.className}>{ob.label}</span>
                       <button className="btn btn-sm btn-danger-ghost"
-                        onClick={() => removeAppItem(item.id)} title="Remove">×</button>
+                        onClick={() => removeAppItem(item.id)}
+                        aria-label={`Remove ${item.album}`}>×</button>
                     </div>
                   </div>
                 </div>
@@ -1678,16 +1348,14 @@ function CollectionTab({ username, onCountChange }) {
                 <div className="coll-card-row">
                   {item.cover
                     ? <img className="thumb" src={item.cover} alt={item.album} />
-                    : <div className="thumb-placeholder">No Art</div>}
+                    : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
                   <div className="card-info">
                     <div className="card-title">{item.album}</div>
                     <div className="card-artist">{item.artist}{item.year ? ` · ${item.year}` : ""}</div>
                   </div>
                   <div className="coll-obtained">
                     <span className="chip chip-purchased">Purchased</span>
-                    {item.date_added && (
-                      <span className="coll-date">{formatDate(item.date_added)}</span>
-                    )}
+                    {item.date_added && <span className="coll-date">{formatDate(item.date_added)}</span>}
                   </div>
                 </div>
               </div>
@@ -1705,19 +1373,65 @@ function CollectionTab({ username, onCountChange }) {
   );
 }
 
-// ── App ───────────────────────────────────────────────────────────────────────
+// ── App ───────────────────────────────────────────────────────────────────
 
 export default function App() {
   const [tab, setTab] = useState("wantlist");
   const [username, setUsername] = useState(() => loadStr(KEYS.username, "glassmouse"));
   const [wantlistCount, setWantlistCount] = useState(() => load(KEYS.wantlist).length);
   const [compareCount, setCompareCount] = useState(() => load(KEYS.compare).length);
-  const [collectionCount, setCollectionCount] = useState(() => load(KEYS.collection).length);
+  const [authenticated, setAuthenticated] = useState(null); // null = loading
+  const [authUsername, setAuthUsername] = useState("");
+
+  const API = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    // Strip ?auth=success from URL after Discogs redirect
+    if (window.location.search.includes("auth=success")) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    // Check if already logged in
+    fetch(`${API}/oauth/me`, { credentials: "include" })
+      .then(r => r.json())
+      .then(data => {
+        setAuthenticated(data.authenticated);
+        if (data.username) setAuthUsername(data.username);
+      })
+      .catch(() => setAuthenticated(false));
+  }, []);
 
   const handleUsernameChange = (val) => {
     setUsername(val);
     saveStr(KEYS.username, val);
   };
+
+  // FIX 3: instant compare badge update when WantlistTab sends an item over
+  const handleCompareAdd = () => setCompareCount(c => c + 1);
+
+  if (authenticated === null) return (
+    <>
+      <style>{STYLES}</style>
+      <div style={{textAlign:"center", padding:"80px 24px", fontFamily:"'DM Mono', monospace", fontSize:"11px", color:"#a89e90", letterSpacing:"0.15em", textTransform:"uppercase"}}>
+        Loading…
+      </div>
+    </>
+  );
+
+  if (!authenticated) return (
+    <>
+      <style>{STYLES}</style>
+      <div style={{maxWidth:"400px", margin:"0 auto", padding:"80px 24px", fontFamily:"'DM Mono', monospace", textAlign:"center"}}>
+        <p style={{fontSize:"10px", letterSpacing:"0.3em", textTransform:"uppercase", color:"#a89e90", marginBottom:"16px"}}>Record Finder</p>
+        <h1 style={{fontFamily:"'Fraunces', serif", fontSize:"32px", fontWeight:"700", lineHeight:"1.1", marginBottom:"32px"}}>
+          Find the best <em style={{fontStyle:"italic", fontWeight:"400", color:"#c8622e"}}>vinyl</em><br />before you buy.
+        </h1>
+        <a href={`${API}/oauth/start`}
+          style={{display:"inline-block", background:"#c8622e", color:"#fff", fontFamily:"'DM Mono', monospace", fontSize:"10px", letterSpacing:"0.2em", textTransform:"uppercase", padding:"12px 24px", borderRadius:"4px", textDecoration:"none"}}>
+          Connect Discogs →
+        </a>
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -1725,45 +1439,61 @@ export default function App() {
       <div className="app">
 
         <header className="header">
-          <p className="header-eyebrow">Record Procurement Tool · v0.05</p>
+          <p className="header-eyebrow">
+            Record Procurement Tool
+            <span style={{marginLeft:"12px", opacity:0.5}}>v0.07</span>
+          </p>
           <h1>Find the best <em>vinyl</em><br />before you buy.</h1>
           <div className="header-meta">
-            <span className="header-sub">Discogs Wantlist → Compare → Collection</span>
+            <span className="header-sub">Wantlist → Compare → Collection</span>
             <div className="username-field">
               <span className="username-label">Discogs</span>
-              <input className="username-input" type="text"
-                placeholder="username" value={username}
-                onChange={e => handleUsernameChange(e.target.value)} />
+              <span style={{fontSize:"13px", fontFamily:"'DM Mono', monospace"}}>{authUsername}</span>
+              <a href={`${API}/oauth/logout`}
+                style={{fontSize:"9px", color:"var(--text-3)", letterSpacing:"0.15em", textTransform:"uppercase", textDecoration:"none"}}
+                onClick={() => setAuthenticated(false)}>
+                Log out
+              </a>
             </div>
           </div>
         </header>
 
-        <nav className="tab-nav">
-          <button className={`tab-btn${tab === "wantlist" ? " active" : ""}`}
+        <nav className="tab-nav" role="tablist" aria-label="Main navigation">
+          <button role="tab" aria-selected={tab === "wantlist"}
+            className={`tab-btn${tab === "wantlist" ? " active" : ""}`}
             onClick={() => setTab("wantlist")}>
             Wantlist
-            {wantlistCount > 0 && <span className="tab-badge">{wantlistCount}</span>}
+            {wantlistCount > 0 && (
+              <span className="tab-badge" aria-label={`${wantlistCount} items`}>{wantlistCount}</span>
+            )}
           </button>
-          <button className={`tab-btn${tab === "compare" ? " active" : ""}`}
+          <button role="tab" aria-selected={tab === "compare"}
+            className={`tab-btn${tab === "compare" ? " active" : ""}`}
             onClick={() => setTab("compare")}>
             Compare
-            {compareCount > 0 && <span className="tab-badge">{compareCount}</span>}
+            {compareCount > 0 && (
+              <span className="tab-badge teal" aria-label={`${compareCount} items`}>{compareCount}</span>
+            )}
           </button>
-          <button className={`tab-btn${tab === "collection" ? " active" : ""}`}
+          <button role="tab" aria-selected={tab === "collection"}
+            className={`tab-btn${tab === "collection" ? " active" : ""}`}
             onClick={() => setTab("collection")}>
             Collection
-            {collectionCount > 0 && <span className="tab-badge teal">{collectionCount}</span>}
           </button>
         </nav>
 
         {tab === "wantlist" && (
-          <WantlistTab username={username} onCountChange={setWantlistCount} />
+          <WantlistTab
+            username={username}
+            onCountChange={setWantlistCount}
+            onCompareAdd={handleCompareAdd}
+          />
         )}
         {tab === "compare" && (
           <CompareTab onCountChange={setCompareCount} />
         )}
         {tab === "collection" && (
-          <CollectionTab username={username} onCountChange={setCollectionCount} />
+          <CollectionTab username={username} />
         )}
 
       </div>
