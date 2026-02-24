@@ -1,1509 +1,1716 @@
 import { useState, useEffect, useRef } from "react";
 
+// ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
+
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #e8e2d6;
-    --surface: #f2ede3;
-    --surface-raised: #f8f4ee;
-    --border: #d4ccc0;
-    --border-strong: #b8b0a4;
-    --text: #1c1a17;
-    --text-2: #6a6358;
-    --text-3: #a89e90;
-    --accent: #c8622e;
-    --accent-dark: #a84e22;
-    --teal: #3d7266;
-    --teal-bg: #eaf2f0;
-    --gold: #b8922a;
-    --gold-bg: #faf3e0;
-    --red-bg: #fdf0ee;
+    --bg:        #1c1814;
+    --surface:   #242018;
+    --surface2:  #2c2820;
+    --border:    #3a3530;
+    --text:      #f0e8d8;
+    --text-muted: #9a8f80;
+    --text-dim:  #6a6058;
+    --accent:    #e07840;
+    --accent-dim: #9a4e1e;
+    --teal:      #4a9080;
+    --teal-dim:  #2a5548;
+    --danger:    #c0504a;
+    --radius:    8px;
+    --radius-lg: 14px;
+    --sidebar-w: 220px;
+  }
+
+  html, body {
+    width: 100%;
+    min-height: 100vh;
   }
 
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── LAYOUT ────────────────────────────────────────────────────────────── */
+
+  .app-shell {
     display: flex;
-    justify-content: center;
+    min-height: 100vh;
   }
 
-  .app {
-    width: 100%;
-    max-width: 720px;
-    padding: 52px 28px 120px;
+  /* ── SIDEBAR ───────────────────────────────────────────────────────────── */
+
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    padding: 0 0 24px 0;
   }
 
-  .header {
-    margin-bottom: 36px;
-    padding-bottom: 28px;
-    border-bottom: 2px solid var(--text);
+  .sidebar-brand {
+    padding: 28px 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
   }
 
-  .header-eyebrow {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 10px;
-  }
-
-  .header h1 {
+  .sidebar-logo {
     font-family: 'Fraunces', serif;
-    font-size: clamp(30px, 5vw, 46px);
+    font-size: 19px;
     font-weight: 700;
-    line-height: 1.08;
+    color: var(--text);
     letter-spacing: -0.02em;
+    line-height: 1.1;
+    display: block;
+    text-decoration: none;
   }
 
-  .header h1 em {
+  .sidebar-logo em {
     font-style: italic;
-    font-weight: 400;
+    font-weight: 300;
     color: var(--accent);
   }
 
-  .header-meta {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-  }
-
-  .header-sub {
-    font-size: 11px;
-    color: var(--text-3);
-    letter-spacing: 0.05em;
-  }
-
-  .username-field {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .username-label {
+  .sidebar-tagline {
     font-size: 10px;
-    color: var(--text-3);
-    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    margin-top: 5px;
   }
 
-  .username-input {
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    padding: 6px 10px;
-    outline: none;
-    border-radius: 4px;
-    width: 140px;
-    transition: border-color 0.15s;
-  }
-
-  .username-input:focus { border-color: var(--accent); }
-
-  .tab-nav {
+  .sidebar-nav {
+    flex: 1;
+    padding: 4px 12px;
     display: flex;
-    gap: 0;
-    margin-bottom: 32px;
-    border-bottom: 2px solid var(--text);
+    flex-direction: column;
+    gap: 2px;
   }
 
-  .tab-btn {
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
     background: none;
     border: none;
+    color: var(--text-muted);
     font-family: 'DM Mono', monospace;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 11px 20px;
+    letter-spacing: 0.04em;
     cursor: pointer;
-    color: var(--text-3);
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
     position: relative;
+  }
+
+  .nav-item:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: var(--surface2);
+    color: var(--accent);
+  }
+
+  .nav-item.active .nav-icon {
+    color: var(--accent);
+  }
+
+  .nav-icon {
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    color: var(--text-dim);
     transition: color 0.15s;
   }
 
-  .tab-btn:hover { color: var(--text); }
-  .tab-btn.active { color: var(--accent); }
-  .tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
+  .nav-item.active .nav-icon {
+    color: var(--accent);
   }
 
-  .tab-badge {
-    display: inline-block;
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-badge.teal {
+    background: var(--teal);
+  }
+
+  .sidebar-footer {
+    padding: 16px 24px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+  }
+
+  .sidebar-user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .sidebar-username {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar-logout {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .sidebar-logout:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .sidebar-status {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .sidebar-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN ──────────────────────────────────────────────────────────────── */
+
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    min-height: 100vh;
+    padding: 40px 40px 48px;
+    max-width: 900px;
+  }
+
+  /* ── MOBILE TAB BAR ────────────────────────────────────────────────────── */
+
+  .mobile-tab-bar {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  }
+
+  .mobile-tab-bar-inner {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .mobile-tab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 20px;
+    border-radius: var(--radius);
+    transition: color 0.15s;
+    position: relative;
+  }
+
+  .mobile-tab-btn.active { color: var(--accent); }
+
+  .mobile-tab-btn-icon {
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  .mobile-tab-badge {
+    position: absolute;
+    top: 0; right: 10px;
     background: var(--accent);
     color: #fff;
     font-size: 8px;
-    padding: 1px 5px;
-    border-radius: 10px;
-    margin-left: 5px;
-    vertical-align: middle;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 999px;
+    letter-spacing: 0;
   }
 
-  .tab-badge.teal { background: var(--teal); }
+  .mobile-tab-badge.teal { background: var(--teal); }
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 10px 18px;
-    border-radius: 4px;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    transition: all 0.15s;
-    white-space: nowrap;
+  @media (max-width: 680px) {
+    .sidebar { display: none; }
+    .main {
+      margin-left: 0;
+      padding: 24px 16px 90px;
+      max-width: 100%;
+    }
+    .mobile-tab-bar { display: block; }
   }
 
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn:focus-visible, .tab-btn:focus-visible, input:focus-visible, a:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  .btn-primary { background: var(--text); color: var(--surface); border-color: var(--text); }
-  .btn-primary:hover:not(:disabled) { background: #333; border-color: #333; }
-  .btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .btn-accent:hover:not(:disabled) { background: var(--accent-dark); border-color: var(--accent-dark); }
-  .btn-teal { background: var(--teal); color: #fff; border-color: var(--teal); }
-  .btn-teal:hover:not(:disabled) { background: #2e5c52; border-color: #2e5c52; }
-  .btn-ghost { background: transparent; color: var(--text-2); border-color: var(--border); }
-  .btn-ghost:hover:not(:disabled) { border-color: var(--text-2); color: var(--text); }
-  .btn-ghost.filter-active { background: var(--text); color: var(--surface); border-color: var(--text); }
-  .btn-danger-ghost { background: transparent; color: var(--text-3); border-color: transparent; }
-  .btn-danger-ghost:hover:not(:disabled) { color: #c0392b; }
-  .btn-sm { padding: 7px 12px; font-size: 9px; }
+  /* ── LOGIN SCREEN ──────────────────────────────────────────────────────── */
 
-  .chip {
-    display: inline-block;
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .chip-pending { background: var(--surface); color: var(--text-3); border: 1px solid var(--border); }
-  .chip-loading { background: var(--surface); color: var(--accent); border: 1px solid #f0d0c0; animation: chipPulse 1.1s ease-in-out infinite; }
-  .chip-us { background: var(--text); color: #f0c060; }
-  .chip-intl { background: #2c4a3e; color: #7ef0c0; }
-  .chip-none { background: var(--surface); color: var(--text-3); border: 1px solid var(--border); }
-  .chip-error { background: var(--red-bg); color: #c0392b; border: 1px solid #f0c0b8; }
-  .chip-purchased { background: var(--teal); color: #fff; }
-  .chip-free { background: var(--gold-bg); color: var(--gold); border: 1px solid #e8d090; }
-
-  @keyframes chipPulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-  }
-
-  .card {
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: border-color 0.15s;
-  }
-
-  .card:hover { border-color: var(--border-strong); }
-
-  .card-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 18px;
-  }
-
-  .thumb {
-    width: 52px;
-    height: 52px;
-    border-radius: 4px;
-    object-fit: cover;
-    flex-shrink: 0;
-    background: var(--border);
-  }
-
-  .thumb-placeholder {
-    width: 52px;
-    height: 52px;
-    border-radius: 4px;
-    background: var(--border);
-    flex-shrink: 0;
+  .login-screen {
+    width: 100vw;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    color: var(--text-3);
+    background: var(--bg);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
   }
 
-  .card-info { flex: 1; min-width: 0; }
+  .login-screen::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle at center, rgba(224,120,64,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .login-screen::after {
+    content: '';
+    position: absolute;
+    bottom: -200px; left: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle at center, rgba(74,144,128,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .login-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .login-title {
+    font-family: 'Fraunces', serif;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .login-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .login-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+
+  .form-field {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 7px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 11px 14px;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .form-input::placeholder { color: var(--text-dim); }
+
+  .form-input:focus {
+    border-color: var(--accent);
+  }
+
+  .form-hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+
+  .form-hint a {
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  .form-hint a:hover { text-decoration: underline; }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.15s;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #f08850;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .login-error {
+    background: rgba(192, 80, 74, 0.12);
+    border: 1px solid rgba(192, 80, 74, 0.3);
+    border-radius: var(--radius);
+    color: #e08080;
+    font-size: 11px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* ── PAGE HEADER ───────────────────────────────────────────────────────── */
+
+  .page-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(26px, 4vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text);
+  }
+
+  .page-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .page-desc {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── SEARCH BAR ────────────────────────────────────────────────────────── */
+
+  .search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input::placeholder { color: var(--text-dim); }
+  .search-input:focus { border-color: var(--accent); }
+
+  .btn-search {
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 11px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+
+  .btn-search:hover:not(:disabled) { background: #f08850; }
+  .btn-search:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ── CARDS ─────────────────────────────────────────────────────────────── */
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover { border-color: #4a4540; }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
 
   .card-title {
     font-family: 'Fraunces', serif;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 400;
     color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.2;
+    line-height: 1.3;
   }
 
   .card-artist {
-    font-size: 12px;
-    color: var(--text-2);
-    margin-top: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .card-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  .wl-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .wl-toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .wl-toolbar-right { display: flex; gap: 8px; }
-
-  .wl-count {
     font-size: 11px;
-    color: var(--text-3);
-    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-top: 3px;
   }
 
-  .wl-grid { display: flex; flex-direction: column; gap: 10px; }
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .chip {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--surface2);
+  }
+
+  .chip.accent {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+    background: rgba(224,120,64,0.08);
+  }
+
+  .chip.teal {
+    border-color: var(--teal-dim);
+    color: var(--teal);
+    background: rgba(74,144,128,0.08);
+  }
+
+  /* ── PRICE SECTION ─────────────────────────────────────────────────────── */
+
+  .price-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .price-cell {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+
+  .price-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+  }
+
+  .price-value {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .price-value.best { color: var(--teal); }
+  .price-value.high { color: var(--accent); }
+
+  .price-sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* ── PROGRESS BAR ──────────────────────────────────────────────────────── */
 
   .progress-bar-wrap {
-    margin-bottom: 20px;
-    padding: 14px 18px;
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
+    margin: 14px 0 4px;
   }
 
   .progress-bar-label {
     display: flex;
     justify-content: space-between;
     font-size: 10px;
-    color: var(--text-3);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
   }
 
   .progress-bar-track {
-    height: 3px;
+    height: 4px;
     background: var(--border);
-    border-radius: 2px;
+    border-radius: 999px;
     overflow: hidden;
   }
 
   .progress-bar-fill {
     height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--teal), var(--accent));
     transition: width 0.4s ease;
   }
+
+  /* ── ACTIONS ROW ───────────────────────────────────────────────────────── */
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-secondary.teal:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  .btn-secondary.danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* ── EMPTY STATE ───────────────────────────────────────────────────────── */
 
   .empty-state {
     text-align: center;
     padding: 64px 24px;
-    border: 1.5px dashed var(--border-strong);
-    border-radius: 8px;
   }
 
   .empty-icon {
-    font-size: 36px;
-    color: var(--border-strong);
-    margin-bottom: 14px;
+    font-size: 40px;
+    margin-bottom: 16px;
+    opacity: 0.3;
   }
 
   .empty-title {
     font-family: 'Fraunces', serif;
     font-size: 20px;
-    color: var(--text-3);
+    font-weight: 400;
+    color: var(--text-muted);
     margin-bottom: 8px;
   }
 
   .empty-sub {
     font-size: 11px;
-    color: var(--text-3);
-    line-height: 1.8;
-    letter-spacing: 0.03em;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 280px;
+    margin: 0 auto;
   }
 
-  .manual-add-form {
-    margin-bottom: 24px;
-    padding: 18px;
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-  }
+  /* ── LOADING ───────────────────────────────────────────────────────────── */
 
-  .form-section-label {
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 12px;
-  }
-
-  .fields-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .field { display: flex; flex-direction: column; gap: 5px; }
-
-  .field label {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-3);
-  }
-
-  .field input, .field textarea {
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    padding: 10px 13px;
-    outline: none;
-    border-radius: 4px;
-    transition: border-color 0.15s;
-    width: 100%;
-  }
-
-  .field input:focus, .field textarea:focus { border-color: var(--accent); }
-  .field input::placeholder, .field textarea::placeholder { color: var(--border-strong); }
-
-  .price-row {
+  .loading-state {
     display: flex;
-    gap: 16px;
-    align-items: baseline;
-    margin-top: 8px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 28px 0;
+    color: var(--text-dim);
+    font-size: 12px;
   }
 
-  .price-block { display: flex; flex-direction: column; gap: 2px; }
-  .price-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-3); }
-  .price-value { font-size: 22px; font-weight: 500; color: var(--text); line-height: 1; }
-  .price-value.us { color: var(--text); }
-  .price-value.intl { color: #2c6e5c; }
-  .price-sub { font-size: 10px; color: var(--text-3); margin-top: 2px; }
-
-  .warning-intl {
-    font-size: 9px;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-top: 6px;
-  }
-
-  .threshold-row {
-    margin-bottom: 28px;
-    padding: 16px 18px;
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-  }
-
-  .slider-label-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 10px;
-  }
-
-  .slider-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-3); }
-  .slider-value { font-size: 20px; color: var(--accent); font-weight: 500; }
-  .slider-sub { font-size: 10px; color: var(--text-3); margin-top: 4px; }
-
-  input[type="range"] {
-    width: 100%;
-    appearance: none;
-    background: var(--border);
-    height: 3px;
-    outline: none;
-    cursor: pointer;
-    border-radius: 2px;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
-    cursor: pointer;
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
     border-radius: 50%;
-  }
-
-  .cmp-grid { display: flex; flex-direction: column; gap: 16px; }
-  .cmp-card { background: var(--surface-raised); border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
-
-  .cmp-section {
-    padding: 14px 18px;
-    border-top: 1px solid var(--border);
-  }
-
-  .cmp-section-title {
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-bottom: 10px;
-  }
-
-  .budget-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 5px 10px;
-    border-radius: 4px;
-    margin-top: 8px;
-  }
-
-  .budget-ok { background: var(--teal-bg); color: var(--teal); }
-  .budget-maybe { background: var(--gold-bg); color: var(--gold); }
-  .budget-over { background: var(--red-bg); color: #c0392b; }
-
-  .retail-links { display: flex; flex-direction: column; gap: 6px; }
-
-  .retail-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 4px;
-    text-decoration: none;
-    transition: border-color 0.15s, background 0.15s;
-  }
-
-  .retail-link:hover { border-color: var(--accent); background: #fff9f6; }
-  .retail-link-name { font-size: 13px; color: var(--text); font-weight: 500; }
-  .retail-link-action { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
-
-  .bc-compare { display: flex; flex-direction: column; gap: 10px; }
-
-  .bc-fields-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 10px;
-  }
-
-  .bc-result {
-    padding: 12px 14px;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 4px;
-  }
-
-  .bc-result-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
-  .bc-result-value { font-size: 16px; font-weight: 500; color: var(--text); }
-  .bc-result-note { font-size: 10px; color: var(--text-3); margin-top: 2px; }
-
-  .cmp-actions {
-    padding: 12px 18px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .cmp-actions-spacer { flex: 1; }
-
-  .coll-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .coll-grid { display: flex; flex-direction: column; gap: 10px; }
-
-  .coll-card {
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-  }
-
-  .coll-card-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
-  }
-
-  .coll-obtained {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
+    animation: spin 0.7s linear infinite;
     flex-shrink: 0;
   }
 
-  .coll-date { font-size: 10px; color: var(--text-3); }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .error-msg {
-    padding: 13px 16px;
-    border: 1.5px solid #e8a090;
-    background: var(--red-bg);
-    color: #c0392b;
-    font-size: 12px;
-    border-radius: 6px;
+  /* ── SECTION LABEL ─────────────────────────────────────────────────────── */
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── WISHLIST ITEM ─────────────────────────────────────────────────────── */
+
+  .wishlist-input-row {
+    display: flex;
+    gap: 8px;
     margin-bottom: 20px;
   }
 
-  @media (max-width: 540px) {
-    .app { padding: 32px 16px 80px; }
-    .field input, .field textarea, .username-input { font-size: 16px; }
-    .fields-row { grid-template-columns: 1fr; }
-    .bc-fields-row { grid-template-columns: 1fr; }
-    .wl-toolbar { flex-direction: column; align-items: flex-start; }
-    .price-row { gap: 12px; }
+  .wishlist-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 6px;
+  }
+
+  .wishlist-item-name {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .wishlist-item-status {
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .wishlist-item-status.found { color: var(--teal); }
+  .wishlist-item-status.searching { color: var(--accent); }
+
+  .btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s;
+    line-height: 1;
+  }
+
+  .btn-icon:hover { color: var(--danger); }
+
+  /* ── COMPARE TABLE ─────────────────────────────────────────────────────── */
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+
+  .compare-table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: middle;
+  }
+
+  .compare-table td:first-child { color: var(--text); }
+
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  .compare-table tr:hover td { background: var(--surface2); }
+
+  .price-tag {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .price-tag.best-deal { color: var(--teal); }
+
+  /* ── COLLECTION GRID ───────────────────────────────────────────────────── */
+
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+    margin-top: 4px;
+  }
+
+  .collection-thumb {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+
+  .collection-thumb:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .thumb-cover {
+    aspect-ratio: 1;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--text-dim);
+    overflow: hidden;
+  }
+
+  .thumb-cover img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .thumb-info {
+    padding: 10px 12px;
+  }
+
+  .thumb-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .thumb-artist {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── TOAST ─────────────────────────────────────────────────────────────── */
+
+  .toast {
+    position: fixed;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 12px;
+    padding: 10px 18px;
+    opacity: 0;
+    transition: all 0.25s ease;
+    z-index: 999;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (min-width: 681px) {
+    .toast { bottom: 28px; }
+  }
+
+  /* ── SYNC BUTTON ───────────────────────────────────────────────────────── */
+
+  .btn-sync {
+    background: none;
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-sync:hover { background: rgba(74,144,128,0.08); }
+  .btn-sync:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* ── RESULT COUNT ──────────────────────────────────────────────────────── */
+
+  .result-count {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    letter-spacing: 0.06em;
   }
 `;
 
-// ── Storage ──────────────────────────────────────────────────────────────
+// ─── HELPERS ────────────────────────────────────────────────────────────────
 
-const KEYS = {
-  wantlist: "rf_wantlist_v2",
-  compare: "rf_compare_v2",
-  collection: "rf_collection_v2",
-  username: "rf_username",
-};
+const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-function load(key) {
-  try { return JSON.parse(localStorage.getItem(key) || "[]"); }
-  catch { return []; }
+async function fetchAPI(path, options = {}) {
+  const res = await fetch(`${API}${path}`, {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Unknown error" }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
 }
-function loadStr(key, def = "") { return localStorage.getItem(key) || def; }
 
-// FIX: save() now has try/catch wrapper
-function save(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); }
-  catch(e) { console.error("localStorage write failed:", e); }
+function useToast() {
+  const [toast, setToast] = useState({ msg: "", show: false });
+  const timerRef = useRef();
+  const showToast = (msg) => {
+    clearTimeout(timerRef.current);
+    setToast({ msg, show: true });
+    timerRef.current = setTimeout(() => setToast((t) => ({ ...t, show: false })), 2500);
+  };
+  return [toast, showToast];
 }
-function saveStr(key, val) { localStorage.setItem(key, val); }
-function genId() { return Math.random().toString(36).slice(2, 9); }
 
-// ── WantlistCard ──────────────────────────────────────────────────────────
+// ─── LOGIN ───────────────────────────────────────────────────────────────────
 
-function WantlistCard({ item, onMoveToCompare, onRemove }) {
-  const { artist, album, year, cover, status, result, error } = item;
-  const bestUs = result?.best_us;
-  const bestIntl = result?.best_intl;
-  const usOnlyWarning = result?.us_only_warning;
+function LoginScreen({ error, loading }) {
+  const [starting, setStarting] = useState(false);
+
+  async function handleAuthorize() {
+    setStarting(true);
+    try {
+      // Backend returns { auth_url: "https://discogs.com/oauth/authorize?oauth_token=..." }
+      const data = await fetchAPI("/auth/start");
+      window.location.href = data.auth_url;
+    } catch (err) {
+      setStarting(false);
+      console.error("Failed to start OAuth:", err);
+    }
+  }
+
+  const busy = loading || starting;
+
+  return (
+    <div className="login-screen">
+      <div className="login-card">
+        <p className="login-eyebrow">Discogs Price Tool</p>
+        <h1 className="login-title">
+          Spin or <em>Stream</em>
+        </h1>
+        <p className="login-sub">
+          Compare wantlist prices and make smarter decisions about what's worth buying on wax versus just streaming it.
+        </p>
+
+        {error && <div className="login-error">{error}</div>}
+
+        {busy ? (
+          <div className="loading-state" style={{ justifyContent: "center", padding: "20px 0" }}>
+            <div className="spinner" />
+            {loading ? "Completing authorization…" : "Redirecting to Discogs…"}
+          </div>
+        ) : (
+          <>
+            <button className="btn-primary" onClick={handleAuthorize}>
+              Authorize with Discogs
+            </button>
+            <p className="form-hint" style={{ marginTop: "14px", textAlign: "center" }}>
+              You'll be taken to Discogs to sign in and approve access — then right back here.
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── WANTLIST TAB ────────────────────────────────────────────────────────────
+
+function WantlistTab({ username, token, onCountChange, onCompareAdd }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [searching, setSearching] = useState({});
+  const [results, setResults] = useState({});
+  const [toast, showToast] = useToast();
+
+  useEffect(() => {
+    loadWantlist();
+  }, []);
+
+  async function loadWantlist() {
+    setLoading(true);
+    try {
+      const data = await fetchAPI(`/wantlist?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`);
+      setItems(data.items || []);
+      onCountChange?.(data.items?.length || 0);
+    } catch (err) {
+      showToast("Could not load wantlist: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function syncWantlist() {
+    setSyncing(true);
+    try {
+      await loadWantlist();
+      showToast("Wantlist synced ✓");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  async function searchPrices(item) {
+    setSearching((s) => ({ ...s, [item.id]: true }));
+    try {
+      const data = await fetchAPI(
+        `/search?query=${encodeURIComponent(item.title + " " + item.artist)}&token=${encodeURIComponent(token)}`
+      );
+      setResults((r) => ({ ...r, [item.id]: data }));
+    } catch (err) {
+      showToast("Search failed: " + err.message);
+    } finally {
+      setSearching((s) => ({ ...s, [item.id]: false }));
+    }
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <div className="page-header">
+          <p className="page-eyebrow">Your list</p>
+          <h2 className="page-title">Wantlist</h2>
+        </div>
+        <div className="loading-state">
+          <div className="spinner" />
+          Loading wantlist from Discogs…
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Toast toast={toast} />
+      <div className="page-header">
+        <p className="page-eyebrow">Your list</p>
+        <h2 className="page-title">
+          Wantlist <em>{items.length > 0 ? `(${items.length})` : ""}</em>
+        </h2>
+        <p className="page-desc">Check marketplace prices on everything you're hunting for.</p>
+        <div className="header-actions">
+          <button className="btn-sync" onClick={syncWantlist} disabled={syncing}>
+            {syncing ? "Syncing…" : "↻ Sync from Discogs"}
+          </button>
+        </div>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">◎</div>
+          <p className="empty-title">Nothing on your wantlist yet</p>
+          <p className="empty-sub">Head to Discogs and add some records — they'll show up here.</p>
+        </div>
+      ) : (
+        items.map((item) => (
+          <WantlistCard
+            key={item.id}
+            item={item}
+            result={results[item.id]}
+            searching={searching[item.id]}
+            onSearch={() => searchPrices(item)}
+            onCompareAdd={() => {
+              onCompareAdd?.(item, results[item.id]);
+              showToast(`Added "${item.title}" to Compare`);
+            }}
+          />
+        ))
+      )}
+    </div>
+  );
+}
+
+function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
+  const listings = result?.listings || [];
+  const prices = listings.map((l) => parseFloat(l.price)).filter(Boolean);
+  const minPrice = prices.length ? Math.min(...prices) : null;
+  const avgPrice = prices.length ? prices.reduce((a, b) => a + b) / prices.length : null;
+  const usPrices = listings
+    .filter((l) => l.ships_from === "United States")
+    .map((l) => parseFloat(l.price))
+    .filter(Boolean);
+  const minUS = usPrices.length ? Math.min(...usPrices) : null;
 
   return (
     <div className="card">
-      <div className="card-row">
-        {cover
-          ? <img className="thumb" src={cover} alt={album} />
-          : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
-        <div className="card-info">
-          <div className="card-title">{album}</div>
-          <div className="card-artist">{artist}{year ? ` · ${year}` : ""}</div>
-          {status === "done" && (
-            <div className="price-row">
-              {bestUs && (
-                <div className="price-block">
-                  <span className="price-label">Best US</span>
-                  <span className="price-value us">${bestUs.price.toFixed(2)}</span>
-                  <span className="price-sub">{bestUs.num_for_sale} for sale · est. {result?.us_shipping_estimate || "$4–8"} shipping</span>
-                </div>
-              )}
-              {bestIntl && (
-                <div className="price-block">
-                  <span className="price-label">Best Intl</span>
-                  <span className="price-value intl" aria-label={`$${bestIntl.total_low} to $${bestIntl.total_high}`}>
-                    ${bestIntl.total_low}–${bestIntl.total_high}
-                  </span>
-                  <span className="price-sub">incl. est. shipping · {bestIntl.ships_from}</span>
-                </div>
-              )}
-              {!bestUs && !bestIntl && (
-                <div className="price-block">
-                  <span className="price-sub" style={{fontStyle:"italic"}}>No Discogs listings found</span>
-                </div>
-              )}
-            </div>
-          )}
-          {status === "done" && usOnlyWarning && (
-            <div className="warning-intl">⚠ No US sellers — international only</div>
-          )}
-          {status === "error" && (
-            <div style={{fontSize:"11px", color:"#c0392b", marginTop:"4px", fontStyle:"italic"}}>{error}</div>
-          )}
+      <div className="card-header">
+        <div>
+          <div className="card-title">{item.title}</div>
+          <div className="card-artist">{item.artist}</div>
         </div>
-        <div className="card-controls">
-          {status === "pending" && <span className="chip chip-pending">Pending</span>}
-          {status === "loading" && <span className="chip chip-loading">Searching</span>}
-          {status === "done" && (bestUs || bestIntl) && (
-            <button className="btn btn-sm btn-accent" onClick={() => onMoveToCompare(item)}>
-              Compare →
-            </button>
-          )}
-          {status === "done" && !bestUs && !bestIntl && (
-            <span className="chip chip-none">No Listings</span>
-          )}
-          {status === "error" && <span className="chip chip-error">Error</span>}
-          <button
-            className="btn btn-sm btn-danger-ghost"
-            onClick={() => onRemove(item.id)}
-            aria-label={`Remove ${album} from wantlist`}
-          >×</button>
-        </div>
+        {item.year && <div className="chip">{item.year}</div>}
       </div>
-    </div>
-  );
-}
 
-// ── WantlistTab ───────────────────────────────────────────────────────────
+      <div className="card-meta">
+        {item.format && <span className="chip">{item.format}</span>}
+        {item.label && <span className="chip">{item.label}</span>}
+        {result && (
+          <span className="chip teal">{listings.length} listings</span>
+        )}
+      </div>
 
-// FIX 3: receives onCompareAdd to sync compare badge count in real time
-function WantlistTab({ username, onCountChange, onCompareAdd }) {
-  const [wantlist, setWantlist] = useState(() => load(KEYS.wantlist));
-  const [scanning, setScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
-  const [currentAlbum, setCurrentAlbum] = useState("");
-  const [importLoading, setImportLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [addArtist, setAddArtist] = useState("");
-  const [addAlbum, setAddAlbum] = useState("");
-  const [addBcUrl, setAddBcUrl] = useState("");
-  // FIX 4: US-only filter — pending/loading always visible regardless
-  const [filterUs, setFilterUs] = useState(false);
-  const [scanTotal, setScanTotal] = useState(0);
-  const [showAddForm, setShowAddForm] = useState(false);
-
-  // FIX 1: useRef instead of plain object literal (stable across renders)
-  const cancelRef = useRef(false);
-
-  useEffect(() => { onCountChange(wantlist.length); }, [wantlist.length]);
-
-  const persist = (list) => {
-    setWantlist(list);
-    save(KEYS.wantlist, list);
-  };
-
-  const syncWantlist = async (isUpdate = false) => {
-    if (!username.trim()) { setError("Enter your Discogs username in the header."); return; }
-    setImportLoading(true);
-    setError(null);
-    try {
-      const API = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${API}/wantlist?username=${encodeURIComponent(username)}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-
-      const existing = load(KEYS.wantlist);
-      const compare = load(KEYS.compare);
-      const collection = load(KEYS.collection);
-
-      const existingIds = new Set(existing.map(i => i.discogs_release_id).filter(Boolean));
-      const compareIds = new Set(compare.map(i => i.discogs_release_id).filter(Boolean));
-      const collectionIds = new Set(collection.map(i => i.discogs_release_id).filter(Boolean));
-      const newDiscogsIds = new Set(data.wants.map(w => w.discogs_release_id).filter(Boolean));
-
-      if (isUpdate) {
-        const removed = existing.filter(
-          i => i.source === "discogs" && i.discogs_release_id && !newDiscogsIds.has(i.discogs_release_id)
-        );
-        if (removed.length > 0) {
-          const updatedCollection = [...collection];
-          removed.forEach(item => {
-            if (!collectionIds.has(item.discogs_release_id)) {
-              updatedCollection.push({
-                id: item.id, artist: item.artist, album: item.album, year: item.year,
-                cover: item.cover || null, discogs_release_id: item.discogs_release_id,
-                discogs_url: item.discogs_url, source: "discogs_app",
-                obtained_via: "purchased", addedAt: Date.now(),
-              });
-            }
-          });
-          save(KEYS.collection, updatedCollection);
-        }
-      }
-
-      const newItems = data.wants
-        .filter(w => !existingIds.has(w.discogs_release_id)
-          && !compareIds.has(w.discogs_release_id)
-          && !collectionIds.has(w.discogs_release_id))
-        .map(w => ({
-          id: genId(), artist: w.artist, album: w.album, year: w.year,
-          cover: w.cover || null, discogs_release_id: w.discogs_release_id,
-          discogs_url: w.discogs_url, source: "discogs", bandcamp_url: null,
-          status: "pending", result: null, error: null,
-        }));
-
-      const kept = isUpdate
-        ? existing.filter(i => i.source !== "discogs" || newDiscogsIds.has(i.discogs_release_id))
-        : existing.filter(i => i.source !== "discogs");
-
-      persist([...kept, ...newItems]);
-    } catch (err) {
-      setError(err.message || "Failed to fetch wantlist");
-    } finally {
-      setImportLoading(false);
-    }
-  };
-
-  const scanAll = async () => {
-    const pending = wantlist.filter(i => i.status === "pending" || i.status === "error");
-    if (pending.length === 0) return;
-    setScanning(true);
-    cancelRef.current = false;
-    setScanProgress(0);
-    setCurrentAlbum("");
-    setScanTotal(pending.length);
-
-    setWantlist(prev => {
-      const updated = prev.map(i =>
-        pending.find(p => p.id === i.id) ? { ...i, status: "loading" } : i
-      );
-      save(KEYS.wantlist, updated);
-      return updated;
-    });
-
-    const API = import.meta.env.VITE_API_URL;
-    let completed = 0;
-
-    for (const item of pending) {
-      if (cancelRef.current) break;
-      // Show current album in progress bar
-      setCurrentAlbum(`${item.artist} — ${item.album}`);
-      try {
-        const params = new URLSearchParams({ artist: item.artist, album: item.album });
-        const res = await fetch(`${API}/search?${params}`);
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
-        setWantlist(prev => {
-          const updated = prev.map(i => i.id === item.id
-            ? { ...i, status: "done", result: data, error: null } : i);
-          save(KEYS.wantlist, updated);
-          return updated;
-        });
-      } catch (err) {
-        setWantlist(prev => {
-          const updated = prev.map(i => i.id === item.id
-            ? { ...i, status: "error", error: err.message || "Search failed" } : i);
-          save(KEYS.wantlist, updated);
-          return updated;
-        });
-      }
-      completed++;
-      setScanProgress(Math.round((completed / pending.length) * 100));
-      if (completed < pending.length) await new Promise(r => setTimeout(r, 3500));
-    }
-
-    setCurrentAlbum("");
-    setScanning(false);
-  };
-
-  // FIX 2: cancel resets still-loading items back to pending
-  const cancelScan = () => {
-    cancelRef.current = true;
-    setScanning(false);
-    setCurrentAlbum("");
-    setWantlist(prev => {
-      const updated = prev.map(i =>
-        i.status === "loading" ? { ...i, status: "pending" } : i
-      );
-      save(KEYS.wantlist, updated);
-      return updated;
-    });
-  };
-
-  const removeItem = (id) => persist(wantlist.filter(i => i.id !== id));
-
-  const addManual = () => {
-    if (!addArtist.trim() || !addAlbum.trim()) return;
-    const item = {
-      id: genId(), artist: addArtist.trim(), album: addAlbum.trim(), year: "",
-      cover: null, discogs_release_id: null, discogs_url: null,
-      source: addBcUrl.trim() ? "bandcamp" : "manual",
-      bandcamp_url: addBcUrl.trim() || null,
-      status: "pending", result: null, error: null,
-    };
-    persist([...wantlist, item]);
-    setAddArtist(""); setAddAlbum(""); setAddBcUrl("");
-  };
-
-  // FIX 3: call onCompareAdd so App updates compare badge without refresh
-  const moveToCompare = (item) => {
-    const compare = load(KEYS.compare);
-    if (compare.find(c => c.id === item.id)) return;
-    save(KEYS.compare, [...compare, { ...item, bandcamp_price: null }]);
-    persist(wantlist.filter(i => i.id !== item.id));
-    onCompareAdd();
-  };
-
-  const pendingCount = wantlist.filter(i => i.status === "pending" || i.status === "error").length;
-
-  // FIX 4: US filter — pending and loading are always shown regardless
-  const visibleItems = filterUs
-    ? wantlist.filter(i =>
-        i.status === "pending" ||
-        i.status === "loading" ||
-        (i.status === "done" && i.result?.best_us)
-      )
-    : wantlist;
-
-  return (
-    <div>
-      {error && <div className="error-msg">{error}</div>}
-
-      <div className="manual-add-form">
-        <div
-          className="form-section-label"
-          style={{display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer", marginBottom: showAddForm ? "12px" : "0"}}
-          onClick={() => setShowAddForm(f => !f)}
-        >
-          <span>Add Manually</span>
-          <span>{showAddForm ? "−" : "+"}</span>
+      {searching && (
+        <div className="loading-state" style={{ padding: "12px 0" }}>
+          <div className="spinner" />
+          Fetching marketplace prices…
         </div>
-        {showAddForm && <>
-        <div className="fields-row">
-          <div className="field">
-            <label htmlFor="wl-artist">Artist</label>
-            <input id="wl-artist" type="text" placeholder="Artist name" value={addArtist}
-              onChange={e => setAddArtist(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && addManual()} />
-          </div>
-          <div className="field">
-            <label htmlFor="wl-album">Album</label>
-            <input id="wl-album" type="text" placeholder="Album title" value={addAlbum}
-              onChange={e => setAddAlbum(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && addManual()} />
-          </div>
-        </div>
-        <div className="field" style={{marginBottom:"10px"}}>
-          <label htmlFor="wl-bc-url">Bandcamp URL (optional — for Bandcamp-only albums)</label>
-          <input id="wl-bc-url" type="text" placeholder="https://artist.bandcamp.com/album/..."
-            value={addBcUrl} onChange={e => setAddBcUrl(e.target.value)} />
-        </div>
-        <button className="btn btn-primary"
-                  onClick={addManual} disabled={!addArtist.trim() || !addAlbum.trim()}>
-                  + Add to Wantlist
-                </button>
-                </>}
-              </div>
+      )}
 
-      {wantlist.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">◎</div>
-          <div className="empty-title">Your wantlist is empty</div>
-          <div className="empty-sub">
-            Sync from Discogs to pull your wantlist,<br />
-            or add albums manually above.
-          </div>
-          <div style={{marginTop:"20px", display:"flex", gap:"10px", justifyContent:"center"}}>
-            <button className="btn btn-accent"
-              onClick={() => syncWantlist(false)} disabled={importLoading}>
-              {importLoading ? "Syncing…" : "Sync from Discogs"}
-            </button>
-          </div>
-        </div>
-      ) : (
+      {result && listings.length > 0 && (
         <>
-          <div className="wl-toolbar">
-            <div className="wl-toolbar-left">
-              <span className="wl-count">
-                {wantlist.length} album{wantlist.length !== 1 ? "s" : ""}
-                {pendingCount > 0 ? ` · ${pendingCount} unsearched` : ""}
-              </span>
-              {/* FIX 4: US-only toggle — pending/loading always visible */}
-              <button
-                className={`btn btn-ghost btn-sm${filterUs ? " filter-active" : ""}`}
-                onClick={() => setFilterUs(f => !f)}
-                aria-pressed={filterUs}
-              >
-                {filterUs ? "US Only ✓" : "US Only"}
-              </button>
-            </div>
-            <div className="wl-toolbar-right">
-              {scanning
-                ? <button className="btn btn-ghost btn-sm" onClick={cancelScan}>Cancel Scan</button>
-                : <>
-                    <button className="btn btn-ghost btn-sm"
-                      onClick={() => syncWantlist(true)} disabled={importLoading}>
-                      {importLoading ? "Updating…" : "↻ Update from Discogs"}
-                    </button>
-                    <button className="btn btn-accent btn-sm"
-                      onClick={scanAll} disabled={pendingCount === 0}>
-                      {`Scan Prices${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
-                    </button>
-                  </>
-              }
-            </div>
+          <div className="price-grid">
+            {minPrice != null && (
+              <div className="price-cell">
+                <div className="price-label">Lowest</div>
+                <div className="price-value best">${minPrice.toFixed(2)}</div>
+                <div className="price-sub">anywhere</div>
+              </div>
+            )}
+            {minUS != null && (
+              <div className="price-cell">
+                <div className="price-label">Best US Ship</div>
+                <div className="price-value">${minUS.toFixed(2)}</div>
+                <div className="price-sub">ships from US</div>
+              </div>
+            )}
+            {avgPrice != null && (
+              <div className="price-cell">
+                <div className="price-label">Avg</div>
+                <div className="price-value high">${avgPrice.toFixed(2)}</div>
+                <div className="price-sub">{listings.length} listings</div>
+              </div>
+            )}
           </div>
 
-          {scanning && (
+          {minPrice != null && avgPrice != null && (
             <div className="progress-bar-wrap">
               <div className="progress-bar-label">
-                {/* Shows current album name while scanning */}
-                <span style={{overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"70%"}}>
-                  {currentAlbum || "Scanning…"}
-                </span>
-                <span>
-                  {scanProgress}%{scanTotal > 1 && scanProgress < 100 ? ` · ~${Math.max(1, Math.ceil((scanTotal - Math.round(scanProgress / 100 * scanTotal)) * 3.5 / 60))}m left` : ""}
-                </span>                
+                <span>Low ${minPrice.toFixed(2)}</span>
+                <span>Avg ${avgPrice.toFixed(2)}</span>
               </div>
               <div className="progress-bar-track">
-                <div className="progress-bar-fill" style={{width: scanProgress + "%"}} />
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: `${Math.min((minPrice / avgPrice) * 100, 100)}%` }}
+                />
               </div>
             </div>
           )}
-
-          <div className="wl-grid">
-            {visibleItems.map(item => (
-              <WantlistCard key={item.id} item={item}
-                onMoveToCompare={moveToCompare} onRemove={removeItem} />
-            ))}
-          </div>
         </>
       )}
-    </div>
-  );
-}
 
-// ── CompareCard ───────────────────────────────────────────────────────────
+      {result && listings.length === 0 && (
+        <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "8px 0" }}>
+          No listings found on the marketplace right now.
+        </p>
+      )}
 
-function CompareCard({ item, threshold, onMoveToCollection, onBackToWantlist }) {
-  const [bcUrl, setBcUrl] = useState(item.bandcamp_url || "");
-  const [bcPrice, setBcPrice] = useState(item.bandcamp_price != null ? String(item.bandcamp_price) : "");
-
-  const bestUs = item.result?.best_us;
-  const bestIntl = item.result?.best_intl;
-  const bcPriceNum = parseFloat(bcPrice) || null;
-
-  const usBudget = bestUs ? (bestUs.price <= threshold ? "ok" : "over") : null;
-  const intlBudget = bestIntl
-    ? bestIntl.total_low <= threshold && bestIntl.total_high <= threshold ? "ok"
-      : bestIntl.total_low <= threshold ? "maybe" : "over"
-    : null;
-
-  const q = encodeURIComponent(`${item.artist} ${item.album} vinyl`);
-  const retailLinks = [
-    { name: "Amazon", url: `https://www.amazon.com/s?k=${q}` },
-    { name: "Target", url: `https://www.target.com/s?searchTerm=${q}` },
-    { name: "Walmart", url: `https://www.walmart.com/search?q=${q}` },
-    { name: "Discogs", url: item.discogs_url || `https://www.discogs.com/search/?q=${encodeURIComponent(item.artist + " " + item.album)}&type=release` },
-  ];
-
-  const saveBcData = () => {
-    const compare = load(KEYS.compare);
-    save(KEYS.compare, compare.map(c => c.id === item.id
-      ? { ...c, bandcamp_url: bcUrl.trim() || null, bandcamp_price: bcPriceNum }
-      : c));
-  };
-
-  return (
-    <div className="cmp-card">
-      <div className="card-row">
-        {item.cover
-          ? <img className="thumb" src={item.cover} alt={item.album} />
-          : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
-        <div className="card-info">
-          <div className="card-title">{item.album}</div>
-          <div className="card-artist">{item.artist}{item.year ? ` · ${item.year}` : ""}</div>
-        </div>
+      <div className="card-actions">
+        {!result && (
+          <button className="btn-search" onClick={onSearch} disabled={searching}>
+            {searching ? "Searching…" : "Check Prices"}
+          </button>
+        )}
+        {result && (
+          <button className="btn-secondary" onClick={onSearch} disabled={searching}>
+            Refresh
+          </button>
+        )}
+        {result && listings.length > 0 && (
+          <button className="btn-secondary teal" onClick={onCompareAdd}>
+            + Compare
+          </button>
+        )}
         {item.discogs_url && (
-          <a href={item.discogs_url} target="_blank" rel="noreferrer"
-            className="btn btn-sm btn-accent" style={{flexShrink:0}}>
-            Buy on Discogs ↗
+          <a
+            href={item.discogs_url}
+            target="_blank"
+            rel="noreferrer"
+            style={{ textDecoration: "none" }}
+          >
+            <button className="btn-secondary">View on Discogs ↗</button>
           </a>
         )}
       </div>
-
-      <div className="cmp-section">
-        <div className="cmp-section-title">Discogs Pricing</div>
-        <div className="price-row">
-          {bestUs && (
-            <div className="price-block">
-              <span className="price-label">Best US · {bestUs.num_for_sale} for sale</span>
-              <span className="price-value us">${bestUs.price.toFixed(2)}</span>
-              {usBudget && (
-                <div className={`budget-indicator budget-${usBudget}`}>
-                  {usBudget === "ok" ? "✓ Within budget" : "✗ Over budget"}
-                </div>
-              )}
-            </div>
-          )}
-          {bestIntl && (
-            <div className="price-block">
-              <span className="price-label">Best Intl · {bestIntl.ships_from}</span>
-              <span className="price-value intl">${bestIntl.price.toFixed(2)}</span>
-              <span className="price-sub">+ est. ${bestIntl.shipping_low}–${bestIntl.shipping_high} shipping</span>
-              <span className="price-sub">Total: ${bestIntl.total_low}–${bestIntl.total_high}</span>
-              {intlBudget && (
-                <div className={`budget-indicator budget-${intlBudget}`}>
-                  {intlBudget === "ok" ? "✓ Within budget"
-                    : intlBudget === "maybe" ? "~ Low estimate fits"
-                    : "✗ Over budget"}
-                </div>
-              )}
-            </div>
-          )}
-          {!bestUs && !bestIntl && (
-            <span style={{fontSize:"12px", color:"var(--text-3)", fontStyle:"italic"}}>No Discogs listings found</span>
-          )}
-        </div>
-      </div>
-
-      <div className="cmp-section">
-        <div className="cmp-section-title">Find It Elsewhere</div>
-        <div className="retail-links">
-          {retailLinks.map((link, i) => (
-            <a key={i} className="retail-link" href={link.url} target="_blank" rel="noreferrer">
-              <span className="retail-link-name">{link.name}</span>
-              <span className="retail-link-action">Search ↗</span>
-            </a>
-          ))}
-          {bcUrl.trim() && (
-            <a className="retail-link" href={bcUrl.trim()} target="_blank" rel="noreferrer">
-              <span className="retail-link-name">Bandcamp</span>
-              <span className="retail-link-action">Open ↗</span>
-            </a>
-          )}
-        </div>
-      </div>
-
-      <div className="cmp-section">
-        <div className="cmp-section-title">Compare with Bandcamp (manual)</div>
-        <div className="bc-compare">
-          <div className="bc-fields-row">
-            <div className="field">
-              <label>Bandcamp URL</label>
-              <input type="text" placeholder="https://artist.bandcamp.com/album/..."
-                value={bcUrl} onChange={e => setBcUrl(e.target.value)} onBlur={saveBcData} />
-            </div>
-            <div className="field">
-              <label>Price you see ($)</label>
-              <input type="number" placeholder="e.g. 7.00" min="0" step="0.01"
-                value={bcPrice} onChange={e => setBcPrice(e.target.value)} onBlur={saveBcData} />
-            </div>
-          </div>
-
-          {bcPriceNum && bestUs && (
-            <div className="bc-result">
-              <div className="bc-result-label">Vinyl vs Digital</div>
-              <div className="bc-result-value">
-                ${Math.abs(bestUs.price - bcPriceNum).toFixed(2)} {bestUs.price > bcPriceNum ? "more for vinyl" : "cheaper for vinyl"}
-              </div>
-              <div className="bc-result-note">
-                US vinyl ${bestUs.price.toFixed(2)} vs Bandcamp ${bcPriceNum.toFixed(2)}
-                {bestUs.price - bcPriceNum <= threshold ? " — within your budget" : " — over your budget"}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="cmp-actions">
-        <button className="btn btn-ghost btn-sm" onClick={() => onBackToWantlist(item)}>
-          ← Back to Wantlist
-        </button>
-        <div className="cmp-actions-spacer" />
-        <button className="btn btn-sm btn-ghost"
-          style={{color:"var(--gold)", borderColor:"#e8d090"}}
-          onClick={() => onMoveToCollection(item, "free")}>
-          Obtained Free
-        </button>
-        <button className="btn btn-sm btn-teal"
-          onClick={() => onMoveToCollection(item, "purchased")}>
-          ✓ Purchased
-        </button>
-      </div>
     </div>
   );
 }
 
-// ── CompareTab ────────────────────────────────────────────────────────────
+// ─── COMPARE TAB ─────────────────────────────────────────────────────────────
 
-function CompareTab({ onCountChange }) {
-  const [compare, setCompare] = useState(() => load(KEYS.compare));
-  const [threshold, setThreshold] = useState(20);
+function CompareTab({ compareItems, onCountChange, onRemove }) {
+  const [toast, showToast] = useToast();
 
-  useEffect(() => { onCountChange(compare.length); }, [compare.length]);
+  useEffect(() => {
+    onCountChange?.(compareItems.length);
+  }, [compareItems.length]);
 
-  const persist = (list) => { setCompare(list); save(KEYS.compare, list); };
+  function handleRemove(id) {
+    onRemove(id);
+    showToast("Removed from compare");
+  }
 
-  const moveToCollection = (item, obtained_via) => {
-    const collection = load(KEYS.collection);
-    if (!collection.find(c => c.id === item.id)) {
-      save(KEYS.collection, [...collection, {
-        id: item.id, artist: item.artist, album: item.album, year: item.year,
-        cover: item.cover || null, discogs_release_id: item.discogs_release_id || null,
-        discogs_url: item.discogs_url || null, bandcamp_url: item.bandcamp_url || null,
-        source: item.source, obtained_via, addedAt: Date.now(),
-      }]);
-    }
-    persist(compare.filter(c => c.id !== item.id));
-  };
-
-  const backToWantlist = (item) => {
-    const wantlist = load(KEYS.wantlist);
-    save(KEYS.wantlist, [...wantlist, { ...item, status: item.result ? "done" : "pending" }]);
-    persist(compare.filter(c => c.id !== item.id));
-  };
-
-  return (
-    <div>
-      <div className="threshold-row">
-        <div className="slider-label-row">
-          <span className="slider-label">All-in Budget</span>
-          <span className="slider-value">${threshold}</span>
+  if (compareItems.length === 0) {
+    return (
+      <div>
+        <Toast toast={toast} />
+        <div className="page-header">
+          <p className="page-eyebrow">Side by side</p>
+          <h2 className="page-title">Compare</h2>
+          <p className="page-desc">Add records from your Wantlist to compare prices head-to-head.</p>
         </div>
-        <input type="range" min={0} max={200} step={5} value={threshold}
-          onChange={e => setThreshold(Number(e.target.value))}
-          aria-label="Budget threshold in dollars" />
-        <div className="slider-sub">Max you'll pay all-in, including estimated shipping</div>
-      </div>
-
-      {compare.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">⊙</div>
-          <div className="empty-title">Nothing to compare yet</div>
-          <div className="empty-sub">
-            Search prices in the Wantlist tab, then hit<br />
-            <strong>Compare →</strong> on any album to bring it here.
-          </div>
+          <p className="empty-title">Nothing to compare yet</p>
+          <p className="empty-sub">
+            Check prices on your wantlist items and hit "+ Compare" to add them here.
+          </p>
         </div>
-      ) : (
-        <div className="cmp-grid">
-          {compare.map(item => (
-            <CompareCard key={item.id} item={item} threshold={threshold}
-              onMoveToCollection={moveToCollection}
-              onBackToWantlist={backToWantlist} />
-          ))}
-        </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Toast toast={toast} />
+      <div className="page-header">
+        <p className="page-eyebrow">Side by side</p>
+        <h2 className="page-title">
+          Compare <em>({compareItems.length})</em>
+        </h2>
+        <p className="page-desc">Lowest prices across your shortlisted records.</p>
+      </div>
+
+      <p className="section-label">Price comparison</p>
+
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <table className="compare-table">
+          <thead>
+            <tr>
+              <th>Record</th>
+              <th>Lowest</th>
+              <th>Best US</th>
+              <th>Listings</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {compareItems.map((ci) => {
+              const listings = ci.result?.listings || [];
+              const prices = listings.map((l) => parseFloat(l.price)).filter(Boolean);
+              const minPrice = prices.length ? Math.min(...prices) : null;
+              const usPrices = listings
+                .filter((l) => l.ships_from === "United States")
+                .map((l) => parseFloat(l.price))
+                .filter(Boolean);
+              const minUS = usPrices.length ? Math.min(...usPrices) : null;
+
+              const bestDeal = compareItems.reduce((best, curr) => {
+                const ps = (curr.result?.listings || []).map((l) => parseFloat(l.price)).filter(Boolean);
+                const m = ps.length ? Math.min(...ps) : Infinity;
+                const bestPs = (best?.result?.listings || []).map((l) => parseFloat(l.price)).filter(Boolean);
+                const bm = bestPs?.length ? Math.min(...bestPs) : Infinity;
+                return m < bm ? curr : best;
+              }, compareItems[0]);
+
+              const isBest = bestDeal?.item?.id === ci.item.id && minPrice != null;
+
+              return (
+                <tr key={ci.item.id}>
+                  <td>
+                    <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 400, fontSize: "13px" }}>
+                      {ci.item.title}
+                    </div>
+                    <div style={{ fontSize: "10px", color: "var(--text-dim)", marginTop: "2px" }}>
+                      {ci.item.artist}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`price-tag ${isBest ? "best-deal" : ""}`}>
+                      {minPrice != null ? `$${minPrice.toFixed(2)}` : "—"}
+                    </span>
+                    {isBest && (
+                      <span className="chip teal" style={{ marginLeft: "6px", verticalAlign: "middle" }}>
+                        best
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    <span className="price-tag" style={{ fontSize: "13px" }}>
+                      {minUS != null ? `$${minUS.toFixed(2)}` : "—"}
+                    </span>
+                  </td>
+                  <td>{listings.length}</td>
+                  <td>
+                    <button className="btn-icon" onClick={() => handleRemove(ci.item.id)} title="Remove">
+                      ×
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card-actions" style={{ marginTop: "16px" }}>
+        <button
+          className="btn-secondary danger"
+          onClick={() => {
+            compareItems.forEach((ci) => onRemove(ci.item.id));
+          }}
+        >
+          Clear all
+        </button>
+      </div>
     </div>
   );
 }
 
-// ── CollectionTab ─────────────────────────────────────────────────────────
+// ─── COLLECTION TAB ──────────────────────────────────────────────────────────
 
-function CollectionTab({ username }) {
-  const [appItems, setAppItems] = useState(() => load(KEYS.collection));
-  const [discogsItems, setDiscogsItems] = useState([]);
-  const [syncLoading, setSyncLoading] = useState(false);
-  const [syncError, setSyncError] = useState(null);
-  const [synced, setSynced] = useState(false);
+function CollectionTab({ username, token }) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
+  const [toast, showToast] = useToast();
 
-  const syncCollection = async () => {
-    if (!username.trim()) { setSyncError("Enter your Discogs username in the header."); return; }
-    setSyncLoading(true);
-    setSyncError(null);
+  useEffect(() => {
+    loadCollection();
+  }, []);
+
+  async function loadCollection() {
+    setLoading(true);
     try {
-      const API = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${API}/collection?username=${encodeURIComponent(username)}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setDiscogsItems(data.releases || []);
-      setSynced(true);
+      const data = await fetchAPI(
+        `/collection?username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`
+      );
+      setItems(data.items || []);
     } catch (err) {
-      setSyncError(err.message || "Failed to fetch collection");
+      showToast("Could not load collection: " + err.message);
     } finally {
-      setSyncLoading(false);
+      setLoading(false);
     }
-  };
+  }
 
-  const removeAppItem = (id) => {
-    const updated = appItems.filter(i => i.id !== id);
-    setAppItems(updated);
-    save(KEYS.collection, updated);
-  };
-
-  const appIds = new Set(appItems.map(i => i.discogs_release_id).filter(Boolean));
-  const filteredDiscogs = discogsItems.filter(i => !appIds.has(i.discogs_release_id));
-
-  const obtainedLabel = (via) => {
-    if (via === "purchased") return { label: "Purchased", className: "chip chip-purchased" };
-    if (via === "free") return { label: "Obtained Free", className: "chip chip-free" };
-    return { label: "In Collection", className: "chip chip-pending" };
-  };
-
-  const formatDate = (str) => {
-    if (!str) return "";
-    try { return new Date(str).toLocaleDateString("en-US", { year: "numeric", month: "short" }); }
-    catch { return ""; }
-  };
-
-  const totalCount = appItems.length + filteredDiscogs.length;
+  const filtered = query.trim()
+    ? items.filter(
+        (it) =>
+          it.title?.toLowerCase().includes(query.toLowerCase()) ||
+          it.artist?.toLowerCase().includes(query.toLowerCase())
+      )
+    : items;
 
   return (
     <div>
-      {syncError && <div className="error-msg">{syncError}</div>}
-
-      <div className="coll-toolbar">
-        <span className="wl-count">
-          {totalCount} item{totalCount !== 1 ? "s" : ""}
-          {synced ? ` · Discogs synced` : ""}
-        </span>
-        <button className="btn btn-ghost btn-sm" onClick={syncCollection} disabled={syncLoading}>
-          {syncLoading ? "Syncing…" : "↻ Sync Discogs Collection"}
-        </button>
+      <Toast toast={toast} />
+      <div className="page-header">
+        <p className="page-eyebrow">What you own</p>
+        <h2 className="page-title">
+          Collection <em>{items.length > 0 ? `(${items.length})` : ""}</em>
+        </h2>
+        <p className="page-desc">Everything in your Discogs collection.</p>
       </div>
 
-      {totalCount === 0 && (
+      <div className="search-row" style={{ marginBottom: "20px" }}>
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Filter by title or artist…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+
+      {loading ? (
+        <div className="loading-state">
+          <div className="spinner" />
+          Loading collection…
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">◉</div>
-          <div className="empty-title">Collection is empty</div>
-          <div className="empty-sub">
-            Mark albums as Purchased or Obtained Free in the Compare tab.<br />
-            Sync your Discogs collection above.
-          </div>
+          <p className="empty-title">{query ? "No matches" : "Collection is empty"}</p>
+          <p className="empty-sub">
+            {query ? `Nothing matching "${query}"` : "Add records to your Discogs collection and sync."}
+          </p>
         </div>
-      )}
-
-      {appItems.length > 0 && (
+      ) : (
         <>
-          <div style={{fontSize:"9px", letterSpacing:"0.25em", textTransform:"uppercase", color:"var(--text-3)", marginBottom:"10px", paddingBottom:"8px", borderBottom:"1px solid var(--border)"}}>
-            From This App
-          </div>
-          <div className="coll-grid" style={{marginBottom:"24px"}}>
-            {appItems.map(item => {
-              const ob = obtainedLabel(item.obtained_via);
-              return (
-                <div key={item.id} className="coll-card">
-                  <div className="coll-card-row">
-                    {item.cover
-                      ? <img className="thumb" src={item.cover} alt={item.album} />
-                      : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
-                    <div className="card-info">
-                      <div className="card-title">{item.album}</div>
-                      <div className="card-artist">{item.artist}{item.year ? ` · ${item.year}` : ""}</div>
-                      {item.bandcamp_url && (
-                        <a href={item.bandcamp_url} target="_blank" rel="noreferrer"
-                          style={{fontSize:"10px", color:"var(--accent)", textDecoration:"none", letterSpacing:"0.08em", textTransform:"uppercase", display:"inline-block", marginTop:"4px"}}>
-                          Bandcamp ↗
-                        </a>
-                      )}
-                    </div>
-                    <div className="coll-obtained">
-                      <span className={ob.className}>{ob.label}</span>
-                      <button className="btn btn-sm btn-danger-ghost"
-                        onClick={() => removeAppItem(item.id)}
-                        aria-label={`Remove ${item.album}`}>×</button>
-                    </div>
-                  </div>
+          <p className="result-count">{filtered.length} record{filtered.length !== 1 ? "s" : ""}</p>
+          <div className="collection-grid">
+            {filtered.map((item) => (
+              <div key={item.id} className="collection-thumb">
+                <div className="thumb-cover">
+                  {item.cover_url ? (
+                    <img src={item.cover_url} alt={item.title} loading="lazy" />
+                  ) : (
+                    "◎"
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {filteredDiscogs.length > 0 && (
-        <>
-          <div style={{fontSize:"9px", letterSpacing:"0.25em", textTransform:"uppercase", color:"var(--text-3)", marginBottom:"10px", paddingBottom:"8px", borderBottom:"1px solid var(--border)"}}>
-            Discogs Collection · {filteredDiscogs.length} records
-          </div>
-          <div className="coll-grid">
-            {filteredDiscogs.map((item, i) => (
-              <div key={i} className="coll-card">
-                <div className="coll-card-row">
-                  {item.cover
-                    ? <img className="thumb" src={item.cover} alt={item.album} />
-                    : <div className="thumb-placeholder" role="img" aria-label="No album art">◌</div>}
-                  <div className="card-info">
-                    <div className="card-title">{item.album}</div>
-                    <div className="card-artist">{item.artist}{item.year ? ` · ${item.year}` : ""}</div>
-                  </div>
-                  <div className="coll-obtained">
-                    <span className="chip chip-purchased">Purchased</span>
-                    {item.date_added && <span className="coll-date">{formatDate(item.date_added)}</span>}
-                  </div>
+                <div className="thumb-info">
+                  <div className="thumb-title">{item.title}</div>
+                  <div className="thumb-artist">{item.artist}</div>
                 </div>
               </div>
             ))}
           </div>
         </>
       )}
-
-      {!synced && totalCount === appItems.length && appItems.length > 0 && (
-        <div style={{fontSize:"11px", color:"var(--text-3)", marginTop:"16px", textAlign:"center"}}>
-          Sync your Discogs collection above to see your full record history.
-        </div>
-      )}
     </div>
   );
 }
 
-// ── App ───────────────────────────────────────────────────────────────────
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+
+function Toast({ toast }) {
+  return <div className={`toast ${toast.show ? "show" : ""}`}>{toast.msg}</div>;
+}
+
+// ─── APP ROOT ────────────────────────────────────────────────────────────────
 
 export default function App() {
+  const [authUsername, setAuthUsername] = useState(() => localStorage.getItem("sos_username") || "");
+  const [authToken, setAuthToken] = useState(() => localStorage.getItem("sos_token") || "");
   const [tab, setTab] = useState("wantlist");
-  const [username, setUsername] = useState(() => loadStr(KEYS.username, "glassmouse"));
-  const [wantlistCount, setWantlistCount] = useState(() => load(KEYS.wantlist).length);
-  const [compareCount, setCompareCount] = useState(() => load(KEYS.compare).length);
-  const [authenticated, setAuthenticated] = useState(null); // null = loading
-  const [authUsername, setAuthUsername] = useState("");
+  const [wantlistCount, setWantlistCount] = useState(0);
+  const [compareCount, setCompareCount] = useState(0);
+  const [compareItems, setCompareItems] = useState([]);
+  const [oauthLoading, setOauthLoading] = useState(false);
+  const [oauthError, setOauthError] = useState("");
 
-const API = import.meta.env.VITE_API_URL;
+  // Handle OAuth callback: Discogs redirects back with ?oauth_token=...&oauth_verifier=...
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const authStatus = params.get("auth");
+  const token = params.get("token");
+  if (authStatus !== "success" || !token) return;
+
+  window.history.replaceState({}, "", window.location.pathname);
+  setOauthLoading(true);
+
+  fetchAPI("/oauth/me", { headers: { "X-Auth-Token": token } })
+    .then((data) => {
+      localStorage.setItem("sos_username", data.username);
+      localStorage.setItem("sos_token", token);
+      setAuthUsername(data.username);
+      setAuthToken(token);
+    })
+    .catch((err) => setOauthError(err.message || "Authorization failed. Please try again."))
+    .finally(() => setOauthLoading(false));
+}, []);
+
+  function handleLogout() {
+    localStorage.removeItem("sos_username");
+    localStorage.removeItem("sos_token");
+    localStorage.removeItem("sos_secret");
+    setAuthUsername("");
+    setAuthToken("");
+    setCompareItems([]);
+  }
+
+  function handleCompareAdd(item, result) {
+    setCompareItems((prev) => {
+      if (prev.find((ci) => ci.item.id === item.id)) return prev;
+      return [...prev, { item, result }];
+    });
+  }
+
+  function handleCompareRemove(id) {
+    setCompareItems((prev) => prev.filter((ci) => ci.item.id !== id));
+  }
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    if (token) {
-      localStorage.setItem("rf_auth_token", token);
-      window.history.replaceState({}, "", window.location.pathname);
-    }
-    const stored = localStorage.getItem("rf_auth_token");
-    if (!stored) { setAuthenticated(false); return; }
-    fetch(`${API}/oauth/me`, { headers: { "X-Auth-Token": stored } })
-      .then(r => r.json())
-      .then(data => {
-        setAuthenticated(data.authenticated);
-        if (data.username) setAuthUsername(data.username);
-        if (!data.authenticated) localStorage.removeItem("rf_auth_token");
-      })
-      .catch(() => setAuthenticated(false));
-  }, []);
+    setCompareCount(compareItems.length);
+  }, [compareItems.length]);
 
-  const handleUsernameChange = (val) => {
-    setUsername(val);
-    saveStr(KEYS.username, val);
-  };
-
-  // FIX 3: instant compare badge update when WantlistTab sends an item over
-  const handleCompareAdd = () => setCompareCount(c => c + 1);
-
-  if (authenticated === null) return (
-    <>
-      <style>{STYLES}</style>
-      <div style={{textAlign:"center", padding:"80px 24px", fontFamily:"'DM Mono', monospace", fontSize:"11px", color:"#a89e90", letterSpacing:"0.15em", textTransform:"uppercase"}}>
-        Loading…
-      </div>
-    </>
-  );
-
-  if (!authenticated) return (
-    <>
-      <style>{STYLES}</style>
-      <div style={{maxWidth:"400px", margin:"0 auto", padding:"80px 24px", fontFamily:"'DM Mono', monospace", textAlign:"center"}}>
-        <p style={{fontSize:"10px", letterSpacing:"0.3em", textTransform:"uppercase", color:"#a89e90", marginBottom:"16px"}}>Record Finder</p>
-        <h1 style={{fontFamily:"'Fraunces', serif", fontSize:"32px", fontWeight:"700", lineHeight:"1.1", marginBottom:"32px"}}>
-          Find the best <em style={{fontStyle:"italic", fontWeight:"400", color:"#c8622e"}}>vinyl</em><br />before you buy.
-        </h1>
-        <a href={`${API}/oauth/start`}
-          style={{display:"inline-block", background:"#c8622e", color:"#fff", fontFamily:"'DM Mono', monospace", fontSize:"10px", letterSpacing:"0.2em", textTransform:"uppercase", padding:"12px 24px", borderRadius:"4px", textDecoration:"none"}}>
-          Connect Discogs →
-        </a>
-      </div>
-    </>
-  );
+  if (!authUsername || !authToken) {
+    return (
+      <>
+        <style>{STYLES}</style>
+        <LoginScreen error={oauthError} loading={oauthLoading} />
+      </>
+    );
+  }
 
   return (
     <>
       <style>{STYLES}</style>
-      <div className="app">
-
-        <header className="header">
-          <p className="header-eyebrow">
-            Record Procurement Tool
-            <span style={{marginLeft:"12px", opacity:0.5}}>v0.07</span>
-          </p>
-          <h1>Find the best <em>vinyl</em><br />before you buy.</h1>
-          <div className="header-meta">
-            <span className="header-sub">Wantlist → Compare → Collection</span>
-            <div className="username-field">
-              <span className="username-label">Discogs</span>
-              <span style={{fontSize:"13px", fontFamily:"'DM Mono', monospace"}}>{authUsername}</span>
-              <button
-                style={{fontSize:"9px", color:"var(--text-3)", letterSpacing:"0.15em", textTransform:"uppercase", textDecoration:"none", background:"none", border:"none", cursor:"pointer", padding:0}}
-                onClick={() => {
-                  const token = localStorage.getItem("rf_auth_token");
-                  fetch(`${API}/oauth/logout`, { headers: { "X-Auth-Token": token } })
-                    .then(() => { localStorage.removeItem("rf_auth_token"); setAuthenticated(false); });
-                }}>
-                Log out
-              </button>
-            </div>
+      <div className="app-shell">
+        {/* ── SIDEBAR ── */}
+        <aside className="sidebar">
+          <div className="sidebar-brand">
+            <span className="sidebar-logo">
+              Spin or <em>Stream</em>
+            </span>
+            <p className="sidebar-tagline">Vinyl price tool</p>
           </div>
-        </header>
 
-        <nav className="tab-nav" role="tablist" aria-label="Main navigation">
-          <button role="tab" aria-selected={tab === "wantlist"}
-            className={`tab-btn${tab === "wantlist" ? " active" : ""}`}
-            onClick={() => setTab("wantlist")}>
-            Wantlist
-            {wantlistCount > 0 && (
-              <span className="tab-badge" aria-label={`${wantlistCount} items`}>{wantlistCount}</span>
-            )}
-          </button>
-          <button role="tab" aria-selected={tab === "compare"}
-            className={`tab-btn${tab === "compare" ? " active" : ""}`}
-            onClick={() => setTab("compare")}>
-            Compare
-            {compareCount > 0 && (
-              <span className="tab-badge teal" aria-label={`${compareCount} items`}>{compareCount}</span>
-            )}
-          </button>
-          <button role="tab" aria-selected={tab === "collection"}
-            className={`tab-btn${tab === "collection" ? " active" : ""}`}
-            onClick={() => setTab("collection")}>
-            Collection
-          </button>
-        </nav>
+          <nav className="sidebar-nav" role="tablist">
+            <button
+              className={`nav-item ${tab === "wantlist" ? "active" : ""}`}
+              onClick={() => setTab("wantlist")}
+              role="tab"
+              aria-selected={tab === "wantlist"}
+            >
+              <span className="nav-icon">◎</span>
+              Wantlist
+              {wantlistCount > 0 && <span className="nav-badge">{wantlistCount}</span>}
+            </button>
 
-        {tab === "wantlist" && (
-          <WantlistTab
-            username={username}
-            onCountChange={setWantlistCount}
-            onCompareAdd={handleCompareAdd}
-          />
-        )}
-        {tab === "compare" && (
-          <CompareTab onCountChange={setCompareCount} />
-        )}
-        {tab === "collection" && (
-          <CollectionTab username={username} />
-        )}
+            <button
+              className={`nav-item ${tab === "compare" ? "active" : ""}`}
+              onClick={() => setTab("compare")}
+              role="tab"
+              aria-selected={tab === "compare"}
+            >
+              <span className="nav-icon">⊙</span>
+              Compare
+              {compareCount > 0 && <span className="nav-badge teal">{compareCount}</span>}
+            </button>
 
+            <button
+              className={`nav-item ${tab === "collection" ? "active" : ""}`}
+              onClick={() => setTab("collection")}
+              role="tab"
+              aria-selected={tab === "collection"}
+            >
+              <span className="nav-icon">◉</span>
+              Collection
+            </button>
+          </nav>
+
+          <div className="sidebar-footer">
+            <div className="sidebar-user-row">
+              <span className="sidebar-username">{authUsername}</span>
+              <button className="sidebar-logout" onClick={handleLogout}>Log out</button>
+            </div>
+            <p className="sidebar-status">Discogs connected</p>
+          </div>
+        </aside>
+
+        {/* ── MAIN CONTENT ── */}
+        <main className="main">
+          {tab === "wantlist" && (
+            <WantlistTab
+              username={authUsername}
+              token={authToken}
+              onCountChange={setWantlistCount}
+              onCompareAdd={handleCompareAdd}
+            />
+          )}
+          {tab === "compare" && (
+            <CompareTab
+              compareItems={compareItems}
+              onCountChange={setCompareCount}
+              onRemove={handleCompareRemove}
+            />
+          )}
+          {tab === "collection" && (
+            <CollectionTab username={authUsername} token={authToken} />
+          )}
+        </main>
+
+        {/* ── MOBILE TAB BAR ── */}
+        <div className="mobile-tab-bar">
+          <div className="mobile-tab-bar-inner" role="tablist">
+            <button
+              className={`mobile-tab-btn ${tab === "wantlist" ? "active" : ""}`}
+              onClick={() => setTab("wantlist")}
+            >
+              <span className="mobile-tab-icon">◎</span>
+              {wantlistCount > 0 && <span className="mobile-tab-badge">{wantlistCount}</span>}
+              Wantlist
+            </button>
+
+            <button
+              className={`mobile-tab-btn ${tab === "compare" ? "active" : ""}`}
+              onClick={() => setTab("compare")}
+            >
+              <span className="mobile-tab-icon">⊙</span>
+              {compareCount > 0 && <span className="mobile-tab-badge teal">{compareCount}</span>}
+              Compare
+            </button>
+
+            <button
+              className={`mobile-tab-btn ${tab === "collection" ? "active" : ""}`}
+              onClick={() => setTab("collection")}
+            >
+              <span className="mobile-tab-icon">◉</span>
+              Collection
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

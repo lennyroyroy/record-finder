@@ -11,10 +11,24 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
-app.config["SESSION_COOKIE_SECURE"] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SECURE"] = False   # True breaks HTTP on localhost
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-CORS(app, supports_credentials=True, origins=[os.getenv("FRONTEND_URL", "http://localhost:5173")])
+CORS(app, supports_credentials=True, origins=[
+    os.getenv("FRONTEND_URL", "http://localhost:5173"),
+    "http://localhost:5173"
+])
+
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get("Origin", "")
+    allowed = [os.getenv("FRONTEND_URL", "http://localhost:5173"), "http://localhost:5173"]
+    if origin in allowed:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Auth-Token"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 
 DISCOGS_TOKEN = os.getenv("DISCOGS_TOKEN")
@@ -41,19 +55,43 @@ def oauth_start():
         callback_uri=f"{request.host_url}oauth/callback"
     )
     tokens = oauth.fetch_request_token(REQUEST_TOKEN_URL)
-    session["oauth_token"] = tokens["oauth_token"]
-    session["oauth_token_secret"] = tokens["oauth_token_secret"]
+    TOKEN_STORE[tokens["oauth_token"]] = {"oauth_token_secret": tokens["oauth_token_secret"]}
+
     return redirect(f"{AUTHORIZE_URL}?oauth_token={tokens['oauth_token']}")
 
+@app.route("/auth/start")
+def auth_start():
+    oauth = OAuth1Session(
+        DISCOGS_CONSUMER_KEY,
+        client_secret=DISCOGS_CONSUMER_SECRET,
+        callback_uri=f"{request.host_url}oauth/callback"
+    )
+    tokens = oauth.fetch_request_token(REQUEST_TOKEN_URL)
+    TOKEN_STORE[tokens["oauth_token"]] = {"oauth_token_secret": tokens["oauth_token_secret"]}
+    return jsonify({"auth_url": f"{AUTHORIZE_URL}?oauth_token={tokens['oauth_token']}"})
+
+@app.route("/oauth/callback")
 @app.route("/oauth/callback")
 def oauth_callback():
     oauth_token = request.args.get("oauth_token")
     oauth_verifier = request.args.get("oauth_verifier")
+
+    # Retrieve and remove the stored secret
+    stored = TOKEN_STORE.pop(oauth_token, None)
+    if not stored:
+        return "OAuth session expired or not found. Please try again.", 400
+    oauth_token_secret = stored.get("oauth_token_secret", "")
+
+    print(f"DEBUG consumer_key={DISCOGS_CONSUMER_KEY!r}")
+    print(f"DEBUG oauth_token={oauth_token!r}")
+    print(f"DEBUG oauth_token_secret={oauth_token_secret!r}")
+    print(f"DEBUG oauth_verifier={oauth_verifier!r}")
+
     oauth = OAuth1Session(
         DISCOGS_CONSUMER_KEY,
         client_secret=DISCOGS_CONSUMER_SECRET,
-        resource_owner_key=session.get("oauth_token"),
-        resource_owner_secret=session.get("oauth_token_secret"),
+        resource_owner_key=oauth_token,
+        resource_owner_secret=oauth_token_secret,
         verifier=oauth_verifier
     )
     tokens = oauth.fetch_access_token(ACCESS_TOKEN_URL)
