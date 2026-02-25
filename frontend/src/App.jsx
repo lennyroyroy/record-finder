@@ -1735,9 +1735,11 @@ function CompareTab({ compareItems, onRemove }) {
                   <span style={{ fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: 700, color: "var(--text)" }}>
                     ${l.price.toFixed(2)}
                   </span>
-                  <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "6px" }}>
-                    + ${l.shipping_low}–${l.shipping_high} ship *
-                  </span>
+                  {l.shipping_low > 0 && (
+                    <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "6px" }}>
+                      + ${l.shipping_low}–${l.shipping_high} ship
+                    </span>
+                  )}
                 </div>
               </div>
             </a>
@@ -1756,6 +1758,9 @@ function CompareTab({ compareItems, onRemove }) {
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                       <div className="card-title">{ci.item.title}</div>
                       {isBest && <span className="chip teal">best deal</span>}
+                      <a href={`https://music.youtube.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                        <button className="btn-brand btn-brand-ytmusic" style={{ padding: "2px 8px", fontSize: "11px" }}>▶ Listen</button>
+                      </a>
                     </div>
                     <div className="card-artist">{ci.item.artist}</div>
                     {ci.item.year && (
@@ -1793,27 +1798,28 @@ function CompareTab({ compareItems, onRemove }) {
 
               {/* Find elsewhere */}
               <p className="section-label" style={{ marginTop: "16px" }}>Find elsewhere</p>
-              <div className="find-elsewhere-row">
-                {ci.item.discogs_url && (
-                  <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
-                    <button className="btn-brand btn-brand-discogs" style={{ width: "100%" }}>Discogs</button>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  {ci.item.discogs_url && (
+                    <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                      <button className="btn-brand btn-brand-discogs">View on Discogs</button>
+                    </a>
+                  )}
+                  <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="btn-brand btn-brand-bandcamp">Bandcamp Digital</button>
                   </a>
-                )}
-                <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
-                  <button className="btn-brand btn-brand-amazon" style={{ width: "100%" }}>Amazon</button>
-                </a>
-                <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
-                  <button className="btn-brand btn-brand-target" style={{ width: "100%" }}>Target</button>
-                </a>
-                <a href={`https://www.walmart.com/search?q=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
-                  <button className="btn-brand btn-brand-walmart" style={{ width: "100%" }}>Walmart</button>
-                </a>
-                <a href={`https://music.youtube.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
-                  <button className="btn-brand btn-brand-ytmusic" style={{ width: "100%" }}>YT Music</button>
-                </a>
-                <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1, minWidth: "58px" }}>
-                  <button className="btn-brand btn-brand-bandcamp" style={{ width: "100%" }}>Bandcamp</button>
-                </a>
+                </div>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="btn-brand btn-brand-amazon">Amazon</button>
+                  </a>
+                  <a href={`https://www.walmart.com/search?q=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="btn-brand btn-brand-walmart">Walmart</button>
+                  </a>
+                  <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="btn-brand btn-brand-target">Target</button>
+                  </a>
+                </div>
               </div>
             </div>
           );
