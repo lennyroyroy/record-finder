@@ -82,6 +82,12 @@ _Ideas that aren't ready to place yet — add freely, sort later_
 - Label/genre filtering on wantlist
 - Bulk-import wantlist from CSV
 - Dark/light mode toggle (currently dark only)
+- Show Discogs Avatar in app sidebar 
+
+
+## Small Visual Edits
+- Discgos button on Watchlist needs a new design, needs to be resized 
+
 
 ### From mockup review — 2026-02-24
 
