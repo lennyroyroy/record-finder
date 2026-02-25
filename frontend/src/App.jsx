@@ -865,6 +865,27 @@ const STYLES = `
 
   .btn-icon:hover { color: var(--danger); }
 
+  .btn-play-yt {
+    background: rgba(255, 78, 69, 0.12);
+    border: 1px solid rgba(255, 78, 69, 0.28);
+    color: #ff4e45;
+    font-size: 12px;
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .btn-play-yt:hover {
+    background: rgba(255, 78, 69, 0.24);
+    border-color: rgba(255, 78, 69, 0.55);
+  }
+
   /* ── COMPARE TABLE ─────────────────────────────────────────────────────── */
 
   .compare-table {
@@ -1551,7 +1572,12 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
             <div className="card-artist">{item.artist}</div>
           </div>
         </div>
-        {item.year && <div className="chip" style={{ flexShrink: 0 }}>{item.year}</div>}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+          <a href={`https://music.youtube.com/search?q=${ytQuery}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+            <button className="btn-play-yt" title="Preview song on YouTube Music">▶</button>
+          </a>
+          {item.year && <div className="chip">{item.year}</div>}
+        </div>
       </div>
 
       <div className="card-meta">
@@ -1613,12 +1639,6 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
         </p>
       )}
 
-      {!result && !searching && (
-        <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "4px 0 8px", opacity: 0.6 }}>
-          Tap "Check Prices" to scan the Discogs marketplace.
-        </p>
-      )}
-
       <div className="card-actions" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: "8px" }}>
           {!result && (
@@ -1629,9 +1649,6 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
           {result && (
             <button className="btn-secondary" onClick={onSearch} disabled={searching}>Refresh</button>
           )}
-          <a href={`https://music.youtube.com/search?q=${ytQuery}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-            <button className="btn-brand btn-brand-ytmusic">▶ YT Music</button>
-          </a>
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
           {item.discogs_url && (
@@ -1760,7 +1777,7 @@ function CompareTab({ compareItems, onRemove }) {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "2px", flexShrink: 0 }}>
                   <a href={`https://music.youtube.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                    <button className="btn-icon" style={{ color: "#ff4e45", fontSize: "15px" }} title="Listen on YT Music">▶</button>
+                    <button className="btn-play-yt" title="Preview song on YouTube Music">▶</button>
                   </a>
                   <button className="btn-icon" onClick={() => handleRemove(ci.item.id)} title="Remove">×</button>
                 </div>
