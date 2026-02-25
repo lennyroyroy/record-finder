@@ -105,13 +105,22 @@ const STYLES = `
     font-size: 9px;
     color: var(--text-dim);
     opacity: 0.5;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
   .sidebar-attrib a {
     color: var(--text-dim);
     text-decoration: underline;
     text-underline-offset: 2px;
+  }
+
+  .sidebar-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
   }
 
   .sidebar-nav {
@@ -1520,8 +1529,6 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
   const prices = allListings.map((l) => l.price).filter(Boolean);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const avgPrice = prices.length ? prices.reduce((a, b) => a + b) / prices.length : null;
-  const usPrices = usListings.map((l) => l.price).filter(Boolean);
-  const minUS = usPrices.length ? Math.min(...usPrices) : null;
   // Best total-with-shipping across all listings
   const bestUS = result?.best_us;
   const bestIntl = result?.best_intl;
@@ -1562,32 +1569,18 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
       {result && allListings.length > 0 && (
         <>
           <div className="price-grid">
+            {(bestTotalUS ?? bestTotalIntl) != null && (
+              <div className="price-cell">
+                <div className="price-label">Best Total</div>
+                <div className="price-value best">${(bestTotalUS ?? bestTotalIntl).toFixed(2)}</div>
+                <div className="price-sub">inc. est. shipping</div>
+              </div>
+            )}
             {minPrice != null && (
               <div className="price-cell">
-                <div className="price-label">Lowest</div>
-                <div className="price-value best">${minPrice.toFixed(2)}</div>
-                <div className="price-sub">record only</div>
-              </div>
-            )}
-            {minUS != null && (
-              <div className="price-cell">
-                <div className="price-label">Best US</div>
-                <div className="price-value">${minUS.toFixed(2)}</div>
-                <div className="price-sub">ships from US</div>
-              </div>
-            )}
-            {bestTotalUS != null && (
-              <div className="price-cell">
-                <div className="price-label">Total US *</div>
-                <div className="price-value best">${bestTotalUS.toFixed(2)}</div>
-                <div className="price-sub">inc. est. shipping</div>
-              </div>
-            )}
-            {bestTotalIntl != null && !bestTotalUS && (
-              <div className="price-cell">
-                <div className="price-label">Best Intl Total *</div>
-                <div className="price-value">${bestTotalIntl.toFixed(2)}</div>
-                <div className="price-sub">inc. est. shipping</div>
+                <div className="price-label">Record only</div>
+                <div className="price-value">${minPrice.toFixed(2)}</div>
+                <div className="price-sub">{bestTotalUS ? "ships from US" : "lowest found"}</div>
               </div>
             )}
             {avgPrice != null && (
@@ -1610,15 +1603,18 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
               </div>
             </div>
           )}
-          <p style={{ fontSize: "9px", color: "var(--text-dim)", marginTop: "6px", letterSpacing: "0.06em" }}>
-            * shipping is estimated
-          </p>
         </>
       )}
 
       {result && allListings.length === 0 && (
         <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "8px 0" }}>
           No listings found on the marketplace right now.
+        </p>
+      )}
+
+      {!result && !searching && (
+        <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "4px 0 8px", opacity: 0.6 }}>
+          Tap "Check Prices" to scan the Discogs marketplace.
         </p>
       )}
 
@@ -1633,19 +1629,17 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
             <button className="btn-secondary" onClick={onSearch} disabled={searching}>Refresh</button>
           )}
           <a href={`https://music.youtube.com/search?q=${ytQuery}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-            <button className="btn-secondary">▶ YT Music</button>
+            <button className="btn-brand btn-brand-ytmusic">▶ YT Music</button>
           </a>
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
           {item.discogs_url && (
             <a href={item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-              <button className="btn-secondary">Discogs ↗</button>
+              <button className="btn-brand btn-brand-discogs">Discogs ↗</button>
             </a>
           )}
           {result && allListings.length > 0 && (
-            <button className="btn-secondary" style={{ borderColor: "var(--teal-dim)", color: "var(--teal)" }} onClick={onCompareAdd}>
-              + Compare
-            </button>
+            <button className="btn-search" onClick={onCompareAdd}>+ Compare</button>
           )}
         </div>
       </div>
@@ -1788,7 +1782,6 @@ function CompareTab({ compareItems, onRemove }) {
                       </div>
                     </div>
                   )}
-                  <p style={{ fontSize: "9px", color: "var(--text-dim)", marginTop: "6px", letterSpacing: "0.06em" }}>* shipping is estimated</p>
                 </>
               ) : (
                 <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "10px 0 4px" }}>
@@ -1946,6 +1939,7 @@ function Toast({ toast }) {
 export default function App() {
   const [authUsername, setAuthUsername] = useState(() => localStorage.getItem("sos_username") || "");
   const [authToken, setAuthToken] = useState(() => localStorage.getItem("sos_token") || "");
+  const [authAvatar, setAuthAvatar] = useState(() => localStorage.getItem("sos_avatar") || "");
   const [tab, setTab] = useState("wantlist");
   const [wantlistCount, setWantlistCount] = useState(0);
   const [compareItems, setCompareItems] = useState([]);
@@ -1971,6 +1965,8 @@ export default function App() {
   function handleLogout() {
     localStorage.removeItem("sos_username");
     localStorage.removeItem("sos_token");
+    localStorage.removeItem("sos_avatar");
+    setAuthAvatar("");
     localStorage.removeItem("sos_secret");
     setAuthUsername("");
     setAuthToken("");
@@ -1994,8 +1990,10 @@ export default function App() {
         const data = await fetchAPI("/oauth/me", { headers: { "X-Auth-Token": token } });
         localStorage.setItem("sos_username", data.username);
         localStorage.setItem("sos_token", token);
+        localStorage.setItem("sos_avatar", data.avatar_url || "");
         setAuthUsername(data.username);
         setAuthToken(token);
+        setAuthAvatar(data.avatar_url || "");
       } catch (err) {
         setOauthError(err.message || "Authorization failed. Please try again.");
       } finally {
@@ -2098,6 +2096,7 @@ export default function App() {
             ) : (
               <>
                 <div className="sidebar-user-row">
+                  {authAvatar && <img src={authAvatar} className="sidebar-avatar" alt="" />}
                   <span className="sidebar-username">{authUsername}</span>
                   <button className="sidebar-logout" onClick={handleLogout}>Log out</button>
                 </div>
@@ -2106,8 +2105,8 @@ export default function App() {
             )}
           </div>
           <div className="sidebar-attrib">
-            Data by <a href="https://www.discogs.com" target="_blank" rel="noreferrer">Discogs</a>.
-            Cover art © respective rights holders.
+            <div>Data by <a href="https://www.discogs.com" target="_blank" rel="noreferrer">Discogs</a>.</div>
+            <div>Cover art © respective rights holders.</div>
           </div>
         </aside>
 

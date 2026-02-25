@@ -139,11 +139,13 @@ def oauth_callback():
     )
     identity = authed.get("https://api.discogs.com/oauth/identity").json()
     username = identity.get("username")
+    avatar_url = identity.get("avatar_url", "")
 
     token = _make_session_token({
         "access_token": tokens["oauth_token"],
         "access_token_secret": tokens["oauth_token_secret"],
-        "username": username
+        "username": username,
+        "avatar_url": avatar_url,
     })
     return redirect(f"{redirect_back}?auth=success&token={token}")
 
@@ -158,7 +160,7 @@ def oauth_me():
     data = _load_session_token(token)
     if not data:
         return jsonify({"authenticated": False}), 401
-    return jsonify({"authenticated": True, "username": data["username"]})
+    return jsonify({"authenticated": True, "username": data["username"], "avatar_url": data.get("avatar_url", "")})
 
 
 # ─── EXCHANGE RATES & SHIPPING ───────────────────────────────────────────────
