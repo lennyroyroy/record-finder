@@ -104,7 +104,12 @@ def auth_start():
         callback_uri=f"{request.host_url}oauth/callback"
     )
     tokens = oauth.fetch_request_token(REQUEST_TOKEN_URL)
-    TOKEN_STORE[tokens["oauth_token"]] = {"oauth_token_secret": tokens["oauth_token_secret"]}
+    origin = request.headers.get("Origin", FRONTEND_URL)
+    redirect_back = origin if origin in _ALLOWED_ORIGINS else FRONTEND_URL
+    TOKEN_STORE[tokens["oauth_token"]] = {
+        "oauth_token_secret": tokens["oauth_token_secret"],
+        "redirect_back": redirect_back,
+    }
     return jsonify({"auth_url": f"{AUTHORIZE_URL}?oauth_token={tokens['oauth_token']}"})
 
 @app.route("/oauth/callback")
@@ -116,6 +121,7 @@ def oauth_callback():
     if not stored:
         return "OAuth session expired or not found. Please try again.", 400
     oauth_token_secret = stored.get("oauth_token_secret", "")
+    redirect_back = stored.get("redirect_back", FRONTEND_URL)
 
     oauth = OAuth1Session(
         DISCOGS_CONSUMER_KEY,
@@ -139,7 +145,7 @@ def oauth_callback():
         "access_token_secret": tokens["oauth_token_secret"],
         "username": username
     })
-    return redirect(f"{FRONTEND_URL}?auth=success&token={token}")
+    return redirect(f"{redirect_back}?auth=success&token={token}")
 
 @app.route("/oauth/logout")
 def oauth_logout():
