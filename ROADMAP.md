@@ -83,6 +83,8 @@ _Ideas that aren't ready to place yet — add freely, sort later_
 - Bulk-import wantlist from CSV
 - Dark/light mode toggle (currently dark only)
 - Show Discogs Avatar in app sidebar 
+- Create a guest mode that acutally uses our app, by having full discogs api results, we can emulate an item from a watch list, and move it to compare, and a mock collection list
+all mock discogs albums, real functionality to move to compare, real discogs albums in collection, only without the discogs inetgration
 
 
 ## Small Visual Edits
