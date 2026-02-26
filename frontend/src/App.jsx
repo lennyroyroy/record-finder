@@ -1815,7 +1815,10 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [searching, setSearching] = useState({});
-  const [results, setResults] = useState(() => isGuest ? GUEST_DATA.results : {});
+  const [results, setResults] = useState(() => {
+    if (isGuest) return GUEST_DATA.results;
+    try { return JSON.parse(localStorage.getItem("sos_results") || "{}"); } catch { return {}; }
+  });
   const [sortBy, setSortBy] = useState("none");
   const [sortDir, setSortDir] = useState("asc");
   const [searchQuery, setSearchQuery] = useState("");
@@ -1904,7 +1907,11 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
       const data = await fetchAPI(
         `/search?artist=${encodeURIComponent(item.artist)}&album=${encodeURIComponent(item.title)}`
       );
-      setResults((r) => ({ ...r, [item.id]: data }));
+      setResults((r) => {
+        const next = { ...r, [item.id]: data };
+        if (!isGuest) localStorage.setItem("sos_results", JSON.stringify(next));
+        return next;
+      });
     } catch (err) {
       showToast("Search failed: " + err.message);
     } finally {
