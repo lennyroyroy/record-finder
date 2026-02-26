@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.7" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.9" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -529,6 +529,7 @@ const STYLES = `
   }
 
   @media (max-width: 540px) {
+    .price-suffix { display: none; }
     .card { padding: 14px; }
     .card-title { font-size: 14px; }
     .card-artist { font-size: 10px; }
@@ -1437,7 +1438,7 @@ const STYLES = `
   .card-collapsed-sub { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
 
   /* ── SORT BAR ───────────────────────────────────────────────────────────── */
-  .sort-bar       { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .sort-bar       { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; overflow: hidden; }
   .sort-bar-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; }
   .sort-btn {
     background: var(--surface2); border: 1px solid var(--border); border-radius: 999px;
@@ -1498,7 +1499,7 @@ const STYLES = `
     border-radius: var(--radius);
     padding: 9px 14px;
     margin-bottom: 14px;
-    flex-wrap: wrap;
+    overflow: hidden;
   }
   .best-deal-eyebrow {
     font-size: 8px;
@@ -2056,7 +2057,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         <div className="best-deal-banner">
           <span className="best-deal-eyebrow">Today's best deal</span>
           <span className="best-deal-text">{bestDeal.title} · {bestDeal.artist}</span>
-          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)} inc. shipping</span>
+          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)}<span className="price-suffix"> inc. shipping</span></span>
         </div>
       )}
 
@@ -2095,7 +2096,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
             <button className="sort-btn" onClick={() => setSortBy("none")}>✕ Clear</button>
           )}
           {items.some((i) => results[i.id]) && (
-            <button className="sort-btn" onClick={toggleAllCollapse} style={{ marginLeft: "auto" }}>
+            <button className="sort-btn" onClick={toggleAllCollapse}>
               {items.filter((i) => results[i.id]).every((i) => collapsedCards.has(i.id)) ? "⊕ Expand All" : "⊖ Collapse All"}
             </button>
           )}
