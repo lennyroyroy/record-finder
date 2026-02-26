@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.4.1" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.5" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -205,11 +205,183 @@ const STYLES = `
   }
 
   .nav-item.settings-item {
-    opacity: 0.45;
     margin-top: auto;
     font-size: 11px;
+    opacity: 0.6;
   }
-  .nav-item.settings-item:hover { opacity: 0.8; }
+  .nav-item.settings-item:hover { opacity: 1; }
+  .nav-item.settings-item.active { opacity: 1; }
+
+  .nav-section-label {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    padding: 14px 24px 6px;
+    margin-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── SETTINGS TAB ── */
+  .settings-panel-wrap {
+    padding: 40px 48px;
+    max-width: 640px;
+  }
+  .settings-group {
+    margin-bottom: 32px;
+  }
+  .settings-group-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(58,53,48,0.4);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-label {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .settings-row-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.65;
+    max-width: 400px;
+  }
+  .toggle-wrap {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+  .toggle-wrap input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    background: var(--text-dim);
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .toggle-wrap input:checked + .toggle-track {
+    background: rgba(74,144,128,0.2);
+    border-color: var(--teal);
+  }
+  .toggle-wrap input:checked + .toggle-track::after {
+    transform: translateX(16px);
+    background: var(--teal);
+  }
+
+  /* ── DISCOVER TAB ── */
+  .discover-wrap {
+    padding: 40px 48px;
+    max-width: 800px;
+  }
+  .discover-filters {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .discover-filter {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 999px;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .discover-filter:hover { color: var(--text-muted); border-color: var(--text-dim); }
+  .discover-filter.active { color: var(--text); border-color: var(--text-muted); background: var(--surface2); }
+  .discover-filter.f-bandcamp.active  { color: #1da0c3; border-color: rgba(29,160,195,0.5); background: rgba(29,160,195,0.08); }
+  .discover-filter.f-pitchfork.active { color: var(--accent); border-color: rgba(224,120,64,0.5); background: rgba(224,120,64,0.08); }
+  .discover-filter.f-stereogum.active { color: #9a78c8; border-color: rgba(154,120,200,0.5); background: rgba(154,120,200,0.08); }
+
+  .discover-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .discover-card-body { flex: 1; min-width: 0; }
+  .discover-card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .discover-card-artist { font-size: 11px; color: var(--text-muted); margin-top: 2px; margin-bottom: 8px; }
+  .discover-card-meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+  .source-badge {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid;
+  }
+  .source-badge.sb-bandcamp  { color: #1da0c3; border-color: rgba(29,160,195,0.4); background: rgba(29,160,195,0.08); }
+  .source-badge.sb-pitchfork { color: var(--accent); border-color: rgba(224,120,64,0.4); background: rgba(224,120,64,0.08); }
+  .source-badge.sb-stereogum { color: #9a78c8; border-color: rgba(154,120,200,0.4); background: rgba(154,120,200,0.08); }
+  .source-badge.sb-multi     { color: var(--teal); border-color: rgba(74,144,128,0.4); background: rgba(74,144,128,0.08); }
+  .discover-card-score { font-family: 'Fraunces', serif; font-size: 13px; font-weight: 700; color: var(--accent); }
+  .discover-card-foot { display: flex; align-items: center; justify-content: space-between; }
+  .btn-add-wantlist {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 20px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-add-wantlist:hover { color: var(--teal); border-color: rgba(74,144,128,0.5); }
+  .discover-card-date { font-size: 9px; color: var(--text-dim); }
 
   .sidebar-footer {
     padding: 16px 24px 0;
@@ -1246,6 +1418,95 @@ const STYLES = `
   .sort-btn:hover  { border-color: var(--accent); color: var(--accent); }
   .sort-btn.active { background: rgba(224,120,64,0.1); border-color: var(--accent-dim); color: var(--accent); }
 
+  /* ── WANTLIST SEARCH ────────────────────────────────────────────────────── */
+  .wantlist-search-wrap {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .wantlist-search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 36px 9px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .wantlist-search-input:focus { border-color: var(--text-muted); }
+  .wantlist-search-input::placeholder { color: var(--text-dim); }
+  .wantlist-search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+  }
+  .wantlist-search-clear:hover { color: var(--text-muted); }
+
+  /* ── BEST DEAL BANNER ───────────────────────────────────────────────────── */
+  .best-deal-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(74,144,128,0.07);
+    border: 1px solid rgba(74,144,128,0.25);
+    border-radius: var(--radius);
+    padding: 9px 14px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .best-deal-eyebrow {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .best-deal-text {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .best-deal-price {
+    font-size: 12px;
+    color: var(--teal);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── PWA INSTALL BUTTON ─────────────────────────────────────────────────── */
+  .btn-install {
+    background: rgba(74,144,128,0.12);
+    border: 1px solid rgba(74,144,128,0.35);
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    padding: 7px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: opacity 0.15s;
+  }
+  .btn-install:hover { opacity: 0.8; }
+
   /* ── VINYL PLACEHOLDER ──────────────────────────────────────────────────── */
   .vinyl-ph {
     border-radius: 50%; background: var(--surface2); border: 1px solid var(--border);
@@ -1557,6 +1818,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   const [results, setResults] = useState(() => isGuest ? GUEST_DATA.results : {});
   const [sortBy, setSortBy] = useState("none");
   const [sortDir, setSortDir] = useState("asc");
+  const [searchQuery, setSearchQuery] = useState("");
   const [toast, showToast] = useToast();
 
   function toggleSort(field) {
@@ -1568,12 +1830,40 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
     }
   }
 
-  const sortedItems = [...items].sort((a, b) => {
+  const filteredItems = searchQuery.trim()
+    ? items.filter((item) => {
+        const q = searchQuery.toLowerCase();
+        return (
+          (item.title || "").toLowerCase().includes(q) ||
+          (item.artist || "").toLowerCase().includes(q) ||
+          (item.label || "").toLowerCase().includes(q)
+        );
+      })
+    : items;
+
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (sortBy === "price") {
+      const ap = results[a.id]?.best_total;
+      const bp = results[b.id]?.best_total;
+      if (ap == null && bp == null) return 0;
+      if (ap == null) return 1;
+      if (bp == null) return -1;
+      return sortDir === "asc" ? ap - bp : bp - ap;
+    }
     if (sortBy === "none") return 0;
     const av = sortBy === "year" ? String(a.year || 0) : (a.artist || "");
     const bv = sortBy === "year" ? String(b.year || 0) : (b.artist || "");
     return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
   });
+
+  const bestDeal = items.length > 0
+    ? items.reduce((best, item) => {
+        const price = results[item.id]?.best_total;
+        if (price == null) return best;
+        if (!best || price < results[best.id]?.best_total) return item;
+        return best;
+      }, null)
+    : null;
 
   useEffect(() => {
     if (isGuest) {
@@ -1656,6 +1946,29 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
       </div>
 
       {items.length > 1 && (
+        <div className="wantlist-search-wrap">
+          <input
+            type="text"
+            className="wantlist-search-input"
+            placeholder={`Search ${items.length} records…`}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button className="wantlist-search-clear" onClick={() => setSearchQuery("")}>✕</button>
+          )}
+        </div>
+      )}
+
+      {bestDeal && (
+        <div className="best-deal-banner">
+          <span className="best-deal-eyebrow">Today's best deal</span>
+          <span className="best-deal-text">{bestDeal.title} · {bestDeal.artist}</span>
+          <span className="best-deal-price">${results[bestDeal.id].best_total.toFixed(2)} inc. shipping</span>
+        </div>
+      )}
+
+      {items.length > 1 && (
         <div className="sort-bar">
           <span className="sort-bar-label">Sort:</span>
           <button className={`sort-btn ${sortBy === "artist" ? "active" : ""}`} onClick={() => toggleSort("artist")}>
@@ -1663,6 +1976,9 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
           </button>
           <button className={`sort-btn ${sortBy === "year" ? "active" : ""}`} onClick={() => toggleSort("year")}>
             Year {sortBy === "year" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+          </button>
+          <button className={`sort-btn ${sortBy === "price" ? "active" : ""}`} onClick={() => toggleSort("price")}>
+            Price {sortBy === "price" ? (sortDir === "asc" ? "↑" : "↓") : ""}
           </button>
           {sortBy !== "none" && (
             <button className="sort-btn" onClick={() => setSortBy("none")}>✕ Clear</button>
@@ -2092,6 +2408,156 @@ function Toast({ toast }) {
   return <div className={`toast ${toast.show ? "show" : ""}`}>{toast.msg}</div>;
 }
 
+// ─── SETTINGS TAB ────────────────────────────────────────────────────────────
+
+function SettingsTab({ experimentalEnabled, onToggle, installPrompt, appInstalled, onInstall }) {
+  return (
+    <div className="settings-panel-wrap">
+      <div className="page-header">
+        <p className="page-eyebrow">Preferences</p>
+        <h2 className="page-title">Settings</h2>
+      </div>
+
+      {(installPrompt || appInstalled) && (
+        <div className="settings-group">
+          <div className="settings-group-label">App</div>
+          <div className="settings-row">
+            <div>
+              <div className="settings-row-label">Install App</div>
+              <div className="settings-row-desc">
+                Add Spin or Stream to your home screen for instant access and a native app experience.
+              </div>
+            </div>
+            {appInstalled ? (
+              <span style={{ fontSize: "11px", color: "var(--teal)", flexShrink: 0 }}>Installed ✓</span>
+            ) : (
+              <button className="btn-install" onClick={onInstall}>Install</button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="settings-group">
+        <div className="settings-group-label">Experimental Features</div>
+        <div className="settings-row">
+          <div>
+            <div className="settings-row-label">Enable Experimental Features</div>
+            <div className="settings-row-desc">
+              Unlocks features in active development. Currently adds a{" "}
+              <strong style={{ color: "var(--text)" }}>Discover</strong> tab with new music
+              recommendations from Bandcamp Daily, Pitchfork, and Stereogum. May change between updates.
+            </div>
+          </div>
+          <label className="toggle-wrap">
+            <input type="checkbox" checked={experimentalEnabled} onChange={onToggle} />
+            <span className="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── DISCOVER TAB ─────────────────────────────────────────────────────────────
+
+function DiscoverTab() {
+  const [albums, setAlbums] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  useEffect(() => {
+    fetchAPI("/discover")
+      .then((data) => {
+        setAlbums(data.albums || []);
+        setLastUpdated(data.cached_at || null);
+      })
+      .catch((err) => setError(err.message || "Failed to load recommendations."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const visible = filter === "all" ? albums : albums.filter((a) => a.sources.includes(filter));
+
+  function sourceBadgeClass(src) {
+    return { bandcamp: "sb-bandcamp", pitchfork: "sb-pitchfork", stereogum: "sb-stereogum" }[src] || "";
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  const updatedAgo = (() => {
+    if (!lastUpdated) return null;
+    const diff = (new Date().getTime() - new Date(lastUpdated).getTime()) / 3600000;
+    return diff < 1 ? "just now" : `${Math.floor(diff)}h ago`;
+  })();
+
+  return (
+    <div className="discover-wrap">
+      <div className="page-header">
+        <p className="page-eyebrow">What's New</p>
+        <h2 className="page-title">
+          Discover{" "}
+          {!loading && <em>({visible.length})</em>}
+        </h2>
+        <p className="page-desc">
+          New recommendations from Bandcamp Daily, Pitchfork Best New Music, and Stereogum.
+          {updatedAgo && <> · Updated {updatedAgo}</>}
+        </p>
+      </div>
+
+      <div className="discover-filters">
+        {["all", "bandcamp", "pitchfork", "stereogum"].map((src) => (
+          <button
+            key={src}
+            className={`discover-filter f-${src} ${filter === src ? "active" : ""}`}
+            onClick={() => setFilter(src)}
+          >
+            {src === "all" ? "All" : src === "bandcamp" ? "Bandcamp Daily" : src === "pitchfork" ? "Pitchfork BNM" : "Stereogum"}
+          </button>
+        ))}
+      </div>
+
+      {loading && <p style={{ color: "var(--text-dim)", fontSize: "12px" }}>Loading recommendations…</p>}
+      {error && <p style={{ color: "var(--accent)", fontSize: "12px" }}>{error}</p>}
+
+      {!loading && !error && visible.length === 0 && (
+        <p style={{ color: "var(--text-dim)", fontSize: "12px" }}>No recommendations found for this source.</p>
+      )}
+
+      {visible.map((album, i) => (
+        <div key={i} className="discover-card">
+          <div className="discover-card-body">
+            <div className="discover-card-title">{album.album}</div>
+            <div className="discover-card-artist">{album.artist}</div>
+            <div className="discover-card-meta">
+              {album.appears_on_multiple_sources && (
+                <span className="source-badge sb-multi">{album.sources.length} sources</span>
+              )}
+              {album.sources.map((src) => (
+                <span key={src} className={`source-badge ${sourceBadgeClass(src)}`}>{src}</span>
+              ))}
+              {album.genres && album.genres.slice(0, 2).map((g) => (
+                <span key={g} className="chip">{g}</span>
+              ))}
+              {album.score && <span className="discover-card-score">{album.score}</span>}
+            </div>
+            <div className="discover-card-foot">
+              <a href={album.url} target="_blank" rel="noreferrer" className="btn-add-wantlist">
+                View →
+              </a>
+              <span className="discover-card-date">{formatDate(album.date)}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── APP ROOT ────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -2104,6 +2570,35 @@ export default function App() {
   const [oauthLoading, setOauthLoading] = useState(false);
   const [oauthError, setOauthError] = useState("");
   const [isGuest, setIsGuest] = useState(false);
+  const [experimentalEnabled, setExperimentalEnabled] = useState(() => localStorage.getItem("sos_experimental") === "true");
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [appInstalled, setAppInstalled] = useState(false);
+
+  function handleExperimentalToggle() {
+    const next = !experimentalEnabled;
+    setExperimentalEnabled(next);
+    localStorage.setItem("sos_experimental", String(next));
+    if (!next && tab === "discover") setTab("wantlist");
+  }
+
+  useEffect(() => {
+    const onBefore = (e) => { e.preventDefault(); setInstallPrompt(e); };
+    const onInstalled = () => { setAppInstalled(true); setInstallPrompt(null); };
+    window.addEventListener("beforeinstallprompt", onBefore);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBefore);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+
+  async function handleInstallApp() {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === "accepted") setAppInstalled(true);
+    setInstallPrompt(null);
+  }
 
   function handleGuestMode() {
     setIsGuest(true);
@@ -2161,13 +2656,16 @@ export default function App() {
     completeAuth();
   }, []);
 
-  // Validate stored session on mount
+  // Validate stored session on mount and refresh avatar
   useEffect(() => {
     if (!authUsername || !authToken) return;
     fetchAPI("/oauth/me")
       .then((data) => {
         if (!data.authenticated) {
           handleLogout();
+        } else if (data.avatar_url) {
+          localStorage.setItem("sos_avatar", data.avatar_url);
+          setAuthAvatar(data.avatar_url);
         }
       })
       .catch(() => handleLogout());
@@ -2247,7 +2745,27 @@ export default function App() {
               Collection
             </button>
 
-            <button className="nav-item settings-item" disabled>
+            {experimentalEnabled && (
+              <>
+                <div className="nav-section-label">Experimental</div>
+                <button
+                  className={`nav-item ${tab === "discover" ? "active" : ""}`}
+                  onClick={() => setTab("discover")}
+                  role="tab"
+                  aria-selected={tab === "discover"}
+                >
+                  <span className="nav-icon">✦</span>
+                  Discover
+                </button>
+              </>
+            )}
+
+            <button
+              className={`nav-item settings-item ${tab === "settings" ? "active" : ""}`}
+              onClick={() => setTab("settings")}
+              role="tab"
+              aria-selected={tab === "settings"}
+            >
               <span className="nav-icon">⚙</span>
               Settings
             </button>
@@ -2265,7 +2783,7 @@ export default function App() {
             ) : (
               <>
                 <div className="sidebar-user-row">
-                  {authAvatar && <img src={authAvatar} className="sidebar-avatar" alt="" />}
+                  {authAvatar && <img src={authAvatar} className="sidebar-avatar" alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} />}
                   <span className="sidebar-username">{authUsername}</span>
                   <button className="sidebar-logout" onClick={handleLogout}>Log out</button>
                 </div>
@@ -2320,6 +2838,18 @@ export default function App() {
           )}
           {tab === "collection" && (
             <CollectionTab username={authUsername} isGuest={isGuest} />
+          )}
+          {tab === "settings" && (
+            <SettingsTab
+              experimentalEnabled={experimentalEnabled}
+              onToggle={handleExperimentalToggle}
+              installPrompt={installPrompt}
+              appInstalled={appInstalled}
+              onInstall={handleInstallApp}
+            />
+          )}
+          {tab === "discover" && experimentalEnabled && (
+            <DiscoverTab />
           )}
         </main>
 
