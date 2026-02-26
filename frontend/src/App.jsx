@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
+import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.2" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.3" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -277,7 +279,7 @@ const STYLES = `
     flex: 1;
     min-height: 100vh;
     padding: 40px 40px 48px;
-    max-width: 1000px;
+    max-width: 1120px;
   }
 
   /* ── MOBILE TAB BAR ────────────────────────────────────────────────────── */
@@ -1242,7 +1244,8 @@ const STYLES = `
     background: none; border: 1px solid;
     border-radius: var(--radius); font-family: 'DM Mono', monospace;
     font-size: 9px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
-    padding: 6px 10px; cursor: pointer; transition: opacity 0.15s; text-align: center;
+    padding: 6px 10px; cursor: pointer; transition: opacity 0.15s;
+    display: inline-flex; align-items: center; gap: 5px;
     line-height: 1.2; white-space: nowrap;
   }
   .btn-brand:hover { opacity: 0.7; }
@@ -1331,19 +1334,19 @@ function PlayDropdown({ query }) {
         title="Preview on music services"
         onClick={() => setOpen(o => !o)}
         style={open ? { background: "rgba(255,78,69,0.24)", borderColor: "rgba(255,78,69,0.55)" } : {}}
-      >▶</button>
+      ><FaPlay size={9} /></button>
       {open && (
         <div className="play-dropdown-menu">
           <a href={ytUrl} target="_blank" rel="noreferrer" className="play-dropdown-item" onClick={() => setOpen(false)}>
-            <span className="play-dropdown-dot" style={{ background: "#ff4e45" }} />
+            <SiYoutubemusic size={11} style={{ color: "#ff4e45", flexShrink: 0 }} />
             YouTube Music
           </a>
           <a href={spotifyUrl} target="_blank" rel="noreferrer" className="play-dropdown-item" onClick={() => setOpen(false)}>
-            <span className="play-dropdown-dot" style={{ background: "#1db954" }} />
+            <FaSpotify size={11} style={{ color: "#1db954", flexShrink: 0 }} />
             Spotify
           </a>
           <a href={appleUrl} target="_blank" rel="noreferrer" className="play-dropdown-item" onClick={() => setOpen(false)}>
-            <span className="play-dropdown-dot" style={{ background: "#fc3c44" }} />
+            <SiApplemusic size={11} style={{ color: "#fc3c44", flexShrink: 0 }} />
             Apple Music
           </a>
         </div>
@@ -1697,14 +1700,12 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
             <div style={{ display: "flex", gap: "5px", marginTop: "6px", flexWrap: "wrap" }}>
               {item.format && <span className="chip">{item.format}</span>}
               {item.label && <span className="chip">{item.label}</span>}
+              {item.year && <span className="chip">{item.year}</span>}
               {result && <span className="chip teal">{totalForSale} listings</span>}
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px", flexShrink: 0 }}>
-          {item.year && <div className="chip">{item.year}</div>}
-          <PlayDropdown query={ytQuery} />
-        </div>
+        <PlayDropdown query={ytQuery} />
       </div>
 
       {searching && (
@@ -1864,7 +1865,7 @@ function CompareTab({ compareItems, onRemove }) {
                     ${l.price.toFixed(2)}
                   </span>
                   <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "6px" }}>
-                    + ${l.shipping_low ?? (isUS ? 10 : 0)}–${l.shipping_high ?? (isUS ? 10 : 0)} ship
+                    ~${l.shipping_high ?? (isUS ? 10 : 0)} ship
                   </span>
                 </div>
               </div>
@@ -1923,21 +1924,21 @@ function CompareTab({ compareItems, onRemove }) {
               <p className="section-label" style={{ marginTop: "16px" }}>Find elsewhere</p>
               <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
                 <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-brand btn-brand-amazon">Amazon</button>
+                  <button className="btn-brand btn-brand-amazon"><FaAmazon size={10} /> Amazon</button>
                 </a>
                 <a href={`https://www.walmart.com/search?q=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-brand btn-brand-walmart">Walmart</button>
+                  <button className="btn-brand btn-brand-walmart"><SiWalmart size={10} /> Walmart</button>
                 </a>
                 <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-brand btn-brand-target">Target</button>
+                  <button className="btn-brand btn-brand-target"><SiTarget size={10} /> Target</button>
                 </a>
                 <div style={{ width: "1px", height: "22px", background: "var(--border)", margin: "0 2px", flexShrink: 0 }} />
                 <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-brand btn-brand-bandcamp">Bandcamp</button>
+                  <button className="btn-brand btn-brand-bandcamp"><FaBandcamp size={10} /> Bandcamp</button>
                 </a>
                 {ci.item.discogs_url && (
                   <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                    <button className="btn-brand btn-brand-discogs">Discogs ↗</button>
+                    <button className="btn-brand btn-brand-discogs"><SiDiscogs size={10} /> Discogs</button>
                   </a>
                 )}
               </div>
