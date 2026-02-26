@@ -382,6 +382,7 @@ const STYLES = `
   }
   .btn-add-wantlist:hover { color: var(--teal); border-color: rgba(74,144,128,0.5); }
   .discover-card-date { font-size: 9px; color: var(--text-dim); }
+  .on-wantlist-badge { font-size: 8px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--teal); border: 1px solid rgba(74,144,128,0.4); background: rgba(74,144,128,0.1); border-radius: 20px; padding: 2px 8px; white-space: nowrap; }
 
   .sidebar-footer {
     padding: 16px 24px 0;
@@ -1452,6 +1453,13 @@ const STYLES = `
   }
   .wantlist-search-clear:hover { color: var(--text-muted); }
 
+  .scan-hint {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    padding: 0 2px;
+  }
+
   /* ── BEST DEAL BANNER ───────────────────────────────────────────────────── */
   .best-deal-banner {
     display: flex;
@@ -1882,6 +1890,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
       const data = await fetchAPI(`/wantlist?username=${encodeURIComponent(username)}`);
       setItems(data.items || []);
       onCountChange?.(data.items?.length || 0);
+      localStorage.setItem("sos_wantlist_cache", JSON.stringify(data.items || []));
     } catch (err) {
       showToast("Could not load wantlist: " + err.message);
     } finally {
@@ -1903,6 +1912,10 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   async function searchPrices(item) {
     if (isGuest) return; // Guest prices are pre-loaded fixture data
     setSearching((s) => ({ ...s, [item.id]: true }));
+    const wakeTimer = setTimeout(
+      () => showToast("Backend waking up — first scan may take ~20s…"),
+      5000
+    );
     try {
       const data = await fetchAPI(
         `/search?artist=${encodeURIComponent(item.artist)}&album=${encodeURIComponent(item.title)}`
@@ -1915,6 +1928,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
     } catch (err) {
       showToast("Search failed: " + err.message);
     } finally {
+      clearTimeout(wakeTimer);
       setSearching((s) => ({ ...s, [item.id]: false }));
     }
   }
@@ -1991,6 +2005,10 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
             <button className="sort-btn" onClick={() => setSortBy("none")}>✕ Clear</button>
           )}
         </div>
+      )}
+
+      {!isGuest && items.length > 0 && Object.keys(results).length === 0 && (
+        <p className="scan-hint">Scan records to unlock price sort and best deal banner.</p>
       )}
 
       {items.length === 0 ? (
@@ -2474,6 +2492,20 @@ function DiscoverTab() {
   const [filter, setFilter] = useState("all");
   const [lastUpdated, setLastUpdated] = useState(null);
 
+  // Build normalized set from cached wantlist for cross-referencing
+  const wantlistTerms = (() => {
+    try {
+      const cached = JSON.parse(localStorage.getItem("sos_wantlist_cache") || "[]");
+      const norm = (s) => (s || "").toLowerCase().replace(/[^\w\s]/g, "").trim();
+      return new Set(cached.flatMap((i) => [norm(i.title), norm(i.artist)].filter(Boolean)));
+    } catch { return new Set(); }
+  })();
+
+  function isOnWantlist(album) {
+    const norm = (s) => (s || "").toLowerCase().replace(/[^\w\s]/g, "").trim();
+    return wantlistTerms.has(norm(album.album)) || wantlistTerms.has(norm(album.artist));
+  }
+
   useEffect(() => {
     fetchAPI("/discover")
       .then((data) => {
@@ -2484,7 +2516,9 @@ function DiscoverTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  const visible = filter === "all" ? albums : albums.filter((a) => a.sources.includes(filter));
+  const filtered = filter === "all" ? albums : albums.filter((a) => a.sources.includes(filter));
+  // Wantlist matches float to top
+  const visible = [...filtered].sort((a, b) => isOnWantlist(b) - isOnWantlist(a));
 
   function sourceBadgeClass(src) {
     return { bandcamp: "sb-bandcamp", pitchfork: "sb-pitchfork", stereogum: "sb-stereogum" }[src] || "";
@@ -2512,6 +2546,7 @@ function DiscoverTab() {
         </h2>
         <p className="page-desc">
           New recommendations from Bandcamp Daily, Pitchfork Best New Music, and Stereogum.
+          Wantlist matches are flagged and sorted to the top.
           {updatedAgo && <> · Updated {updatedAgo}</>}
         </p>
       </div>
@@ -2541,6 +2576,9 @@ function DiscoverTab() {
             <div className="discover-card-title">{album.album}</div>
             <div className="discover-card-artist">{album.artist}</div>
             <div className="discover-card-meta">
+              {isOnWantlist(album) && (
+                <span className="on-wantlist-badge">On your wantlist</span>
+              )}
               {album.appears_on_multiple_sources && (
                 <span className="source-badge sb-multi">{album.sources.length} sources</span>
               )}
