@@ -40,6 +40,7 @@ const STYLES = `
     font-family: 'DM Mono', monospace;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   /* ── LAYOUT ────────────────────────────────────────────────────────────── */
@@ -517,7 +518,7 @@ const STYLES = `
     .sidebar { display: none; }
     .main {
       margin-left: 0;
-      padding: 16px 16px 90px;
+      padding: 16px 10px 90px;
       max-width: 100%;
     }
     .mobile-tab-bar { display: block; }
@@ -1982,6 +1983,12 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
     });
   }
 
+  function toggleAllCollapse() {
+    const scannedIds = items.filter((i) => results[i.id]).map((i) => i.id);
+    const allCollapsed = scannedIds.every((id) => collapsedCards.has(id));
+    setCollapsedCards(allCollapsed ? new Set() : new Set(scannedIds));
+  }
+
   async function searchPrices(item) {
     if (isGuest) return; // Guest prices are pre-loaded fixture data
     setSearching((s) => ({ ...s, [item.id]: true }));
@@ -2086,6 +2093,11 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
           </button>
           {sortBy !== "none" && (
             <button className="sort-btn" onClick={() => setSortBy("none")}>✕ Clear</button>
+          )}
+          {items.some((i) => results[i.id]) && (
+            <button className="sort-btn" onClick={toggleAllCollapse} style={{ marginLeft: "auto" }}>
+              {items.filter((i) => results[i.id]).every((i) => collapsedCards.has(i.id)) ? "⊕ Expand All" : "⊖ Collapse All"}
+            </button>
           )}
         </div>
       )}
