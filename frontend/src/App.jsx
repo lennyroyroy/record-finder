@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.3" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.4" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -361,6 +361,9 @@ const STYLES = `
     .card-actions { gap: 6px; }
     .find-elsewhere-row { gap: 4px; }
     .btn-brand { font-size: 8px; padding: 5px 8px; }
+    /* 3rd price card spans full width so there's no orphan */
+    .price-cell:last-child:nth-child(3) { grid-column: 1 / -1; }
+    .wantlist-card-actions { min-width: 90px; }
   }
 
   /* ── LOGIN SCREEN ──────────────────────────────────────────────────────── */
@@ -897,25 +900,39 @@ const STYLES = `
   .btn-icon:hover { color: var(--danger); }
 
   .btn-play-yt {
-    background: rgba(255, 78, 69, 0.12);
-    border: 1px solid rgba(255, 78, 69, 0.28);
-    color: #ff4e45;
-    font-size: 12px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
     cursor: pointer;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    display: flex;
+    border-radius: 20px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s, border-color 0.15s;
-    padding: 0;
-    flex-shrink: 0;
+    gap: 6px;
+    padding: 6px 12px;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+    width: 100%;
   }
   .btn-play-yt:hover {
-    background: rgba(255, 78, 69, 0.24);
-    border-color: rgba(255, 78, 69, 0.55);
+    border-color: var(--text-muted);
+    color: var(--text);
   }
+
+  .wantlist-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+    flex-shrink: 0;
+    min-width: 108px;
+  }
+  .wantlist-card-actions .btn-search,
+  .wantlist-card-actions .btn-secondary { width: 100%; }
+  .wantlist-card-actions .play-dropdown-wrap { width: 100%; }
 
   /* ── PLAY DROPDOWN ──────────────────────────────────────────────────────── */
   .play-dropdown-wrap {
@@ -1333,8 +1350,8 @@ function PlayDropdown({ query }) {
         className="btn-play-yt"
         title="Preview on music services"
         onClick={() => setOpen(o => !o)}
-        style={open ? { background: "rgba(255,78,69,0.24)", borderColor: "rgba(255,78,69,0.55)" } : {}}
-      ><FaPlay size={9} /></button>
+        style={open ? { borderColor: "var(--text-muted)", color: "var(--text)" } : {}}
+      ><FaPlay size={8} /> Listen</button>
       {open && (
         <div className="play-dropdown-menu">
           <a href={ytUrl} target="_blank" rel="noreferrer" className="play-dropdown-item" onClick={() => setOpen(false)}>
@@ -1705,7 +1722,16 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
             </div>
           </div>
         </div>
-        <PlayDropdown query={ytQuery} />
+        <div className="wantlist-card-actions">
+          <button
+            className={result ? "btn-secondary" : "btn-search"}
+            onClick={onSearch}
+            disabled={searching}
+          >
+            {searching ? "Searching…" : result ? "Refresh" : "Check Prices"}
+          </button>
+          <PlayDropdown query={ytQuery} />
+        </div>
       </div>
 
       {searching && (
@@ -1761,23 +1787,11 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
         </p>
       )}
 
-      <div className="card-actions" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", gap: "8px" }}>
-          {result && (
-            <button className="btn-secondary" onClick={onSearch} disabled={searching}>Refresh</button>
-          )}
+      {result && allListings.length > 0 && (
+        <div className="card-actions" style={{ justifyContent: "flex-end" }}>
+          <button className="btn-sync" onClick={onCompareAdd}>+ Compare</button>
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
-          {!result && (
-            <button className="btn-search" onClick={onSearch} disabled={searching}>
-              {searching ? "Searching…" : "Check Prices"}
-            </button>
-          )}
-          {result && allListings.length > 0 && (
-            <button className="btn-sync" onClick={onCompareAdd}>+ Compare</button>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
