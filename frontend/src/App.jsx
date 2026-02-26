@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.4" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.4.1" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -359,7 +359,6 @@ const STYLES = `
     .price-label { font-size: 9px; }
     .price-sub { font-size: 9px; }
     .card-actions { gap: 6px; }
-    .find-elsewhere-row { gap: 4px; }
     .btn-brand { font-size: 8px; padding: 5px 8px; }
     /* 3rd price card spans full width so there's no orphan */
     .price-cell:last-child:nth-child(3) { grid-column: 1 / -1; }
@@ -1256,7 +1255,23 @@ const STYLES = `
   .vinyl-ph::after  { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 13%; height: 13%; border-radius: 50%; background: var(--accent-dim); }
 
   /* ── FIND ELSEWHERE BRAND BUTTONS ───────────────────────────────────────── */
-  .find-elsewhere-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .find-elsewhere-retail {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .find-elsewhere-streaming {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 6px;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .find-elsewhere-retail > a,
+  .find-elsewhere-streaming > a { display: block; }
+  .find-elsewhere-retail .btn-brand,
+  .find-elsewhere-streaming .btn-brand { width: 100%; justify-content: center; }
   .btn-brand {
     background: none; border: 1px solid;
     border-radius: var(--radius); font-family: 'DM Mono', monospace;
@@ -1936,7 +1951,7 @@ function CompareTab({ compareItems, onRemove }) {
 
               {/* Find elsewhere */}
               <p className="section-label" style={{ marginTop: "16px" }}>Find elsewhere</p>
-              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="find-elsewhere-retail">
                 <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
                   <button className="btn-brand btn-brand-amazon"><FaAmazon size={10} /> Amazon</button>
                 </a>
@@ -1946,7 +1961,8 @@ function CompareTab({ compareItems, onRemove }) {
                 <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
                   <button className="btn-brand btn-brand-target"><SiTarget size={10} /> Target</button>
                 </a>
-                <div style={{ width: "1px", height: "22px", background: "var(--border)", margin: "0 2px", flexShrink: 0 }} />
+              </div>
+              <div className="find-elsewhere-streaming">
                 <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
                   <button className="btn-brand btn-brand-bandcamp"><FaBandcamp size={10} /> Bandcamp</button>
                 </a>
