@@ -533,8 +533,6 @@ const STYLES = `
     .price-sub { font-size: 9px; }
     .card-actions { gap: 6px; }
     .btn-brand { font-size: 8px; padding: 5px 8px; }
-    /* 3rd price card spans full width so there's no orphan */
-    .price-cell:last-child:nth-child(3) { grid-column: 1 / -1; }
     .wantlist-card-actions { min-width: 90px; }
   }
 
@@ -847,7 +845,7 @@ const STYLES = `
 
   .price-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin-top: 14px;
     padding-top: 14px;
@@ -2006,7 +2004,11 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
             Year {sortBy === "year" ? (sortDir === "asc" ? "↑" : "↓") : ""}
           </button>
           <button className={`sort-btn ${sortBy === "price" ? "active" : ""}`} onClick={() => toggleSort("price")}>
-            Price {sortBy === "price" ? (sortDir === "asc" ? "↑" : "↓") : ""}
+            {(() => {
+              const scanned = items.filter((i) => bestPrice(results[i.id]) != null).length;
+              const arrow = sortBy === "price" ? (sortDir === "asc" ? " ↑" : " ↓") : "";
+              return scanned > 0 ? `Price${arrow} (${scanned}/${items.length})` : `Price (scan first)`;
+            })()}
           </button>
           {sortBy !== "none" && (
             <button className="sort-btn" onClick={() => setSortBy("none")}>✕ Clear</button>
