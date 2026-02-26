@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.7" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.8" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -529,6 +529,7 @@ const STYLES = `
   }
 
   @media (max-width: 540px) {
+    .price-suffix { display: none; }
     .card { padding: 14px; }
     .card-title { font-size: 14px; }
     .card-artist { font-size: 10px; }
@@ -1498,7 +1499,7 @@ const STYLES = `
     border-radius: var(--radius);
     padding: 9px 14px;
     margin-bottom: 14px;
-    flex-wrap: wrap;
+    overflow: hidden;
   }
   .best-deal-eyebrow {
     font-size: 8px;
@@ -2056,7 +2057,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         <div className="best-deal-banner">
           <span className="best-deal-eyebrow">Today's best deal</span>
           <span className="best-deal-text">{bestDeal.title} · {bestDeal.artist}</span>
-          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)} inc. shipping</span>
+          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)}<span className="price-suffix"> inc. shipping</span></span>
         </div>
       )}
 
