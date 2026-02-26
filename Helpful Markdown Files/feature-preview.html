@@ -68,6 +68,15 @@
     .chip.danger { color: var(--danger); border-color: rgba(192,80,74,0.35); background: rgba(192,80,74,0.08); }
 
     .card-actions-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+
+    /* ── CARD COLLAPSE ROW (for F12 mockup) ── */
+    .card-collapse-row { display: flex; justify-content: center; align-items: center; border-top: 1px solid var(--border); padding: 3px 0; margin-top: 6px; }
+    .btn-collapse-demo { background: none; border: none; color: var(--text-dim); font-size: 14px; cursor: pointer; padding: 2px 8px; line-height: 1; transition: color 0.15s; }
+    .btn-collapse-demo:hover { color: var(--text-muted); }
+    /* ── COMPARE WIDTH OPTIONS ── */
+    .compare-opt-tag { display: inline-block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-dim); background: rgba(224,120,64,0.08); border: 1px solid rgba(224,120,64,0.2); border-radius: 20px; padding: 3px 10px; margin-bottom: 12px; }
+    .compare-width-b-wrap { max-width: 520px; margin: 0 auto; }
+    @media (min-width: 600px) { .compare-width-c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } }
     .wantlist-right { display: flex; flex-direction: column; gap: 6px; min-width: 108px; }
 
     /* ── BUTTONS ── */
@@ -257,131 +266,14 @@
 
   <!-- ── TABLE OF CONTENTS ── -->
   <nav class="toc">
-    <a href="#f1">Search Bar ✓</a>
-    <a href="#f2">Sort by Price ✓</a>
     <a href="#f3">Already Own This</a>
     <a href="#f4">Savings % Badge</a>
     <a href="#f5">Export CSV</a>
-    <a href="#f6">Scan Progress</a>
-    <a href="#f7">Best Deal Banner ✓</a>
     <a href="#f8">Label Filter</a>
-    <a href="#f9">Break-even Calc</a>
-    <a href="#f10">PWA Install ✓</a>
-    <a href="#full-wantlist">Full Wantlist</a>
-    <a href="#full-compare">Full Compare</a>
-    <a href="#f11">Music Discovery ✓</a>
-    <a href="#f-settings">Settings ✓</a>
+    <a href="#f9">Break-even</a>
+    <a href="#f12">Expand / Collapse All</a>
+    <a href="#compare-width">Compare Card Width</a>
   </nav>
-
-
-  <!-- ══════════════════════════════════════════════════════════
-       FEATURE 1 — SEARCH BAR
-  ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="f1">
-    <div class="feature-label">Feature 01 <span class="shipped-badge">Shipped ✓</span></div>
-    <div class="feature-title">Search Bar</div>
-    <div class="feature-desc">A text input at the top of the Wantlist. Filters cards in real-time as you type — no server call needed. Shows a count of matching results. At 65+ items this is immediately useful.</div>
-
-    <div class="preview-box">
-      <div class="preview-label">Isolated — search bar component</div>
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input type="text" class="search-input" placeholder="Search your wantlist…" id="search-input" oninput="handleSearch(this.value)" />
-        <span class="search-count" id="search-count">4 items</span>
-      </div>
-
-      <div id="search-results">
-        <div class="card" data-title="love of my life nils landgren">
-          <div class="card-header">
-            <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-              <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-              <div><div class="card-title">Love of My Life</div><div class="card-artist">Nils Landgren</div><div class="chips"><span class="chip">Vinyl</span><span class="chip">ACT Music</span><span class="chip">2026</span></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="card" data-title="kind of blue miles davis">
-          <div class="card-header">
-            <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-              <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-              <div><div class="card-title">Kind of Blue</div><div class="card-artist">Miles Davis</div><div class="chips"><span class="chip">Vinyl</span><span class="chip">Columbia</span><span class="chip">1959</span></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="card" data-title="ok computer radiohead">
-          <div class="card-header">
-            <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-              <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-              <div><div class="card-title">OK Computer</div><div class="card-artist">Radiohead</div><div class="chips"><span class="chip">Vinyl</span><span class="chip">Parlophone</span><span class="chip">1997</span></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="card" data-title="back to black amy winehouse">
-          <div class="card-header">
-            <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-              <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-              <div><div class="card-title">Back to Black</div><div class="card-artist">Amy Winehouse</div><div class="chips"><span class="chip">Vinyl</span><span class="chip">Island</span><span class="chip">2006</span></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <p class="note">↑ Try typing in the search box above — cards filter live.</p>
-    </div>
-  </div>
-
-
-  <!-- ══════════════════════════════════════════════════════════
-       FEATURE 2 — SORT BY PRICE
-  ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="f2">
-    <div class="feature-label">Feature 02 <span class="shipped-badge">Shipped ✓</span></div>
-    <div class="feature-title">Sort by Price</div>
-    <div class="feature-desc">Adds Price as a third sort option alongside the existing Year and Artist pills. When active, cards reorder cheapest-to-most-expensive (best total). Only useful after scan — the pill is dimmed for unscanned items.</div>
-
-    <div class="preview-box">
-      <div class="preview-label">Isolated — sort pills with price added</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px">
-        <button class="sort-pill" onclick="setSortActive(this)">Year ↑</button>
-        <button class="sort-pill" onclick="setSortActive(this)">Artist ↑</button>
-        <button class="sort-pill new active" onclick="setSortActive(this)">Price ↑</button>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-            <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-            <div><div class="card-title">Kind of Blue</div><div class="card-artist">Miles Davis</div><div class="chips"><span class="chip">Vinyl</span><span class="chip">Columbia</span><span class="chip">1959</span><span class="chip teal">8 listings</span></div></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;min-width:108px">
-            <button class="btn btn-secondary" style="width:100%;font-size:10px">Refresh</button>
-            <button class="btn-listen">▶ Listen</button>
-          </div>
-        </div>
-        <div class="price-grid">
-          <div class="price-cell"><div class="price-label">Best Total</div><div class="price-value best">$28.50</div><div class="price-sub">inc. shipping</div></div>
-          <div class="price-cell"><div class="price-label">Record Only</div><div class="price-value mid">$18.50</div><div class="price-sub">lowest found</div></div>
-          <div class="price-cell"><div class="price-label">Avg</div><div class="price-value high">$22.80</div><div class="price-sub">8 listings</div></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-            <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-            <div><div class="card-title">Love of My Life</div><div class="card-artist">Nils Landgren</div><div class="chips"><span class="chip">Vinyl</span><span class="chip">ACT Music</span><span class="chip">2026</span><span class="chip teal">4 listings</span></div></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;min-width:108px">
-            <button class="btn btn-secondary" style="width:100%;font-size:10px">Refresh</button>
-            <button class="btn-listen">▶ Listen</button>
-          </div>
-        </div>
-        <div class="price-grid">
-          <div class="price-cell"><div class="price-label">Best Total</div><div class="price-value best">$54.58</div><div class="price-sub">inc. shipping</div></div>
-          <div class="price-cell"><div class="price-label">Record Only</div><div class="price-value mid">$44.58</div><div class="price-sub">lowest found</div></div>
-          <div class="price-cell"><div class="price-label">Avg</div><div class="price-value high">$45.81</div><div class="price-sub">4 listings</div></div>
-        </div>
-      </div>
-      <p class="note">↑ Cards sorted by Best Total ascending. Miles Davis ($28.50) appears first.</p>
-    </div>
-  </div>
 
 
   <!-- ══════════════════════════════════════════════════════════
@@ -518,70 +410,6 @@
 
 
   <!-- ══════════════════════════════════════════════════════════
-       FEATURE 6 — SCAN-ALL PROGRESS
-  ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="f6">
-    <div class="feature-label">Feature 06</div>
-    <div class="feature-title">Scan-All Progress Indicator</div>
-    <div class="feature-desc">During batch scan, replaces the per-card spinners with a single progress bar and counter at the top of the wantlist. Shows X of Y with the current record name. Much clearer than watching 12 cards spin simultaneously.</div>
-
-    <div class="preview-box">
-      <div class="preview-label">Mid-scan state — 8 of 12 complete</div>
-      <div class="scan-progress-wrap">
-        <div class="scan-progress-header">
-          <span class="scan-progress-text">Scanning <strong style="color:var(--text)">OK Computer</strong>…</span>
-          <span class="scan-progress-count">8 of 12</span>
-        </div>
-        <div class="scan-progress-track">
-          <div class="scan-progress-fill" style="width:67%"></div>
-        </div>
-      </div>
-
-      <div class="spacer"></div>
-      <div class="preview-label">Completed state — all done</div>
-      <div class="scan-progress-wrap" style="background:rgba(74,144,128,0.06);border-color:rgba(74,144,128,0.25)">
-        <div class="scan-progress-header">
-          <span class="scan-progress-text" style="color:var(--teal)">✓ Scan complete</span>
-          <span class="scan-progress-count">12 of 12</span>
-        </div>
-        <div class="scan-progress-track">
-          <div class="scan-progress-fill" style="width:100%"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ══════════════════════════════════════════════════════════
-       FEATURE 7 — BEST DEAL BANNER
-  ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="f7">
-    <div class="feature-label">Feature 07 <span class="shipped-badge">Shipped ✓</span></div>
-    <div class="feature-title">"Today's Best Deal" Banner</div>
-    <div class="feature-desc">A pinned one-liner at the top of the wantlist, computed from scan data already in localStorage. Surfaces the single best opportunity — cheapest best-total across all scanned items — so the most important thing is always visible without scrolling.</div>
-
-    <div class="preview-box">
-      <div class="preview-label">Banner — above the card list</div>
-      <div class="best-deal-banner">
-        <span class="best-deal-eyebrow">Best deal</span>
-        <span class="best-deal-item">Miles Davis — Kind of Blue</span>
-        <span class="best-deal-price">$28.50 inc. shipping · US seller</span>
-        <a href="#" class="best-deal-link">View →</a>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-            <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-            <div><div class="card-title">Kind of Blue</div><div class="card-artist">Miles Davis</div><div class="chips"><span class="chip">Columbia</span><span class="chip">1959</span><span class="chip teal">8 listings</span></div></div>
-          </div>
-        </div>
-      </div>
-      <p class="note">↑ Banner only shows after at least one scan. Tapping "View →" scrolls to that card.</p>
-    </div>
-  </div>
-
-
-  <!-- ══════════════════════════════════════════════════════════
        FEATURE 8 — LABEL FILTERING
   ══════════════════════════════════════════════════════════ -->
   <div class="feature-section" id="f8">
@@ -668,158 +496,80 @@
 
 
   <!-- ══════════════════════════════════════════════════════════
-       FEATURE 10 — PWA INSTALL
+       FEATURE 12 — EXPAND / COLLAPSE ALL
   ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="f10">
-    <div class="feature-label">Feature 10 <span class="shipped-badge">Shipped ✓</span></div>
-    <div class="feature-title">PWA / Installable App</div>
-    <div class="feature-desc">A web app manifest + service worker (via Vite's PWA plugin) that makes the app installable to the iOS/Android home screen. The install prompt appears once, at the bottom of the screen. After install, the app opens full-screen, no browser chrome.</div>
+  <div class="feature-section" id="f12">
+    <div class="feature-label">Feature 12</div>
+    <div class="feature-title">Expand / Collapse All</div>
+    <div class="feature-desc">A toggle button in the sort bar that expands or collapses all scanned cards at once. Unscanned cards are unaffected — they have no price data and no chevron. Pressing the button when all scanned cards are expanded will collapse them all; pressing again expands them. Useful for scanning a long list then getting a clean price overview without scrolling.</div>
 
     <div class="preview-box">
-      <div class="preview-label">Install banner — fixed at screen bottom</div>
-      <div class="pwa-banner">
-        <div class="pwa-icon-wrap">
-          <svg class="pwa-icon-inner" width="28" height="28" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10.5" fill="#1c1814" stroke="#3a3530"/><circle cx="11" cy="11" r="7.5" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="11" cy="11" r="5" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="11" cy="11" r="3.2" fill="none" stroke="#e07840" stroke-width="1"/><circle cx="11" cy="11" r="1.2" fill="#9a4e1e"/></svg>
-        </div>
-        <div class="pwa-text">
-          <div class="pwa-title-text">Spin or Stream</div>
-          <div class="pwa-sub">Add to Home Screen for quick access</div>
-        </div>
-        <button class="btn btn-search" style="font-size:9px;padding:7px 14px;flex-shrink:0">Install</button>
-        <button class="pwa-dismiss">×</button>
-      </div>
-      <p class="note">↑ This banner is shown once by the browser when the PWA criteria are met. After install, it never appears again.</p>
-    </div>
-  </div>
+      <div class="preview-label">Sort bar with toggle — all cards expanded</div>
 
-
-  <!-- ══════════════════════════════════════════════════════════
-       FULL INTEGRATED VIEW — WANTLIST
-  ══════════════════════════════════════════════════════════ -->
-  <div class="divider"></div>
-  <div class="feature-section" id="full-wantlist">
-    <div class="feature-label">Integrated View</div>
-    <div class="feature-title">Full Wantlist — All Features Active</div>
-    <div class="feature-desc">What the wantlist looks like with search, sort, label filter, best deal banner, scan progress, and all card badges active at once.</div>
-
-    <div class="full-view">
-      <!-- Page header -->
-      <div class="page-eyebrow">Your list</div>
-      <div class="full-view-title">Wantlist <em style="font-style:italic;color:var(--text-muted)">(4)</em></div>
-      <div class="full-view-sub">Scan prices, compare deals, move to collection.</div>
-
-      <!-- Best deal banner (F7) -->
-      <div class="best-deal-banner">
-        <span class="best-deal-eyebrow">Best deal</span>
-        <span class="best-deal-item">Miles Davis — Kind of Blue</span>
-        <span class="best-deal-price">$28.50 inc. shipping · US seller</span>
-        <a href="#" class="best-deal-link">View →</a>
-      </div>
-
-      <!-- Toolbar: search (F1) + sort (F2) + export (F5) -->
-      <div class="search-wrap" style="margin-bottom:10px">
-        <span class="search-icon">⌕</span>
-        <input type="text" class="search-input" placeholder="Search your wantlist…" />
-        <span class="search-count">4 items</span>
-      </div>
-      <div class="toolbar" style="margin-bottom:10px">
-        <div class="sort-group">
-          <button class="sort-pill">Year ↑</button>
-          <button class="sort-pill">Artist ↑</button>
-          <button class="sort-pill new active">Price ↑</button>
-        </div>
-        <div class="toolbar-right">
-          <button class="btn btn-secondary" style="font-size:9px;padding:5px 10px;display:flex;align-items:center;gap:4px">↓ CSV</button>
-          <button class="btn btn-search" style="font-size:9px;padding:5px 10px">Scan All</button>
+      <!-- Sort bar with toggle button -->
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <span style="font-size:10px;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;flex-shrink:0">Sort:</span>
+        <button class="sort-pill">Artist</button>
+        <button class="sort-pill">Year</button>
+        <button class="sort-pill active">Price ↑</button>
+        <div style="margin-left:auto">
+          <button class="btn btn-secondary" style="font-size:9px;padding:5px 12px" id="demo-toggle-all" onclick="demoToggleAll()">⊖ Collapse All</button>
         </div>
       </div>
 
-      <!-- Label filters (F8) -->
-      <div class="label-filters" style="margin-bottom:14px">
-        <button class="label-chip active">All</button>
-        <button class="label-chip">ACT Music</button>
-        <button class="label-chip">Columbia</button>
-        <button class="label-chip">Parlophone</button>
-        <button class="label-chip">Island</button>
-      </div>
-
-      <!-- Scan progress (F6) -->
-      <div class="scan-progress-wrap" style="margin-bottom:14px;background:rgba(74,144,128,0.06);border-color:rgba(74,144,128,0.25)">
-        <div class="scan-progress-header">
-          <span class="scan-progress-text" style="color:var(--teal)">✓ Scan complete</span>
-          <span class="scan-progress-count">4 of 4</span>
-        </div>
-        <div class="scan-progress-track"><div class="scan-progress-fill" style="width:100%"></div></div>
-      </div>
-
-      <!-- Card 1: Miles Davis — cheapest, best deal, in collection (F3), savings badge (F4) -->
-      <div class="card">
+      <!-- Scanned card 1 -->
+      <div class="card" style="margin-bottom:8px">
         <div class="card-header">
           <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
             <svg class="vinyl-ph" width="72" height="72" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
             <div>
               <div class="card-title">Kind of Blue</div>
               <div class="card-artist">Miles Davis</div>
-              <div class="chips">
-                <span class="chip">Columbia</span>
-                <span class="chip">1959</span>
-                <span class="chip warning">✓ In collection</span>
-                <span class="chip savings">−19% vs avg</span>
-                <span class="chip teal">8 listings</span>
-              </div>
+              <div class="chips"><span class="chip">Columbia</span><span class="chip">1959</span><span class="chip teal">8 listings</span></div>
             </div>
           </div>
-          <div class="wantlist-right">
+          <div style="display:flex;flex-direction:column;gap:6px;min-width:108px">
             <button class="btn btn-secondary" style="width:100%;font-size:10px">Refresh</button>
             <button class="btn-listen">▶ Listen</button>
           </div>
         </div>
-        <div class="price-grid">
+        <div class="card-collapse-row">
+          <button class="btn-collapse-demo" id="demo-ch-1" onclick="demoToggleCard('1')">▴</button>
+        </div>
+        <div id="demo-pg-1" class="price-grid" style="margin-top:10px">
           <div class="price-cell"><div class="price-label">Best Total</div><div class="price-value best">$28.50</div><div class="price-sub">inc. shipping</div></div>
           <div class="price-cell"><div class="price-label">Record Only</div><div class="price-value mid">$18.50</div><div class="price-sub">lowest found</div></div>
           <div class="price-cell"><div class="price-label">Avg</div><div class="price-value high">$35.00</div><div class="price-sub">8 listings</div></div>
         </div>
-        <div class="progress-wrap">
-          <div class="progress-bar-label"><span>Low $18.50</span><span>Avg $35.00</span></div>
-          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:53%"></div></div>
-        </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:12px">
-          <button class="btn btn-sync">+ Compare</button>
-        </div>
       </div>
 
-      <!-- Card 2: Nils Landgren — scanned, savings badge, normal -->
-      <div class="card">
+      <!-- Scanned card 2 -->
+      <div class="card" style="margin-bottom:8px">
         <div class="card-header">
           <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
             <svg class="vinyl-ph" width="72" height="72" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
             <div>
               <div class="card-title">Love of My Life</div>
               <div class="card-artist">Nils Landgren</div>
-              <div class="chips">
-                <span class="chip">ACT Music</span>
-                <span class="chip">2026</span>
-                <span class="chip">−3% vs avg</span>
-                <span class="chip teal">4 listings</span>
-              </div>
+              <div class="chips"><span class="chip">ACT Music</span><span class="chip">2026</span><span class="chip teal">4 listings</span></div>
             </div>
           </div>
-          <div class="wantlist-right">
+          <div style="display:flex;flex-direction:column;gap:6px;min-width:108px">
             <button class="btn btn-secondary" style="width:100%;font-size:10px">Refresh</button>
             <button class="btn-listen">▶ Listen</button>
           </div>
         </div>
-        <div class="price-grid">
+        <div class="card-collapse-row">
+          <button class="btn-collapse-demo" id="demo-ch-2" onclick="demoToggleCard('2')">▴</button>
+        </div>
+        <div id="demo-pg-2" class="price-grid" style="margin-top:10px">
           <div class="price-cell"><div class="price-label">Best Total</div><div class="price-value best">$54.58</div><div class="price-sub">inc. shipping</div></div>
           <div class="price-cell"><div class="price-label">Record Only</div><div class="price-value mid">$44.58</div><div class="price-sub">lowest found</div></div>
           <div class="price-cell"><div class="price-label">Avg</div><div class="price-value high">$45.81</div><div class="price-sub">4 listings</div></div>
         </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:12px">
-          <button class="btn btn-sync">+ Compare</button>
-        </div>
       </div>
 
-      <!-- Card 3: Radiohead — not scanned -->
+      <!-- Unscanned card — unaffected -->
       <div class="card dim">
         <div class="card-header">
           <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
@@ -830,354 +580,135 @@
               <div class="chips"><span class="chip">Parlophone</span><span class="chip">1997</span></div>
             </div>
           </div>
-          <div class="wantlist-right">
+          <div style="display:flex;flex-direction:column;gap:6px;min-width:108px">
             <button class="btn btn-search" style="width:100%;font-size:10px">Check Prices</button>
             <button class="btn-listen">▶ Listen</button>
           </div>
         </div>
       </div>
 
-      <!-- Card 4: Amy Winehouse — not scanned -->
-      <div class="card dim">
-        <div class="card-header">
-          <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-            <svg class="vinyl-ph" width="72" height="72" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
-            <div>
-              <div class="card-title">Back to Black</div>
-              <div class="card-artist">Amy Winehouse</div>
-              <div class="chips"><span class="chip">Island</span><span class="chip">2006</span></div>
-            </div>
-          </div>
-          <div class="wantlist-right">
-            <button class="btn btn-search" style="width:100%;font-size:10px">Check Prices</button>
-            <button class="btn-listen">▶ Listen</button>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /full-view -->
+      <p class="note">↑ "Collapse All" only affects the 2 scanned cards — the unscanned Radiohead card is unaffected (no chevron, no price data). Try the chevrons and the toggle button above.</p>
+    </div>
   </div>
 
 
   <!-- ══════════════════════════════════════════════════════════
-       FULL INTEGRATED VIEW — COMPARE CARD
+       DESIGN — COMPARE CARD WIDTH OPTIONS
   ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="full-compare">
-    <div class="feature-label">Integrated View</div>
-    <div class="feature-title">Full Compare Card — Break-even Active</div>
-    <div class="feature-desc">What a Compare card looks like with the break-even calculator widget added below the listing rows.</div>
+  <div class="feature-section" id="compare-width">
+    <div class="feature-label">Design Decision</div>
+    <div class="feature-title">Compare Card Width</div>
+    <div class="feature-desc">Three options for how Compare cards are sized and arranged. Option A is the current behaviour. Options B and C increase visual space and improve the layout at wider viewports. Pending approval before implementing.</div>
 
-    <div class="full-view">
-      <div class="page-eyebrow">Side by side</div>
-      <div class="full-view-title">Compare <em style="font-style:italic;color:var(--text-muted)">(1)</em></div>
-      <div class="full-view-sub">All available prices and where else to find each record.</div>
-
+    <!-- Option A: Current -->
+    <div class="preview-box" style="margin-bottom:16px">
+      <span class="compare-opt-tag">Option A — Current · Full width stacked</span>
       <div class="card">
         <div class="card-header">
           <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
-            <svg class="vinyl-ph" width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="20" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.7"/><circle cx="28" cy="28" r="13" fill="none" stroke="#3a3530" stroke-width="0.5" opacity="0.5"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
+            <svg class="vinyl-ph" width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
             <div>
               <div class="card-title">Love of My Life</div>
               <div class="card-artist">Nils Landgren</div>
-              <div class="chips"><span class="chip">2026</span></div>
+              <div class="chips"><span class="chip">2026</span><span class="chip teal">best deal</span></div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-            <button class="btn-listen" style="min-width:90px">▶ Listen</button>
-            <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;padding:0 4px">×</button>
+            <button class="btn-listen" style="min-width:80px">▶ Listen</button>
+            <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px">×</button>
           </div>
         </div>
-
         <div class="section-label" style="margin-top:14px">Discogs marketplace</div>
-        <div class="listing-row">
-          <div><span class="listing-origin us">Germany</span><span class="listing-count">— 1 for sale</span></div>
-          <div><span class="listing-price">$47.05</span><span class="listing-ship">~$22 ship</span></div>
-        </div>
-        <div class="listing-row">
-          <div><span class="listing-origin us">Germany</span><span class="listing-count">— 3 for sale</span></div>
-          <div><span class="listing-price">$44.58</span><span class="listing-ship">~$22 ship</span></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-bar-label"><span>Low $44.58</span><span>Avg $45.81</span></div>
-          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:97%"></div></div>
-        </div>
-
-        <!-- Break-even widget (F9) -->
-        <div class="breakeven-widget" style="margin-top:14px">
-          <div class="breakeven-title">Spin or Stream?</div>
-          <div class="breakeven-row">
-            <span>Best total (vinyl)</span>
-            <span>$44.58</span>
-          </div>
-          <div class="breakeven-row">
-            <span>Your streaming</span>
-            <span>$<input class="breakeven-input" type="number" value="10.99" min="1" max="50" step="0.01" oninput="calcBreakeven2(this)" /> /mo</span>
-          </div>
-          <div class="breakeven-result" id="be-result2">≈ 4 months payback</div>
-          <div class="breakeven-result-sub" id="be-sub2">Own it after ~4 streaming payments</div>
-        </div>
-
-        <div class="section-label" style="margin-top:16px">Find elsewhere</div>
-        <div class="find-retail">
-          <button class="btn-brand btn-brand-amazon">Amazon</button>
-          <button class="btn-brand btn-brand-walmart">Walmart</button>
-          <button class="btn-brand btn-brand-target">Target</button>
-        </div>
-        <div class="find-streaming">
-          <button class="btn-brand btn-brand-bandcamp">Bandcamp</button>
-          <button class="btn-brand btn-brand-discogs">Discogs</button>
-        </div>
-
+        <div class="listing-row"><div><span class="listing-origin">Germany</span><span class="listing-count">— 3 for sale</span></div><div><span class="listing-price">$44.58</span><span class="listing-ship">~$22 ship</span></div></div>
+        <div class="section-label" style="margin-top:14px">Find elsewhere</div>
+        <div class="find-retail"><button class="btn-brand btn-brand-amazon">Amazon</button><button class="btn-brand btn-brand-walmart">Walmart</button><button class="btn-brand btn-brand-target">Target</button></div>
+        <div class="find-streaming"><button class="btn-brand btn-brand-bandcamp">Bandcamp</button><button class="btn-brand btn-brand-discogs">Discogs</button></div>
       </div>
-    </div><!-- /full-view -->
+      <p class="note">↑ Cards fill the full content column width, stacked vertically. Simple, consistent with Wantlist cards. Gets wide on large monitors.</p>
+    </div>
+
+    <!-- Option B: Max-width centered -->
+    <div class="preview-box" style="margin-bottom:16px">
+      <span class="compare-opt-tag">Option B — Max-width 520px, centered</span>
+      <div class="compare-width-b-wrap">
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
+              <svg class="vinyl-ph" width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
+              <div>
+                <div class="card-title">Love of My Life</div>
+                <div class="card-artist">Nils Landgren</div>
+                <div class="chips"><span class="chip">2026</span><span class="chip teal">best deal</span></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+              <button class="btn-listen" style="min-width:80px">▶ Listen</button>
+              <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px">×</button>
+            </div>
+          </div>
+          <div class="section-label" style="margin-top:14px">Discogs marketplace</div>
+          <div class="listing-row"><div><span class="listing-origin">Germany</span><span class="listing-count">— 3 for sale</span></div><div><span class="listing-price">$44.58</span><span class="listing-ship">~$22 ship</span></div></div>
+          <div class="section-label" style="margin-top:14px">Find elsewhere</div>
+          <div class="find-retail"><button class="btn-brand btn-brand-amazon">Amazon</button><button class="btn-brand btn-brand-walmart">Walmart</button><button class="btn-brand btn-brand-target">Target</button></div>
+          <div class="find-streaming"><button class="btn-brand btn-brand-bandcamp">Bandcamp</button><button class="btn-brand btn-brand-discogs">Discogs</button></div>
+        </div>
+      </div>
+      <p class="note">↑ Cards capped at 520px and centered. More focused, magazine-like. On mobile it fills full width just like Option A. Best when you have 1–3 compare items.</p>
+    </div>
+
+    <!-- Option C: Two-column grid -->
+    <div class="preview-box">
+      <span class="compare-opt-tag">Option C — Two-column grid on desktop</span>
+      <div class="compare-width-c-grid">
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
+              <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
+              <div>
+                <div class="card-title">Love of My Life</div>
+                <div class="card-artist">Nils Landgren</div>
+                <div class="chips"><span class="chip">2026</span><span class="chip teal">best deal</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="section-label" style="margin-top:14px">Discogs marketplace</div>
+          <div class="listing-row"><div><span class="listing-origin">Germany</span><span class="listing-count">— 3 for sale</span></div><div><span class="listing-price">$44.58</span><span class="listing-ship">~$22 ship</span></div></div>
+          <div class="section-label" style="margin-top:14px">Find elsewhere</div>
+          <div class="find-retail"><button class="btn-brand btn-brand-amazon">Amazon</button><button class="btn-brand btn-brand-target">Target</button></div>
+          <div class="find-streaming"><button class="btn-brand btn-brand-bandcamp">Bandcamp</button><button class="btn-brand btn-brand-discogs">Discogs</button></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div style="display:flex;gap:12px;align-items:flex-start;flex:1;min-width:0">
+              <svg class="vinyl-ph" width="48" height="48" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27.5" fill="#1c1814" stroke="#3a3530"/><circle cx="28" cy="28" r="8" fill="none" stroke="#e07840" stroke-width="1.5"/><circle cx="28" cy="28" r="3" fill="#9a4e1e"/></svg>
+              <div>
+                <div class="card-title">Kind of Blue</div>
+                <div class="card-artist">Miles Davis</div>
+                <div class="chips"><span class="chip">1959</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="section-label" style="margin-top:14px">Discogs marketplace</div>
+          <div class="listing-row"><div><span class="listing-origin us">US</span><span class="listing-count">— 8 for sale</span></div><div><span class="listing-price">$18.50</span><span class="listing-ship">~$5 ship</span></div></div>
+          <div class="section-label" style="margin-top:14px">Find elsewhere</div>
+          <div class="find-retail"><button class="btn-brand btn-brand-amazon">Amazon</button><button class="btn-brand btn-brand-target">Target</button></div>
+          <div class="find-streaming"><button class="btn-brand btn-brand-bandcamp">Bandcamp</button><button class="btn-brand btn-brand-discogs">Discogs</button></div>
+        </div>
+      </div>
+      <p class="note">↑ Side-by-side 2-column grid on screens ≥600px. Cards are narrower so the layout is tighter. Degrades to single column on mobile automatically. Best for comparing 2 items simultaneously.</p>
+    </div>
   </div>
 
-  <div class="divider"></div>
 
-  <!-- ══════════════════════════════════════════════════════════
-       FEATURE 11 — MUSIC DISCOVERY
-  ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="f11">
-    <div class="feature-label">Experimental · Feature 11 <span class="shipped-badge">Shipped ✓</span></div>
-    <div class="feature-title">Music Discovery</div>
-    <div class="feature-desc">New recommended albums pulled from Bandcamp Daily Essential Releases, Pitchfork Best New Music, and Stereogum Album Reviews via public RSS feeds. Deduplicates across sources, refreshes every 6 hours. Visible only when Experimental Features is enabled in Settings.</div>
 
-    <!-- Isolated: source filters + cards -->
-    <div class="preview-box" style="margin-bottom:16px">
-      <div class="preview-label">Isolated · Source filters + album cards</div>
-
-      <div class="discover-filters">
-        <button class="discover-filter active" onclick="setDiscoverFilter(this, 'all')">All</button>
-        <button class="discover-filter bandcamp" onclick="setDiscoverFilter(this, 'bandcamp')">Bandcamp Daily</button>
-        <button class="discover-filter pitchfork" onclick="setDiscoverFilter(this, 'pitchfork')">Pitchfork BNM</button>
-        <button class="discover-filter stereogum" onclick="setDiscoverFilter(this, 'stereogum')">Stereogum</button>
-      </div>
-
-      <div id="discover-cards">
-        <!-- Card 1: Pitchfork + Stereogum (cross-source) -->
-        <div class="discover-card" data-sources="pitchfork stereogum">
-          <div class="discover-art">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
-          </div>
-          <div class="discover-body">
-            <div class="discover-title">Only God Was Above Us</div>
-            <div class="discover-artist">Vampire Weekend</div>
-            <div class="discover-meta">
-              <span class="source-badge multi">2 sources</span>
-              <span class="source-badge pitchfork">Pitchfork</span>
-              <span class="source-badge stereogum">Stereogum</span>
-              <span class="chip">Indie Rock</span>
-              <span class="chip">Art Rock</span>
-              <span class="score-chip">9.0</span>
-            </div>
-            <div class="discover-actions">
-              <button class="btn-add-wantlist">+ Add to Wantlist</button>
-              <span class="discover-date">Mar 5, 2024</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 2: Pitchfork BNM -->
-        <div class="discover-card" data-sources="pitchfork">
-          <div class="discover-art">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
-          </div>
-          <div class="discover-body">
-            <div class="discover-title">Manning Fireworks</div>
-            <div class="discover-artist">MJ Lenderman</div>
-            <div class="discover-meta">
-              <span class="source-badge pitchfork">Pitchfork BNM</span>
-              <span class="chip">Indie Rock</span>
-              <span class="chip">Slacker Rock</span>
-              <span class="score-chip">8.6</span>
-            </div>
-            <div class="discover-actions">
-              <button class="btn-add-wantlist">+ Add to Wantlist</button>
-              <span class="discover-date">Sep 6, 2024</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3: Bandcamp Daily -->
-        <div class="discover-card" data-sources="bandcamp">
-          <div class="discover-art">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
-          </div>
-          <div class="discover-body">
-            <div class="discover-title">Perceive Its Beauty, Acknowledge Its Grace</div>
-            <div class="discover-artist">Shabaka</div>
-            <div class="discover-meta">
-              <span class="source-badge bandcamp">Bandcamp Daily</span>
-              <span class="chip">Jazz</span>
-              <span class="chip">Spiritual Jazz</span>
-            </div>
-            <div class="discover-actions">
-              <button class="btn-add-wantlist">+ Add to Wantlist</button>
-              <span class="discover-date">Apr 19, 2024</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 4: Stereogum -->
-        <div class="discover-card" data-sources="stereogum">
-          <div class="discover-art">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
-          </div>
-          <div class="discover-body">
-            <div class="discover-title">Bright Future</div>
-            <div class="discover-artist">Adrianne Lenker</div>
-            <div class="discover-meta">
-              <span class="source-badge stereogum">Stereogum</span>
-              <span class="chip">Folk</span>
-              <span class="chip">Indie Folk</span>
-            </div>
-            <div class="discover-actions">
-              <button class="btn-add-wantlist">+ Add to Wantlist</button>
-              <span class="discover-date">Mar 22, 2024</span>
-            </div>
-          </div>
-        </div>
-      </div><!-- /discover-cards -->
-    </div><!-- /preview-box -->
-
-    <!-- Integrated: how it appears in the app -->
-    <div class="preview-box">
-      <div class="preview-label">Integrated · Full Discover tab in app context</div>
-      <div class="full-view">
-        <div class="page-eyebrow">What's New</div>
-        <div class="full-view-title">Discover <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--text-muted)">(4)</span></div>
-        <div class="full-view-sub" style="margin-bottom:16px">New recommendations from Bandcamp Daily, Pitchfork, and Stereogum · Updated 2h ago</div>
-
-        <div class="discover-filters" style="margin-bottom:16px">
-          <button class="discover-filter active" onclick="setDiscoverFilter2(this,'all')">All</button>
-          <button class="discover-filter bandcamp" onclick="setDiscoverFilter2(this,'bandcamp')">Bandcamp Daily</button>
-          <button class="discover-filter pitchfork" onclick="setDiscoverFilter2(this,'pitchfork')">Pitchfork BNM</button>
-          <button class="discover-filter stereogum" onclick="setDiscoverFilter2(this,'stereogum')">Stereogum</button>
-        </div>
-
-        <div id="discover-cards2">
-          <div class="discover-card" data-sources2="pitchfork stereogum">
-            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
-            <div class="discover-body">
-              <div class="discover-title">Only God Was Above Us</div>
-              <div class="discover-artist">Vampire Weekend</div>
-              <div class="discover-meta"><span class="source-badge multi">2 sources</span><span class="chip">Indie Rock</span><span class="score-chip">9.0</span></div>
-              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Mar 5, 2024</span></div>
-            </div>
-          </div>
-          <div class="discover-card" data-sources2="pitchfork">
-            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
-            <div class="discover-body">
-              <div class="discover-title">Manning Fireworks</div>
-              <div class="discover-artist">MJ Lenderman</div>
-              <div class="discover-meta"><span class="source-badge pitchfork">Pitchfork BNM</span><span class="chip">Indie Rock</span><span class="score-chip">8.6</span></div>
-              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Sep 6, 2024</span></div>
-            </div>
-          </div>
-          <div class="discover-card" data-sources2="bandcamp">
-            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
-            <div class="discover-body">
-              <div class="discover-title">Perceive Its Beauty, Acknowledge Its Grace</div>
-              <div class="discover-artist">Shabaka</div>
-              <div class="discover-meta"><span class="source-badge bandcamp">Bandcamp Daily</span><span class="chip">Jazz</span></div>
-              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Apr 19, 2024</span></div>
-            </div>
-          </div>
-          <div class="discover-card" data-sources2="stereogum">
-            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
-            <div class="discover-body">
-              <div class="discover-title">Bright Future</div>
-              <div class="discover-artist">Adrianne Lenker</div>
-              <div class="discover-meta"><span class="source-badge stereogum">Stereogum</span><span class="chip">Folk</span></div>
-              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Mar 22, 2024</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /feature 11 -->
-
-  <div class="divider"></div>
-
-  <!-- ══════════════════════════════════════════════════════════
-       SETTINGS PANEL PREVIEW
-  ══════════════════════════════════════════════════════════ -->
-  <div class="feature-section" id="f-settings">
-    <div class="feature-label">Foundation <span class="shipped-badge">Shipped ✓</span></div>
-    <div class="feature-title">Settings Panel</div>
-    <div class="feature-desc">Opens when Settings is clicked in the sidebar. Houses the Experimental Features toggle — the gate for Music Discovery and future experimental work. Simple, low visual weight.</div>
-
-    <div class="settings-panel">
-      <div class="settings-section-label">Experimental Features</div>
-
-      <div class="settings-row">
-        <div>
-          <div class="settings-row-label">Enable Experimental Features</div>
-          <div class="settings-row-desc">Unlocks features that are in active development. Currently adds a <strong style="color:var(--text)">Discover</strong> tab with new music recommendations from Bandcamp Daily, Pitchfork, and Stereogum. May change or break between updates.</div>
-        </div>
-        <label class="toggle-wrap">
-          <input type="checkbox" id="exp-toggle" onchange="handleExpToggle(this)" />
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-
-      <div id="exp-status" style="font-size:10px;color:var(--text-dim);margin-top:12px;display:none">
-        ✓ Experimental features enabled — <strong style="color:var(--teal)">Discover</strong> tab is now visible in the sidebar.
-      </div>
-    </div>
-  </div><!-- /settings -->
 
 </div><!-- /page -->
 
 <script>
-  // ── Feature 1: Search ──
-  function handleSearch(val) {
-    const q = val.toLowerCase().trim();
-    const cards = document.querySelectorAll('#search-results .card');
-    let visible = 0;
-    cards.forEach(card => {
-      const title = card.dataset.title || '';
-      const show = !q || title.includes(q);
-      card.style.display = show ? '' : 'none';
-      if (show) visible++;
-    });
-    const total = cards.length;
-    document.getElementById('search-count').textContent = q
-      ? `${visible} of ${total}`
-      : `${total} items`;
-  }
-
-  // ── Feature 2: Sort pills ──
-  function setSortActive(btn) {
-    btn.closest('.sort-group, .preview-box div').querySelectorAll('.sort-pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-  }
-
   // ── Feature 8: Label filter ──
   function setLabelActive(btn) {
     btn.closest('.label-filters').querySelectorAll('.label-chip').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
-  }
-
-  // ── Feature 11: Music Discovery filters ──
-  function setDiscoverFilter(btn, source) {
-    btn.closest('.discover-filters').querySelectorAll('.discover-filter').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('#discover-cards .discover-card').forEach(card => {
-      const sources = card.dataset.sources || '';
-      card.style.display = (source === 'all' || sources.includes(source)) ? '' : 'none';
-    });
-  }
-  function setDiscoverFilter2(btn, source) {
-    btn.closest('.discover-filters').querySelectorAll('.discover-filter').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('#discover-cards2 .discover-card').forEach(card => {
-      const sources = card.dataset.sources2 || '';
-      card.style.display = (source === 'all' || sources.includes(source)) ? '' : 'none';
-    });
-  }
-  function handleExpToggle(cb) {
-    document.getElementById('exp-status').style.display = cb.checked ? 'block' : 'none';
   }
 
   // ── Feature 9: Break-even calculator ──
@@ -1188,12 +719,27 @@
     document.getElementById('be-result').textContent = `≈ ${months} month${months !== 1 ? 's' : ''} payback`;
     document.getElementById('be-sub').textContent = `Own it after ~${months} streaming payment${months !== 1 ? 's' : ''}`;
   }
-  function calcBreakeven2(input) {
-    const vinyl = 44.58;
-    const monthly = parseFloat(input.value) || 10.99;
-    const months = Math.ceil(vinyl / monthly);
-    document.getElementById('be-result2').textContent = `≈ ${months} month${months !== 1 ? 's' : ''} payback`;
-    document.getElementById('be-sub2').textContent = `Own it after ~${months} streaming payment${months !== 1 ? 's' : ''}`;
+
+  // ── Feature 12: Expand/Collapse All demo ──
+  let demoAllCollapsed = false;
+  function demoToggleAll() {
+    demoAllCollapsed = !demoAllCollapsed;
+    ['1','2'].forEach(n => {
+      const pg = document.getElementById('demo-pg-' + n);
+      const ch = document.getElementById('demo-ch-' + n);
+      if (pg) pg.style.display = demoAllCollapsed ? 'none' : '';
+      if (ch) ch.textContent = demoAllCollapsed ? '▾' : '▴';
+    });
+    const btn = document.getElementById('demo-toggle-all');
+    if (btn) btn.textContent = demoAllCollapsed ? '⊕ Expand All' : '⊖ Collapse All';
+  }
+  function demoToggleCard(n) {
+    const pg = document.getElementById('demo-pg-' + n);
+    const ch = document.getElementById('demo-ch-' + n);
+    if (!pg) return;
+    const hidden = pg.style.display === 'none';
+    pg.style.display = hidden ? '' : 'none';
+    if (ch) ch.textContent = hidden ? '▴' : '▾';
   }
 </script>
 </body>
