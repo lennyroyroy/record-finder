@@ -517,10 +517,14 @@ const STYLES = `
     .sidebar { display: none; }
     .main {
       margin-left: 0;
-      padding: 24px 16px 90px;
+      padding: 16px 16px 90px;
       max-width: 100%;
     }
     .mobile-tab-bar { display: block; }
+    .page-eyebrow { display: none; }
+    .page-desc { display: none; }
+    .page-header { margin-bottom: 18px; padding-bottom: 14px; }
+    .page-title { font-size: 22px; }
   }
 
   @media (max-width: 540px) {
@@ -1406,6 +1410,31 @@ const STYLES = `
   @media (max-width: 680px) { .mobile-user-bar { display: flex; } }
   .mobile-user-name { font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+  /* ── MOBILE AVATAR ──────────────────────────────────────────────────────── */
+  .mobile-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    object-fit: cover; border: 1px solid var(--border); flex-shrink: 0;
+  }
+
+  /* ── SCAN ALL PROGRESS ───────────────────────────────────────────────────── */
+  .scan-all-progress {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: rgba(74,144,128,0.07); border: 1px solid rgba(74,144,128,0.25);
+    border-radius: var(--radius); padding: 10px 14px; margin-bottom: 14px;
+  }
+  .scan-all-label { font-size: 10px; color: var(--teal); letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; white-space: nowrap; }
+  .scan-all-title { font-size: 10px; color: var(--text-muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .scan-all-track { flex: 1; min-width: 80px; height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .scan-all-fill  { height: 100%; background: var(--teal); border-radius: 4px; transition: width 0.4s ease; }
+  .btn-cancel-scan { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; background: none; border: 1px solid var(--border); color: var(--text-dim); border-radius: var(--radius); padding: 3px 8px; cursor: pointer; flex-shrink: 0; }
+  .btn-cancel-scan:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* ── CARD COLLAPSE ───────────────────────────────────────────────────────── */
+  .btn-collapse { background: none; border: none; color: var(--text-dim); font-size: 14px; cursor: pointer; padding: 2px 4px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
+  .btn-collapse:hover { color: var(--text-muted); }
+  .card-collapsed-price { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--teal); }
+  .card-collapsed-sub { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
+
   /* ── SORT BAR ───────────────────────────────────────────────────────────── */
   .sort-bar       { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
   .sort-bar-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; }
@@ -1828,6 +1857,10 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   const [sortBy, setSortBy] = useState("none");
   const [sortDir, setSortDir] = useState("asc");
   const [searchQuery, setSearchQuery] = useState("");
+  const [collapsedCards, setCollapsedCards] = useState(new Set());
+  const [scanningAll, setScanningAll] = useState(false);
+  const [scanProgress, setScanProgress] = useState({ current: 0, total: 0, title: "" });
+  const scanCancelRef = useRef(false);
   const [toast, showToast] = useToast();
 
   function toggleSort(field) {
@@ -1914,6 +1947,33 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
     }
   }
 
+  async function scanAll() {
+    if (isGuest || scanningAll) return;
+    const unscanned = items.filter((i) => !results[i.id]);
+    if (!unscanned.length) { showToast("All items already scanned ✓"); return; }
+    setScanningAll(true);
+    scanCancelRef.current = false;
+    for (let i = 0; i < unscanned.length; i++) {
+      if (scanCancelRef.current) break;
+      setScanProgress({ current: i + 1, total: unscanned.length, title: unscanned[i].title });
+      await searchPrices(unscanned[i]);
+      if (i < unscanned.length - 1 && !scanCancelRef.current) {
+        await new Promise((r) => setTimeout(r, 5000));
+      }
+    }
+    setScanningAll(false);
+    setScanProgress({ current: 0, total: 0, title: "" });
+    if (!scanCancelRef.current) showToast("Scan complete ✓");
+  }
+
+  function toggleCollapse(id) {
+    setCollapsedCards((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
   async function searchPrices(item) {
     if (isGuest) return; // Guest prices are pre-loaded fixture data
     setSearching((s) => ({ ...s, [item.id]: true }));
@@ -1964,9 +2024,15 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         <p className="page-desc">Check marketplace prices on everything you're hunting for.</p>
         {!isGuest && (
           <div className="header-actions">
-            <button className="btn-sync" onClick={syncWantlist} disabled={syncing}>
+            <button className="btn-sync" onClick={syncWantlist} disabled={syncing || scanningAll}>
               {syncing ? "Syncing…" : "↻ Sync from Discogs"}
             </button>
+            {items.length > 0 && (
+              <button className="btn-sync" onClick={scanAll} disabled={scanningAll || syncing}
+                style={{ background: "rgba(74,144,128,0.12)", borderColor: "rgba(74,144,128,0.35)", color: "var(--teal)" }}>
+                {scanningAll ? `Scanning… ${scanProgress.current}/${scanProgress.total}` : `⊙ Scan All (${items.filter(i => !results[i.id]).length} left)`}
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -2016,6 +2082,17 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         </div>
       )}
 
+      {scanningAll && (
+        <div className="scan-all-progress">
+          <span className="scan-all-label">{scanProgress.current}/{scanProgress.total}</span>
+          <div className="scan-all-track">
+            <div className="scan-all-fill" style={{ width: `${(scanProgress.current / scanProgress.total) * 100}%` }} />
+          </div>
+          <span className="scan-all-title">{scanProgress.title}</span>
+          <button className="btn-cancel-scan" onClick={() => { scanCancelRef.current = true; }}>Cancel</button>
+        </div>
+      )}
+
       {!isGuest && items.length > 0 && Object.keys(results).length === 0 && (
         <p className="scan-hint">Scan records to unlock price sort and best deal banner.</p>
       )}
@@ -2038,6 +2115,8 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
               onCompareAdd?.(item, results[item.id]);
               showToast(`Added "${item.title}" to Compare`);
             }}
+            collapsed={collapsedCards.has(item.id)}
+            onToggleCollapse={() => toggleCollapse(item.id)}
           />
         ))
       )}
@@ -2045,7 +2124,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   );
 }
 
-function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
+function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collapsed, onToggleCollapse }) {
   const usListings = result?.discogs_us || [];
   const intlListings = result?.discogs_intl || [];
   const allListings = [...usListings, ...intlListings];
@@ -2088,25 +2167,39 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
           </div>
         </div>
         <div className="wantlist-card-actions">
-          <button
-            className={result ? "btn-secondary" : "btn-search"}
-            onClick={onSearch}
-            disabled={searching}
-          >
-            {searching ? "Searching…" : result ? "Refresh" : "Check Prices"}
-          </button>
-          <PlayDropdown query={ytQuery} />
+          {collapsed && result ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px" }}>
+              <span className="card-collapsed-price">${bestTotal?.toFixed(2)}</span>
+              <span className="card-collapsed-sub">inc. shipping</span>
+            </div>
+          ) : (
+            <>
+              <button
+                className={result ? "btn-secondary" : "btn-search"}
+                onClick={onSearch}
+                disabled={searching}
+              >
+                {searching ? "Searching…" : result ? "Refresh" : "Check Prices"}
+              </button>
+              <PlayDropdown query={ytQuery} />
+            </>
+          )}
+          {result && (
+            <button className="btn-collapse" onClick={onToggleCollapse} title={collapsed ? "Expand" : "Collapse"}>
+              {collapsed ? "▾" : "▴"}
+            </button>
+          )}
         </div>
       </div>
 
-      {searching && (
+      {!collapsed && searching && (
         <div className="loading-state" style={{ padding: "12px 0" }}>
           <div className="spinner" />
           Fetching marketplace prices…
         </div>
       )}
 
-      {result && allListings.length > 0 && (
+      {!collapsed && result && allListings.length > 0 && (
         <>
           <div className="price-grid">
             {bestTotal != null && (
@@ -2146,13 +2239,13 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
         </>
       )}
 
-      {result && allListings.length === 0 && (
+      {!collapsed && result && allListings.length === 0 && (
         <p style={{ fontSize: "11px", color: "var(--text-dim)", padding: "8px 0" }}>
           No listings found on the marketplace right now.
         </p>
       )}
 
-      {result && allListings.length > 0 && (
+      {!collapsed && result && allListings.length > 0 && (
         <div className="card-actions" style={{ justifyContent: "flex-end" }}>
           <button className="btn-sync" onClick={onCompareAdd}>+ Compare</button>
         </div>
@@ -2866,7 +2959,10 @@ export default function App() {
               </>
             ) : (
               <>
-                <span className="mobile-user-name">{authUsername}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                  {authAvatar && <img src={authAvatar} className="mobile-avatar" alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+                  <span className="mobile-user-name">{authUsername}</span>
+                </div>
                 <button className="sidebar-logout" onClick={handleLogout}>Log out</button>
               </>
             )}
@@ -2938,6 +3034,14 @@ export default function App() {
             >
               <span className="mobile-tab-icon">◉</span>
               Collection
+            </button>
+
+            <button
+              className={`mobile-tab-btn ${tab === "settings" ? "active" : ""}`}
+              onClick={() => setTab("settings")}
+            >
+              <span className="mobile-tab-icon">⚙</span>
+              Settings
             </button>
           </div>
         </div>
