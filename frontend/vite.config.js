@@ -9,6 +9,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        // Don't intercept navigation to /landing — it's a separate static page
+        navigateFallbackDenylist: [/^\/landing/],
+      },
       manifest: {
         name: 'Spin or Stream',
         short_name: 'Spin or Stream',

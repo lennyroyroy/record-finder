@@ -583,12 +583,11 @@ const STYLES = `
     z-index: 1;
   }
 
-  .login-eyebrow {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 16px;
+  .login-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
   .login-title {
@@ -598,7 +597,7 @@ const STYLES = `
     letter-spacing: -0.02em;
     line-height: 1.1;
     color: var(--text);
-    margin-bottom: 6px;
+    margin: 0;
   }
 
   .login-title em {
@@ -1804,8 +1803,16 @@ function LoginScreen({ error, loading, onGuestMode }) {
       ))}
 
       <div className="login-card">
-        <p className="login-eyebrow">Discogs Price Tool</p>
-        <h1 className="login-title">Spin or <em>Stream</em></h1>
+        <div className="login-logo-wrap">
+          <svg width="36" height="36" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="10.5" fill="#1c1814" stroke="#3a3530"/>
+            <circle cx="11" cy="11" r="7.5" fill="none" stroke="#3a3530" strokeWidth="0.5" opacity="0.7"/>
+            <circle cx="11" cy="11" r="5" fill="none" stroke="#3a3530" strokeWidth="0.5" opacity="0.5"/>
+            <circle cx="11" cy="11" r="3.2" fill="none" stroke="#e07840" strokeWidth="1"/>
+            <circle cx="11" cy="11" r="1.2" fill="#9a4e1e"/>
+          </svg>
+          <h1 className="login-title">Spin <em>or</em> Stream</h1>
+        </div>
         <p className="login-sub">
           Compare wantlist prices and make smarter decisions about what's worth buying on wax versus just streaming it.
         </p>
