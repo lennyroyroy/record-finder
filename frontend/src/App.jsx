@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.5" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.7" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -1429,7 +1429,8 @@ const STYLES = `
   .btn-cancel-scan:hover { border-color: var(--danger); color: var(--danger); }
 
   /* ── CARD COLLAPSE ───────────────────────────────────────────────────────── */
-  .btn-collapse { background: none; border: none; color: var(--text-dim); font-size: 14px; cursor: pointer; padding: 2px 4px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
+  .card-collapse-row { display: flex; justify-content: center; align-items: center; border-top: 1px solid var(--border); padding: 3px 0; margin-top: 6px; }
+  .btn-collapse { background: none; border: none; color: var(--text-dim); font-size: 14px; cursor: pointer; padding: 2px 8px; line-height: 1; transition: color 0.15s; }
   .btn-collapse:hover { color: var(--text-muted); }
   .card-collapsed-price { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--teal); }
   .card-collapsed-sub { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
@@ -2044,6 +2045,14 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         )}
       </div>
 
+      {bestDeal && (
+        <div className="best-deal-banner">
+          <span className="best-deal-eyebrow">Today's best deal</span>
+          <span className="best-deal-text">{bestDeal.title} · {bestDeal.artist}</span>
+          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)} inc. shipping</span>
+        </div>
+      )}
+
       {items.length > 1 && (
         <div className="wantlist-search-wrap">
           <input
@@ -2056,14 +2065,6 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
           {searchQuery && (
             <button className="wantlist-search-clear" onClick={() => setSearchQuery("")}>✕</button>
           )}
-        </div>
-      )}
-
-      {bestDeal && (
-        <div className="best-deal-banner">
-          <span className="best-deal-eyebrow">Today's best deal</span>
-          <span className="best-deal-text">{bestDeal.title} · {bestDeal.artist}</span>
-          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)} inc. shipping</span>
         </div>
       )}
 
@@ -2191,13 +2192,15 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collaps
               <PlayDropdown query={ytQuery} />
             </>
           )}
-          {result && (
-            <button className="btn-collapse" onClick={onToggleCollapse} title={collapsed ? "Expand" : "Collapse"}>
-              {collapsed ? "▾" : "▴"}
-            </button>
-          )}
         </div>
       </div>
+      {result && (
+        <div className="card-collapse-row">
+          <button className="btn-collapse" onClick={onToggleCollapse} title={collapsed ? "Expand" : "Collapse"}>
+            {collapsed ? "▾" : "▴"}
+          </button>
+        </div>
+      )}
 
       {!collapsed && searching && (
         <div className="loading-state" style={{ padding: "12px 0" }}>
