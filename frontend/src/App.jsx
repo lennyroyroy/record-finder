@@ -1852,10 +1852,17 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
       })
     : items;
 
+  // Pick the best (lowest) all-in price from a scan result
+  function bestPrice(result) {
+    if (!result) return null;
+    const candidates = [result.best_us?.total_low, result.best_intl?.total_low].filter((p) => p != null);
+    return candidates.length ? Math.min(...candidates) : null;
+  }
+
   const sortedItems = [...filteredItems].sort((a, b) => {
     if (sortBy === "price") {
-      const ap = results[a.id]?.best_total;
-      const bp = results[b.id]?.best_total;
+      const ap = bestPrice(results[a.id]);
+      const bp = bestPrice(results[b.id]);
       if (ap == null && bp == null) return 0;
       if (ap == null) return 1;
       if (bp == null) return -1;
@@ -1869,9 +1876,9 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
 
   const bestDeal = items.length > 0
     ? items.reduce((best, item) => {
-        const price = results[item.id]?.best_total;
+        const price = bestPrice(results[item.id]);
         if (price == null) return best;
-        if (!best || price < results[best.id]?.best_total) return item;
+        if (!best || price < bestPrice(results[best.id])) return item;
         return best;
       }, null)
     : null;
@@ -1985,7 +1992,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         <div className="best-deal-banner">
           <span className="best-deal-eyebrow">Today's best deal</span>
           <span className="best-deal-text">{bestDeal.title} · {bestDeal.artist}</span>
-          <span className="best-deal-price">${results[bestDeal.id].best_total.toFixed(2)} inc. shipping</span>
+          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)} inc. shipping</span>
         </div>
       )}
 
@@ -2443,24 +2450,28 @@ function SettingsTab({ experimentalEnabled, onToggle, installPrompt, appInstalle
         <h2 className="page-title">Settings</h2>
       </div>
 
-      {(installPrompt || appInstalled) && (
-        <div className="settings-group">
-          <div className="settings-group-label">App</div>
-          <div className="settings-row">
-            <div>
-              <div className="settings-row-label">Install App</div>
-              <div className="settings-row-desc">
-                Add Spin or Stream to your home screen for instant access and a native app experience.
-              </div>
+      <div className="settings-group">
+        <div className="settings-group-label">App</div>
+        <div className="settings-row">
+          <div>
+            <div className="settings-row-label">Install App</div>
+            <div className="settings-row-desc">
+              {appInstalled
+                ? "Spin or Stream is installed on this device."
+                : installPrompt
+                ? "Add Spin or Stream to your home screen for instant access and a full-screen experience."
+                : /iphone|ipad|ipod/i.test(navigator.userAgent)
+                ? "On iOS: tap the Share button in Safari, then tap \"Add to Home Screen\"."
+                : "Open this app in Chrome on Android or desktop to install it to your home screen."}
             </div>
-            {appInstalled ? (
-              <span style={{ fontSize: "11px", color: "var(--teal)", flexShrink: 0 }}>Installed ✓</span>
-            ) : (
-              <button className="btn-install" onClick={onInstall}>Install</button>
-            )}
           </div>
+          {appInstalled ? (
+            <span style={{ fontSize: "11px", color: "var(--teal)", flexShrink: 0 }}>Installed ✓</span>
+          ) : installPrompt ? (
+            <button className="btn-install" onClick={onInstall}>Install</button>
+          ) : null}
         </div>
-      )}
+      </div>
 
       <div className="settings-group">
         <div className="settings-group-label">Experimental Features</div>
