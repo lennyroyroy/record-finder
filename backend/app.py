@@ -173,14 +173,14 @@ FALLBACK_RATES = {
 
 SHIPPING_ESTIMATES = {
     # North America
-    "US": (0, 0), "Canada": (8, 16), "Mexico": (10, 20),
+    "US": (10, 10), "Canada": (8, 16), "Mexico": (10, 20),
     # Latin America
     "Colombia": (18, 38), "Brazil": (20, 40), "Argentina": (22, 42),
     "Chile": (20, 38), "Peru": (20, 38), "Venezuela": (22, 42),
     "Ecuador": (20, 38), "Bolivia": (22, 42), "Uruguay": (22, 42),
     "Paraguay": (22, 42), "Cuba": (24, 44),
     # Europe
-    "UK": (12, 22), "Germany": (10, 22), "France": (10, 22),
+    "UK": (30, 30), "Germany": (10, 22), "France": (10, 22),
     "Netherlands": (10, 20), "Belgium": (10, 20), "Italy": (12, 24),
     "Spain": (12, 24), "Sweden": (12, 22), "Denmark": (12, 22),
     "Norway": (12, 22), "Finland": (12, 22), "Switzerland": (12, 24),
@@ -197,8 +197,8 @@ SHIPPING_ESTIMATES = {
     "South Africa": (20, 38),
 }
 
-US_SHIPPING_LOW = 4
-US_SHIPPING_HIGH = 8
+US_SHIPPING_LOW = 10
+US_SHIPPING_HIGH = 10
 
 DEFAULT_SHIPPING = (15, 32)
 
@@ -325,7 +325,7 @@ def search():
         except RuntimeError:
             return jsonify({"error": "Discogs rate limit reached — wait a moment and try again"}), 429
 
-    best_us = min(discogs_us, key=lambda x: x["price"]) if discogs_us else None
+    best_us = min(discogs_us, key=lambda x: x["total_low"]) if discogs_us else None
     best_intl = min(discogs_intl, key=lambda x: x["total_low"]) if discogs_intl else None
 
     return jsonify({
