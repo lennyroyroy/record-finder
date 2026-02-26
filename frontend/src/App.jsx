@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const APP_VERSION = "v1.0" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.2" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -100,6 +100,15 @@ const STYLES = `
     opacity: 0.6;
   }
 
+  .sidebar-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 5px;
+  }
+
+  .sidebar-logo-mark { flex-shrink: 0; }
+
   .sidebar-attrib {
     padding: 12px 24px 0;
     font-size: 9px;
@@ -193,6 +202,13 @@ const STYLES = `
     background: var(--teal);
   }
 
+  .nav-item.settings-item {
+    opacity: 0.45;
+    margin-top: auto;
+    font-size: 11px;
+  }
+  .nav-item.settings-item:hover { opacity: 0.8; }
+
   .sidebar-footer {
     padding: 16px 24px 0;
     border-top: 1px solid var(--border);
@@ -261,7 +277,7 @@ const STYLES = `
     flex: 1;
     min-height: 100vh;
     padding: 40px 40px 48px;
-    max-width: 900px;
+    max-width: 1000px;
   }
 
   /* ── MOBILE TAB BAR ────────────────────────────────────────────────────── */
@@ -330,6 +346,19 @@ const STYLES = `
       max-width: 100%;
     }
     .mobile-tab-bar { display: block; }
+  }
+
+  @media (max-width: 540px) {
+    .card { padding: 14px; }
+    .card-title { font-size: 14px; }
+    .card-artist { font-size: 10px; }
+    .price-grid { gap: 6px; }
+    .price-value { font-size: 20px; }
+    .price-label { font-size: 9px; }
+    .price-sub { font-size: 9px; }
+    .card-actions { gap: 6px; }
+    .find-elsewhere-row { gap: 4px; }
+    .btn-brand { font-size: 8px; padding: 5px 8px; }
   }
 
   /* ── LOGIN SCREEN ──────────────────────────────────────────────────────── */
@@ -886,6 +915,46 @@ const STYLES = `
     border-color: rgba(255, 78, 69, 0.55);
   }
 
+  /* ── PLAY DROPDOWN ──────────────────────────────────────────────────────── */
+  .play-dropdown-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .play-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    z-index: 50;
+    min-width: 148px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+
+  .play-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: background 0.12s, color 0.12s;
+    white-space: nowrap;
+  }
+  .play-dropdown-item:hover { background: var(--surface); color: var(--text); }
+  .play-dropdown-item + .play-dropdown-item { border-top: 1px solid var(--border); }
+  .play-dropdown-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   /* ── COMPARE TABLE ─────────────────────────────────────────────────────── */
 
   .compare-table {
@@ -1236,6 +1305,53 @@ function VinylPh({ size }) {
   return <div className="vinyl-ph" style={{ width: size, height: size }} />;
 }
 
+// ─── PLAY DROPDOWN ────────────────────────────────────────────────────────────
+
+function PlayDropdown({ query }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  const ytUrl      = `https://music.youtube.com/search?q=${query}`;
+  const spotifyUrl = `https://open.spotify.com/search/${query}`;
+  const appleUrl   = `https://music.apple.com/search?term=${query}`;
+
+  return (
+    <div className="play-dropdown-wrap" ref={ref}>
+      <button
+        className="btn-play-yt"
+        title="Preview on music services"
+        onClick={() => setOpen(o => !o)}
+        style={open ? { background: "rgba(255,78,69,0.24)", borderColor: "rgba(255,78,69,0.55)" } : {}}
+      >▶</button>
+      {open && (
+        <div className="play-dropdown-menu">
+          <a href={ytUrl} target="_blank" rel="noreferrer" className="play-dropdown-item" onClick={() => setOpen(false)}>
+            <span className="play-dropdown-dot" style={{ background: "#ff4e45" }} />
+            YouTube Music
+          </a>
+          <a href={spotifyUrl} target="_blank" rel="noreferrer" className="play-dropdown-item" onClick={() => setOpen(false)}>
+            <span className="play-dropdown-dot" style={{ background: "#1db954" }} />
+            Spotify
+          </a>
+          <a href={appleUrl} target="_blank" rel="noreferrer" className="play-dropdown-item" onClick={() => setOpen(false)}>
+            <span className="play-dropdown-dot" style={{ background: "#fc3c44" }} />
+            Apple Music
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── GUEST FIXTURE DATA ──────────────────────────────────────────────────────
 
 const _dUrl = (q) => `https://www.discogs.com/search/?q=${encodeURIComponent(q)}&type=release&format=Vinyl`;
@@ -1419,8 +1535,8 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
 
   const sortedItems = [...items].sort((a, b) => {
     if (sortBy === "none") return 0;
-    const av = sortBy === "year" ? (a.year || "0") : (a.artist || "");
-    const bv = sortBy === "year" ? (b.year || "0") : (b.artist || "");
+    const av = sortBy === "year" ? String(a.year || 0) : (a.artist || "");
+    const bv = sortBy === "year" ? String(b.year || 0) : (b.artist || "");
     return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
   });
 
@@ -1551,39 +1667,44 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
   const prices = allListings.map((l) => l.price).filter(Boolean);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const avgPrice = prices.length ? prices.reduce((a, b) => a + b) / prices.length : null;
-  // Best total-with-shipping across all listings
-  const bestUS = result?.best_us;
-  const bestIntl = result?.best_intl;
-  const bestTotalUS = bestUS ? bestUS.total_low : null;
-  const bestTotalIntl = bestIntl ? bestIntl.total_low : null;
+
+  // Best total = lowest (price + shipping) across all listings
+  const bestListing = allListings.length
+    ? allListings.reduce((b, l) => {
+        const bt = l.price + (l.shipping_low || 0);
+        const bbt = b.price + (b.shipping_low || 0);
+        return bt < bbt ? l : b;
+      })
+    : null;
+  const bestTotal = bestListing ? bestListing.price + (bestListing.shipping_low || 0) : null;
+
+  // Total records for sale (sum num_for_sale across all listings)
+  const totalForSale = allListings.reduce((sum, l) => sum + (l.num_for_sale || 1), 0);
 
   const ytQuery = encodeURIComponent(`${item.artist} ${item.title}`);
 
   return (
     <div className="card">
       <div className="card-header">
-        <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", gap: "14px", alignItems: "flex-start", flex: 1, minWidth: 0 }}>
           {item.cover_url
-            ? <img src={item.cover_url} alt={item.title} style={{ width: "52px", height: "52px", objectFit: "cover", borderRadius: "6px", border: "1px solid var(--border)", flexShrink: 0 }} />
-            : <VinylPh size={52} />
+            ? <img src={item.cover_url} alt={item.title} style={{ width: "72px", height: "72px", objectFit: "cover", borderRadius: "8px", border: "1px solid var(--border)", flexShrink: 0 }} />
+            : <VinylPh size={72} />
           }
           <div style={{ minWidth: 0 }}>
             <div className="card-title">{item.title}</div>
             <div className="card-artist">{item.artist}</div>
+            <div style={{ display: "flex", gap: "5px", marginTop: "6px", flexWrap: "wrap" }}>
+              {item.format && <span className="chip">{item.format}</span>}
+              {item.label && <span className="chip">{item.label}</span>}
+              {result && <span className="chip teal">{totalForSale} listings</span>}
+            </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-          <a href={`https://music.youtube.com/search?q=${ytQuery}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-            <button className="btn-play-yt" title="Preview song on YouTube Music">▶</button>
-          </a>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px", flexShrink: 0 }}>
           {item.year && <div className="chip">{item.year}</div>}
+          <PlayDropdown query={ytQuery} />
         </div>
-      </div>
-
-      <div className="card-meta">
-        {item.format && <span className="chip">{item.format}</span>}
-        {item.label && <span className="chip">{item.label}</span>}
-        {result && <span className="chip teal">{allListings.length} listings</span>}
       </div>
 
       {searching && (
@@ -1596,25 +1717,25 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
       {result && allListings.length > 0 && (
         <>
           <div className="price-grid">
-            {(bestTotalUS ?? bestTotalIntl) != null && (
+            {bestTotal != null && (
               <div className="price-cell">
                 <div className="price-label">Best Total</div>
-                <div className="price-value best">${(bestTotalUS ?? bestTotalIntl).toFixed(2)}</div>
-                <div className="price-sub">inc. est. shipping</div>
+                <div className="price-value best">${bestTotal.toFixed(2)}</div>
+                <div className="price-sub">inc. shipping</div>
               </div>
             )}
             {minPrice != null && (
               <div className="price-cell">
                 <div className="price-label">Record only</div>
                 <div className="price-value">${minPrice.toFixed(2)}</div>
-                <div className="price-sub">{bestTotalUS ? "ships from US" : "lowest found"}</div>
+                <div className="price-sub">lowest found</div>
               </div>
             )}
             {avgPrice != null && (
               <div className="price-cell">
                 <div className="price-label">Avg</div>
                 <div className="price-value high">${avgPrice.toFixed(2)}</div>
-                <div className="price-sub">{allListings.length} listings</div>
+                <div className="price-sub">{totalForSale} listings</div>
               </div>
             )}
           </div>
@@ -1641,20 +1762,15 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd }) {
 
       <div className="card-actions" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: "8px" }}>
-          {!result && (
-            <button className="btn-search" onClick={onSearch} disabled={searching}>
-              {searching ? "Searching…" : "Check Prices"}
-            </button>
-          )}
           {result && (
             <button className="btn-secondary" onClick={onSearch} disabled={searching}>Refresh</button>
           )}
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
-          {item.discogs_url && (
-            <a href={item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-              <button className="btn-brand btn-brand-discogs">Discogs ↗</button>
-            </a>
+          {!result && (
+            <button className="btn-search" onClick={onSearch} disabled={searching}>
+              {searching ? "Searching…" : "Check Prices"}
+            </button>
           )}
           {result && allListings.length > 0 && (
             <button className="btn-sync" onClick={onCompareAdd}>+ Compare</button>
@@ -1734,7 +1850,7 @@ function CompareTab({ compareItems, onRemove }) {
                 padding: "8px 12px", background: "var(--bg)", border: "1px solid var(--border)",
                 borderRadius: "var(--radius)", marginBottom: "4px" }}>
                 <div>
-                  <span style={{ fontSize: "11px", color: isUS ? "var(--teal)" : "var(--text-muted)", fontWeight: 500 }}>
+                  <span style={{ fontSize: "11px", color: isUS ? "#6aadcc" : "var(--text-muted)", fontWeight: 500 }}>
                     {isUS ? "US" : l.ships_from}
                   </span>
                   {l.num_for_sale > 0 && (
@@ -1747,11 +1863,9 @@ function CompareTab({ compareItems, onRemove }) {
                   <span style={{ fontFamily: "'Fraunces', serif", fontSize: "16px", fontWeight: 700, color: "var(--text)" }}>
                     ${l.price.toFixed(2)}
                   </span>
-                  {l.shipping_low > 0 && (
-                    <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "6px" }}>
-                      + ${l.shipping_low}–${l.shipping_high} ship
-                    </span>
-                  )}
+                  <span style={{ fontSize: "10px", color: "var(--text-dim)", marginLeft: "6px" }}>
+                    + ${l.shipping_low ?? (isUS ? 10 : 0)}–${l.shipping_high ?? (isUS ? 10 : 0)} ship
+                  </span>
                 </div>
               </div>
             </a>
@@ -1775,10 +1889,8 @@ function CompareTab({ compareItems, onRemove }) {
                     </div>
                   </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "2px", flexShrink: 0 }}>
-                  <a href={`https://music.youtube.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                    <button className="btn-play-yt" title="Preview song on YouTube Music">▶</button>
-                  </a>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+                  <PlayDropdown query={qPlain} />
                   <button className="btn-icon" onClick={() => handleRemove(ci.item.id)} title="Remove">×</button>
                 </div>
               </div>
@@ -1810,15 +1922,6 @@ function CompareTab({ compareItems, onRemove }) {
               {/* Find elsewhere */}
               <p className="section-label" style={{ marginTop: "16px" }}>Find elsewhere</p>
               <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
-                {ci.item.discogs_url && (
-                  <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                    <button className="btn-brand btn-brand-discogs">Discogs ↗</button>
-                  </a>
-                )}
-                <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-                  <button className="btn-brand btn-brand-bandcamp">Bandcamp</button>
-                </a>
-                <div style={{ width: "1px", height: "22px", background: "var(--border)", margin: "0 2px", flexShrink: 0 }} />
                 <a href={`https://www.amazon.com/s?k=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
                   <button className="btn-brand btn-brand-amazon">Amazon</button>
                 </a>
@@ -1828,6 +1931,15 @@ function CompareTab({ compareItems, onRemove }) {
                 <a href={`https://www.target.com/s?searchTerm=${qVinyl}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
                   <button className="btn-brand btn-brand-target">Target</button>
                 </a>
+                <div style={{ width: "1px", height: "22px", background: "var(--border)", margin: "0 2px", flexShrink: 0 }} />
+                <a href={`https://bandcamp.com/search?q=${qPlain}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                  <button className="btn-brand btn-brand-bandcamp">Bandcamp</button>
+                </a>
+                {ci.item.discogs_url && (
+                  <a href={ci.item.discogs_url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="btn-brand btn-brand-discogs">Discogs ↗</button>
+                  </a>
+                )}
               </div>
             </div>
           );
@@ -2058,10 +2170,16 @@ export default function App() {
         {/* ── SIDEBAR ── */}
         <aside className="sidebar">
           <div className="sidebar-brand">
-            <span className="sidebar-logo">
-              Spin or <em>Stream</em>
-            </span>
-            <p className="sidebar-tagline">Vinyl price tool</p>
+            <div className="sidebar-logo-wrap">
+              <svg className="sidebar-logo-mark" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="10.5" fill="#1c1814" stroke="#3a3530"/>
+                <circle cx="11" cy="11" r="7.5" fill="none" stroke="#3a3530" strokeWidth="0.5" opacity="0.7"/>
+                <circle cx="11" cy="11" r="5" fill="none" stroke="#3a3530" strokeWidth="0.5" opacity="0.5"/>
+                <circle cx="11" cy="11" r="3.2" fill="none" stroke="#e07840" strokeWidth="1"/>
+                <circle cx="11" cy="11" r="1.2" fill="#9a4e1e"/>
+              </svg>
+              <span className="sidebar-logo">Spin <em>or</em> Stream</span>
+            </div>
             <p className="sidebar-version">{APP_VERSION}</p>
           </div>
 
@@ -2096,6 +2214,11 @@ export default function App() {
             >
               <span className="nav-icon">◉</span>
               Collection
+            </button>
+
+            <button className="nav-item settings-item" disabled>
+              <span className="nav-icon">⚙</span>
+              Settings
             </button>
           </nav>
 
