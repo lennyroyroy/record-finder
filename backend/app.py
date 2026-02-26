@@ -209,55 +209,60 @@ def _fetch_pitchfork():
     albums = []
     try:
         root = _fetch_xml("https://pitchfork.com/feed/feed-best/rss")
-        ns = {"media": "http://search.yahoo.com/mrss/"}
         for item in root.iter("item"):
             title = (item.findtext("title") or "").strip()
-            # Typical format: "Artist: Album Name"
+            # Try "Artist: Album" format, fall back to whole title
             if ":" in title:
                 artist, album = title.split(":", 1)
             else:
                 artist, album = "", title
             url = item.findtext("link") or ""
             date = _parse_date(item.findtext("pubDate"))
-            # Score: look in description for a number like "8.5"
             desc = item.findtext("description") or ""
             score_match = re.search(r"\b([0-9]\.[0-9]|10\.0)\b", desc)
             score = float(score_match.group(1)) if score_match else None
-            # Categories
             genres = [c.text for c in item.findall("category") if c.text]
-            albums.append({
-                "artist": artist.strip(),
-                "album": album.strip(),
-                "source": "pitchfork",
-                "date": date,
-                "score": score,
-                "genres": genres,
-                "url": url,
-            })
+            if artist.strip() or album.strip():
+                albums.append({
+                    "artist": artist.strip(),
+                    "album": album.strip(),
+                    "source": "pitchfork",
+                    "date": date,
+                    "score": score,
+                    "genres": genres,
+                    "url": url,
+                })
     except Exception as e:
         log.warning("Pitchfork RSS failed: %s", e)
     return albums
 
 def _fetch_stereogum():
-    """Stereogum RSS — filter for Album Review category items."""
+    """Stereogum RSS — album reviews identified by category or title separator."""
     albums = []
     try:
         root = _fetch_xml("https://www.stereogum.com/feed")
         for item in root.iter("item"):
-            categories = [c.text for c in item.findall("category") if c.text]
-            if not any("album" in c.lower() and "review" in c.lower() for c in categories):
-                continue
             title = (item.findtext("title") or "").strip()
-            # Common formats: "Artist – Album" or "Artist: Album"
-            for sep in [" \u2013 ", " - ", ": "]:
+            categories = [c.text for c in item.findall("category") if c.text]
+            cats_lower = " ".join(c.lower() for c in categories)
+            # Accept if category mentions album/review, OR title has artist–album separator
+            has_review_cat = "album" in cats_lower or "review" in cats_lower
+            sep_found = None
+            for sep in [" \u2013 ", " \u2014 ", " - "]:
                 if sep in title:
-                    artist, album = title.split(sep, 1)
+                    sep_found = sep
                     break
+            if not has_review_cat and not sep_found:
+                continue
+            if sep_found:
+                artist, album = title.split(sep_found, 1)
+            elif ": " in title:
+                artist, album = title.split(": ", 1)
             else:
                 artist, album = "", title
             url = item.findtext("link") or ""
             date = _parse_date(item.findtext("pubDate"))
-            genres = [c for c in categories if c.lower() not in ("album review", "reviews")]
+            genres = [c for c in categories if c.lower() not in ("album review", "reviews", "music")]
             albums.append({
                 "artist": artist.strip(),
                 "album": album.strip(),
@@ -272,29 +277,35 @@ def _fetch_stereogum():
     return albums
 
 def _fetch_bandcamp():
-    """Bandcamp Daily RSS — filter for Essential Releases posts."""
+    """Bandcamp Daily RSS — recent editorial posts (reviews, essential releases, album of the day)."""
     albums = []
     try:
         root = _fetch_xml("https://daily.bandcamp.com/feed")
+        SKIP = ("interview", "playlist", "label profile", "best of", "year in")
         for item in root.iter("item"):
-            title = (item.findtext("title") or "").lower()
-            categories = [c.text for c in item.findall("category") if c.text]
-            is_essential = "essential" in title or any("essential" in c.lower() for c in categories)
-            if not is_essential:
-                continue
-            # Each roundup post = one entry (individual album extraction would require HTML parsing)
             raw_title = (item.findtext("title") or "").strip()
+            title_lower = raw_title.lower()
+            if any(kw in title_lower for kw in SKIP):
+                continue
+            categories = [c.text for c in item.findall("category") if c.text]
             url = item.findtext("link") or ""
             date = _parse_date(item.findtext("pubDate"))
+            # Try to split "Artist – Album" format; otherwise treat whole title as feature name
+            artist, album = "", raw_title
+            for sep in [" \u2013 ", " \u2014 ", " - "]:
+                if sep in raw_title:
+                    artist, album = raw_title.split(sep, 1)
+                    break
             albums.append({
-                "artist": "Various",
-                "album": raw_title,
+                "artist": artist.strip(),
+                "album": album.strip(),
                 "source": "bandcamp",
                 "date": date,
                 "score": None,
-                "genres": ["Bandcamp Essential Releases"],
+                "genres": categories or ["Bandcamp Daily"],
                 "url": url,
             })
+        albums = albums[:15]  # cap at 15 most recent
     except Exception as e:
         log.warning("Bandcamp RSS failed: %s", e)
     return albums
