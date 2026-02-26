@@ -10,6 +10,9 @@ import logging
 import os
 import re
 import secrets
+import time
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -34,8 +37,10 @@ limiter = Limiter(
 )
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-DEV_FRONTEND_URL = os.getenv("DEV_FRONTEND_URL", "")
-_ALLOWED_ORIGINS = [o for o in [FRONTEND_URL, DEV_FRONTEND_URL, "http://localhost:5173"] if o]
+# DEV_FRONTEND_URL can be a comma-separated list of allowed dev/preview origins
+# e.g. "https://dev--spinorstream.netlify.app,https://abc123--spinorstream.netlify.app"
+_DEV_ORIGINS = [u.strip() for u in os.getenv("DEV_FRONTEND_URL", "").split(",") if u.strip()]
+_ALLOWED_ORIGINS = [o for o in [FRONTEND_URL] + _DEV_ORIGINS + ["http://localhost:5173"] if o]
 CORS(app, supports_credentials=True, origins=_ALLOWED_ORIGINS)
 
 @app.after_request
@@ -98,18 +103,18 @@ def _discogs_get(url, params=None):
 @app.route("/auth/start")
 @limiter.limit("10 per minute")
 def auth_start():
+    origin = request.headers.get("Origin", FRONTEND_URL)
+    redirect_back = origin if origin in _ALLOWED_ORIGINS else FRONTEND_URL
+    # Sign redirect_back into the callback URL so it survives server restarts
+    state = _make_session_token({"redirect_back": redirect_back})
     oauth = OAuth1Session(
         DISCOGS_CONSUMER_KEY,
         client_secret=DISCOGS_CONSUMER_SECRET,
-        callback_uri=f"{request.host_url}oauth/callback"
+        callback_uri=f"{request.host_url}oauth/callback?state={state}"
     )
     tokens = oauth.fetch_request_token(REQUEST_TOKEN_URL)
-    origin = request.headers.get("Origin", FRONTEND_URL)
-    redirect_back = origin if origin in _ALLOWED_ORIGINS else FRONTEND_URL
-    TOKEN_STORE[tokens["oauth_token"]] = {
-        "oauth_token_secret": tokens["oauth_token_secret"],
-        "redirect_back": redirect_back,
-    }
+    # TOKEN_STORE only holds the request token secret (needed for leg 2 of the dance)
+    TOKEN_STORE[tokens["oauth_token"]] = tokens["oauth_token_secret"]
     return jsonify({"auth_url": f"{AUTHORIZE_URL}?oauth_token={tokens['oauth_token']}"})
 
 @app.route("/oauth/callback")
@@ -117,11 +122,13 @@ def oauth_callback():
     oauth_token = request.args.get("oauth_token")
     oauth_verifier = request.args.get("oauth_verifier")
 
-    stored = TOKEN_STORE.pop(oauth_token, None)
-    if not stored:
+    # redirect_back is encoded in the signed state param — survives server restarts
+    state_data = _load_session_token(request.args.get("state", "")) or {}
+    redirect_back = state_data.get("redirect_back", FRONTEND_URL)
+
+    oauth_token_secret = TOKEN_STORE.pop(oauth_token, None)
+    if not oauth_token_secret:
         return "OAuth session expired or not found. Please try again.", 400
-    oauth_token_secret = stored.get("oauth_token_secret", "")
-    redirect_back = stored.get("redirect_back", FRONTEND_URL)
 
     oauth = OAuth1Session(
         DISCOGS_CONSUMER_KEY,
@@ -139,7 +146,8 @@ def oauth_callback():
     )
     identity = authed.get("https://api.discogs.com/oauth/identity").json()
     username = identity.get("username")
-    avatar_url = identity.get("avatar_url", "")
+    user_profile = authed.get(f"https://api.discogs.com/users/{username}").json()
+    avatar_url = user_profile.get("avatar_url", "")
 
     token = _make_session_token({
         "access_token": tokens["oauth_token"],
@@ -160,7 +168,190 @@ def oauth_me():
     data = _load_session_token(token)
     if not data:
         return jsonify({"authenticated": False}), 401
-    return jsonify({"authenticated": True, "username": data["username"], "avatar_url": data.get("avatar_url", "")})
+    username = data["username"]
+    try:
+        profile = _discogs_get(f"https://api.discogs.com/users/{username}").json()
+        avatar_url = profile.get("avatar_url", "")
+    except Exception:
+        avatar_url = data.get("avatar_url", "")
+    return jsonify({"authenticated": True, "username": username, "avatar_url": avatar_url})
+
+
+# ─── MUSIC DISCOVERY ─────────────────────────────────────────────────────────
+
+_DISCOVER_CACHE = {"data": None, "expires": 0}
+_DISCOVER_TTL = 6 * 3600  # 6 hours
+
+_RSS_HEADERS = {"User-Agent": "SpinOrStream/1.0 (+https://spinorstream.com)"}
+
+def _fetch_xml(url):
+    r = requests.get(url, headers=_RSS_HEADERS, timeout=10)
+    r.raise_for_status()
+    return ET.fromstring(r.content)
+
+def _norm(s):
+    """Lowercase + strip punctuation for deduplication matching."""
+    return re.sub(r"[^\w\s]", "", (s or "").lower()).strip()
+
+def _parse_date(s):
+    """Parse an RSS pubDate string to ISO 8601."""
+    if not s:
+        return None
+    for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S GMT"):
+        try:
+            return datetime.strptime(s.strip(), fmt).astimezone(timezone.utc).isoformat()
+        except ValueError:
+            pass
+    return s
+
+def _fetch_pitchfork():
+    """Pitchfork Best New Music RSS — each item is one BNM review."""
+    albums = []
+    try:
+        root = _fetch_xml("https://pitchfork.com/feed/feed-best/rss")
+        ns = {"media": "http://search.yahoo.com/mrss/"}
+        for item in root.iter("item"):
+            title = (item.findtext("title") or "").strip()
+            # Typical format: "Artist: Album Name"
+            if ":" in title:
+                artist, album = title.split(":", 1)
+            else:
+                artist, album = "", title
+            url = item.findtext("link") or ""
+            date = _parse_date(item.findtext("pubDate"))
+            # Score: look in description for a number like "8.5"
+            desc = item.findtext("description") or ""
+            score_match = re.search(r"\b([0-9]\.[0-9]|10\.0)\b", desc)
+            score = float(score_match.group(1)) if score_match else None
+            # Categories
+            genres = [c.text for c in item.findall("category") if c.text]
+            albums.append({
+                "artist": artist.strip(),
+                "album": album.strip(),
+                "source": "pitchfork",
+                "date": date,
+                "score": score,
+                "genres": genres,
+                "url": url,
+            })
+    except Exception as e:
+        log.warning("Pitchfork RSS failed: %s", e)
+    return albums
+
+def _fetch_stereogum():
+    """Stereogum RSS — filter for Album Review category items."""
+    albums = []
+    try:
+        root = _fetch_xml("https://www.stereogum.com/feed")
+        for item in root.iter("item"):
+            categories = [c.text for c in item.findall("category") if c.text]
+            if not any("album" in c.lower() and "review" in c.lower() for c in categories):
+                continue
+            title = (item.findtext("title") or "").strip()
+            # Common formats: "Artist – Album" or "Artist: Album"
+            for sep in [" \u2013 ", " - ", ": "]:
+                if sep in title:
+                    artist, album = title.split(sep, 1)
+                    break
+            else:
+                artist, album = "", title
+            url = item.findtext("link") or ""
+            date = _parse_date(item.findtext("pubDate"))
+            genres = [c for c in categories if c.lower() not in ("album review", "reviews")]
+            albums.append({
+                "artist": artist.strip(),
+                "album": album.strip(),
+                "source": "stereogum",
+                "date": date,
+                "score": None,
+                "genres": genres[:3],
+                "url": url,
+            })
+    except Exception as e:
+        log.warning("Stereogum RSS failed: %s", e)
+    return albums
+
+def _fetch_bandcamp():
+    """Bandcamp Daily RSS — filter for Essential Releases posts."""
+    albums = []
+    try:
+        root = _fetch_xml("https://daily.bandcamp.com/feed")
+        for item in root.iter("item"):
+            title = (item.findtext("title") or "").lower()
+            categories = [c.text for c in item.findall("category") if c.text]
+            is_essential = "essential" in title or any("essential" in c.lower() for c in categories)
+            if not is_essential:
+                continue
+            # Each roundup post = one entry (individual album extraction would require HTML parsing)
+            raw_title = (item.findtext("title") or "").strip()
+            url = item.findtext("link") or ""
+            date = _parse_date(item.findtext("pubDate"))
+            albums.append({
+                "artist": "Various",
+                "album": raw_title,
+                "source": "bandcamp",
+                "date": date,
+                "score": None,
+                "genres": ["Bandcamp Essential Releases"],
+                "url": url,
+            })
+    except Exception as e:
+        log.warning("Bandcamp RSS failed: %s", e)
+    return albums
+
+def _deduplicate(all_albums):
+    """Merge albums that appear across multiple sources."""
+    seen = {}  # (norm_artist, norm_album) -> index in result
+    result = []
+    for a in all_albums:
+        key = (_norm(a["artist"]), _norm(a["album"]))
+        if key in seen:
+            existing = result[seen[key]]
+            if a["source"] not in existing["sources"]:
+                existing["sources"].append(a["source"])
+                existing["appears_on_multiple_sources"] = True
+                if a.get("score") and not existing.get("score"):
+                    existing["score"] = a["score"]
+                if a.get("genres"):
+                    existing["genres"] = list(dict.fromkeys(existing["genres"] + a["genres"]))
+        else:
+            seen[key] = len(result)
+            result.append({
+                "artist": a["artist"],
+                "album": a["album"],
+                "sources": [a["source"]],
+                "appears_on_multiple_sources": False,
+                "date": a["date"],
+                "score": a.get("score"),
+                "genres": a.get("genres", []),
+                "url": a["url"],
+            })
+    return sorted(result, key=lambda x: x["date"] or "", reverse=True)
+
+@app.route("/discover")
+@limiter.limit("20 per minute")
+def discover():
+    now = time.time()
+    if _DISCOVER_CACHE["data"] and now < _DISCOVER_CACHE["expires"]:
+        return jsonify(_DISCOVER_CACHE["data"])
+
+    pitchfork = _fetch_pitchfork()
+    stereogum = _fetch_stereogum()
+    bandcamp  = _fetch_bandcamp()
+
+    albums = _deduplicate(pitchfork + stereogum + bandcamp)
+    payload = {
+        "albums": albums,
+        "sources": {
+            "pitchfork": len(pitchfork),
+            "stereogum": len(stereogum),
+            "bandcamp":  len(bandcamp),
+        },
+        "cached_at": datetime.now(timezone.utc).isoformat(),
+    }
+    _DISCOVER_CACHE["data"] = payload
+    _DISCOVER_CACHE["expires"] = now + _DISCOVER_TTL
+    return jsonify(payload)
 
 
 # ─── EXCHANGE RATES & SHIPPING ───────────────────────────────────────────────

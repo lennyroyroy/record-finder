@@ -44,7 +44,8 @@
 
     /* ── FEATURE SECTIONS ── */
     .feature-section { margin-bottom: 64px; }
-    .feature-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 6px; }
+    .feature-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .shipped-badge { font-size: 8px; letter-spacing: 0.06em; background: rgba(74,144,128,0.15); border: 1px solid rgba(74,144,128,0.4); color: var(--teal); border-radius: 20px; padding: 2px 8px; text-transform: uppercase; }
     .feature-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; color: var(--text); margin-bottom: 6px; }
     .feature-desc { font-size: 10px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.7; max-width: 560px; }
     .preview-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
@@ -201,6 +202,48 @@
     .note { font-size: 9px; color: var(--text-dim); margin-top: 8px; font-style: italic; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── FEATURE 11: MUSIC DISCOVERY ── */
+    .discover-filters { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 16px; }
+    .discover-filter { font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; background: none; border: 1px solid var(--border); color: var(--text-dim); border-radius: 20px; padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
+    .discover-filter:hover { color: var(--text-muted); border-color: var(--text-dim); }
+    .discover-filter.active { color: var(--text); border-color: var(--text-muted); background: var(--surface2); }
+    .discover-filter.bandcamp.active  { color: #1da0c3; border-color: rgba(29,160,195,0.5); background: rgba(29,160,195,0.08); }
+    .discover-filter.pitchfork.active { color: #e07840; border-color: rgba(224,120,64,0.5); background: rgba(224,120,64,0.08); }
+    .discover-filter.stereogum.active { color: #9a78c8; border-color: rgba(154,120,200,0.5); background: rgba(154,120,200,0.08); }
+
+    .discover-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 8px; display: flex; gap: 14px; align-items: flex-start; }
+    .discover-card:last-child { margin-bottom: 0; }
+    .discover-art { width: 56px; height: 56px; flex-shrink: 0; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; }
+    .discover-art svg { opacity: 0.25; }
+    .discover-body { flex: 1; min-width: 0; }
+    .discover-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 400; color: var(--text); line-height: 1.3; }
+    .discover-artist { font-size: 11px; color: var(--text-muted); margin-top: 2px; margin-bottom: 7px; }
+    .discover-meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .source-badge { font-size: 8px; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 7px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+    .source-badge.bandcamp  { color: #1da0c3; border: 1px solid rgba(29,160,195,0.4); background: rgba(29,160,195,0.08); }
+    .source-badge.pitchfork { color: #e07840; border: 1px solid rgba(224,120,64,0.4); background: rgba(224,120,64,0.08); }
+    .source-badge.stereogum { color: #9a78c8; border: 1px solid rgba(154,120,200,0.4); background: rgba(154,120,200,0.08); }
+    .source-badge.multi     { color: var(--teal); border: 1px solid rgba(74,144,128,0.4); background: rgba(74,144,128,0.08); }
+    .score-chip { font-family: 'Fraunces', serif; font-size: 11px; font-weight: 700; color: var(--accent); }
+    .discover-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+    .btn-add-wantlist { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
+    .btn-add-wantlist:hover { color: var(--teal); border-color: rgba(74,144,128,0.5); }
+    .discover-date { font-size: 9px; color: var(--text-dim); }
+
+    /* ── SETTINGS PANEL ── */
+    .settings-panel { background: var(--bg); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+    .settings-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .settings-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(58,53,48,0.5); }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-label { font-size: 12px; color: var(--text); margin-bottom: 3px; }
+    .settings-row-desc  { font-size: 10px; color: var(--text-dim); line-height: 1.6; max-width: 360px; }
+    .toggle-wrap { position: relative; width: 36px; height: 20px; flex-shrink: 0; margin-top: 2px; }
+    .toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track { position: absolute; inset: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+    .toggle-track::after { content: ''; position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; background: var(--text-dim); border-radius: 50%; transition: transform 0.2s, background 0.2s; }
+    .toggle-wrap input:checked + .toggle-track { background: rgba(74,144,128,0.2); border-color: var(--teal); }
+    .toggle-wrap input:checked + .toggle-track::after { transform: translateX(16px); background: var(--teal); }
   </style>
 </head>
 <body>
@@ -214,18 +257,20 @@
 
   <!-- ── TABLE OF CONTENTS ── -->
   <nav class="toc">
-    <a href="#f1">Search Bar</a>
-    <a href="#f2">Sort by Price</a>
+    <a href="#f1">Search Bar ✓</a>
+    <a href="#f2">Sort by Price ✓</a>
     <a href="#f3">Already Own This</a>
     <a href="#f4">Savings % Badge</a>
     <a href="#f5">Export CSV</a>
     <a href="#f6">Scan Progress</a>
-    <a href="#f7">Best Deal Banner</a>
+    <a href="#f7">Best Deal Banner ✓</a>
     <a href="#f8">Label Filter</a>
     <a href="#f9">Break-even Calc</a>
-    <a href="#f10">PWA Install</a>
+    <a href="#f10">PWA Install ✓</a>
     <a href="#full-wantlist">Full Wantlist</a>
     <a href="#full-compare">Full Compare</a>
+    <a href="#f11">Music Discovery ✓</a>
+    <a href="#f-settings">Settings ✓</a>
   </nav>
 
 
@@ -233,7 +278,7 @@
        FEATURE 1 — SEARCH BAR
   ══════════════════════════════════════════════════════════ -->
   <div class="feature-section" id="f1">
-    <div class="feature-label">Feature 01</div>
+    <div class="feature-label">Feature 01 <span class="shipped-badge">Shipped ✓</span></div>
     <div class="feature-title">Search Bar</div>
     <div class="feature-desc">A text input at the top of the Wantlist. Filters cards in real-time as you type — no server call needed. Shows a count of matching results. At 65+ items this is immediately useful.</div>
 
@@ -288,7 +333,7 @@
        FEATURE 2 — SORT BY PRICE
   ══════════════════════════════════════════════════════════ -->
   <div class="feature-section" id="f2">
-    <div class="feature-label">Feature 02</div>
+    <div class="feature-label">Feature 02 <span class="shipped-badge">Shipped ✓</span></div>
     <div class="feature-title">Sort by Price</div>
     <div class="feature-desc">Adds Price as a third sort option alongside the existing Year and Artist pills. When active, cards reorder cheapest-to-most-expensive (best total). Only useful after scan — the pill is dimmed for unscanned items.</div>
 
@@ -511,7 +556,7 @@
        FEATURE 7 — BEST DEAL BANNER
   ══════════════════════════════════════════════════════════ -->
   <div class="feature-section" id="f7">
-    <div class="feature-label">Feature 07</div>
+    <div class="feature-label">Feature 07 <span class="shipped-badge">Shipped ✓</span></div>
     <div class="feature-title">"Today's Best Deal" Banner</div>
     <div class="feature-desc">A pinned one-liner at the top of the wantlist, computed from scan data already in localStorage. Surfaces the single best opportunity — cheapest best-total across all scanned items — so the most important thing is always visible without scrolling.</div>
 
@@ -626,7 +671,7 @@
        FEATURE 10 — PWA INSTALL
   ══════════════════════════════════════════════════════════ -->
   <div class="feature-section" id="f10">
-    <div class="feature-label">Feature 10</div>
+    <div class="feature-label">Feature 10 <span class="shipped-badge">Shipped ✓</span></div>
     <div class="feature-title">PWA / Installable App</div>
     <div class="feature-desc">A web app manifest + service worker (via Vite's PWA plugin) that makes the app installable to the iOS/Android home screen. The install prompt appears once, at the bottom of the screen. After install, the app opens full-screen, no browser chrome.</div>
 
@@ -887,6 +932,201 @@
     </div><!-- /full-view -->
   </div>
 
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       FEATURE 11 — MUSIC DISCOVERY
+  ══════════════════════════════════════════════════════════ -->
+  <div class="feature-section" id="f11">
+    <div class="feature-label">Experimental · Feature 11 <span class="shipped-badge">Shipped ✓</span></div>
+    <div class="feature-title">Music Discovery</div>
+    <div class="feature-desc">New recommended albums pulled from Bandcamp Daily Essential Releases, Pitchfork Best New Music, and Stereogum Album Reviews via public RSS feeds. Deduplicates across sources, refreshes every 6 hours. Visible only when Experimental Features is enabled in Settings.</div>
+
+    <!-- Isolated: source filters + cards -->
+    <div class="preview-box" style="margin-bottom:16px">
+      <div class="preview-label">Isolated · Source filters + album cards</div>
+
+      <div class="discover-filters">
+        <button class="discover-filter active" onclick="setDiscoverFilter(this, 'all')">All</button>
+        <button class="discover-filter bandcamp" onclick="setDiscoverFilter(this, 'bandcamp')">Bandcamp Daily</button>
+        <button class="discover-filter pitchfork" onclick="setDiscoverFilter(this, 'pitchfork')">Pitchfork BNM</button>
+        <button class="discover-filter stereogum" onclick="setDiscoverFilter(this, 'stereogum')">Stereogum</button>
+      </div>
+
+      <div id="discover-cards">
+        <!-- Card 1: Pitchfork + Stereogum (cross-source) -->
+        <div class="discover-card" data-sources="pitchfork stereogum">
+          <div class="discover-art">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
+          </div>
+          <div class="discover-body">
+            <div class="discover-title">Only God Was Above Us</div>
+            <div class="discover-artist">Vampire Weekend</div>
+            <div class="discover-meta">
+              <span class="source-badge multi">2 sources</span>
+              <span class="source-badge pitchfork">Pitchfork</span>
+              <span class="source-badge stereogum">Stereogum</span>
+              <span class="chip">Indie Rock</span>
+              <span class="chip">Art Rock</span>
+              <span class="score-chip">9.0</span>
+            </div>
+            <div class="discover-actions">
+              <button class="btn-add-wantlist">+ Add to Wantlist</button>
+              <span class="discover-date">Mar 5, 2024</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Pitchfork BNM -->
+        <div class="discover-card" data-sources="pitchfork">
+          <div class="discover-art">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
+          </div>
+          <div class="discover-body">
+            <div class="discover-title">Manning Fireworks</div>
+            <div class="discover-artist">MJ Lenderman</div>
+            <div class="discover-meta">
+              <span class="source-badge pitchfork">Pitchfork BNM</span>
+              <span class="chip">Indie Rock</span>
+              <span class="chip">Slacker Rock</span>
+              <span class="score-chip">8.6</span>
+            </div>
+            <div class="discover-actions">
+              <button class="btn-add-wantlist">+ Add to Wantlist</button>
+              <span class="discover-date">Sep 6, 2024</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Bandcamp Daily -->
+        <div class="discover-card" data-sources="bandcamp">
+          <div class="discover-art">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
+          </div>
+          <div class="discover-body">
+            <div class="discover-title">Perceive Its Beauty, Acknowledge Its Grace</div>
+            <div class="discover-artist">Shabaka</div>
+            <div class="discover-meta">
+              <span class="source-badge bandcamp">Bandcamp Daily</span>
+              <span class="chip">Jazz</span>
+              <span class="chip">Spiritual Jazz</span>
+            </div>
+            <div class="discover-actions">
+              <button class="btn-add-wantlist">+ Add to Wantlist</button>
+              <span class="discover-date">Apr 19, 2024</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Stereogum -->
+        <div class="discover-card" data-sources="stereogum">
+          <div class="discover-art">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg>
+          </div>
+          <div class="discover-body">
+            <div class="discover-title">Bright Future</div>
+            <div class="discover-artist">Adrianne Lenker</div>
+            <div class="discover-meta">
+              <span class="source-badge stereogum">Stereogum</span>
+              <span class="chip">Folk</span>
+              <span class="chip">Indie Folk</span>
+            </div>
+            <div class="discover-actions">
+              <button class="btn-add-wantlist">+ Add to Wantlist</button>
+              <span class="discover-date">Mar 22, 2024</span>
+            </div>
+          </div>
+        </div>
+      </div><!-- /discover-cards -->
+    </div><!-- /preview-box -->
+
+    <!-- Integrated: how it appears in the app -->
+    <div class="preview-box">
+      <div class="preview-label">Integrated · Full Discover tab in app context</div>
+      <div class="full-view">
+        <div class="page-eyebrow">What's New</div>
+        <div class="full-view-title">Discover <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--text-muted)">(4)</span></div>
+        <div class="full-view-sub" style="margin-bottom:16px">New recommendations from Bandcamp Daily, Pitchfork, and Stereogum · Updated 2h ago</div>
+
+        <div class="discover-filters" style="margin-bottom:16px">
+          <button class="discover-filter active" onclick="setDiscoverFilter2(this,'all')">All</button>
+          <button class="discover-filter bandcamp" onclick="setDiscoverFilter2(this,'bandcamp')">Bandcamp Daily</button>
+          <button class="discover-filter pitchfork" onclick="setDiscoverFilter2(this,'pitchfork')">Pitchfork BNM</button>
+          <button class="discover-filter stereogum" onclick="setDiscoverFilter2(this,'stereogum')">Stereogum</button>
+        </div>
+
+        <div id="discover-cards2">
+          <div class="discover-card" data-sources2="pitchfork stereogum">
+            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
+            <div class="discover-body">
+              <div class="discover-title">Only God Was Above Us</div>
+              <div class="discover-artist">Vampire Weekend</div>
+              <div class="discover-meta"><span class="source-badge multi">2 sources</span><span class="chip">Indie Rock</span><span class="score-chip">9.0</span></div>
+              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Mar 5, 2024</span></div>
+            </div>
+          </div>
+          <div class="discover-card" data-sources2="pitchfork">
+            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
+            <div class="discover-body">
+              <div class="discover-title">Manning Fireworks</div>
+              <div class="discover-artist">MJ Lenderman</div>
+              <div class="discover-meta"><span class="source-badge pitchfork">Pitchfork BNM</span><span class="chip">Indie Rock</span><span class="score-chip">8.6</span></div>
+              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Sep 6, 2024</span></div>
+            </div>
+          </div>
+          <div class="discover-card" data-sources2="bandcamp">
+            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
+            <div class="discover-body">
+              <div class="discover-title">Perceive Its Beauty, Acknowledge Its Grace</div>
+              <div class="discover-artist">Shabaka</div>
+              <div class="discover-meta"><span class="source-badge bandcamp">Bandcamp Daily</span><span class="chip">Jazz</span></div>
+              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Apr 19, 2024</span></div>
+            </div>
+          </div>
+          <div class="discover-card" data-sources2="stereogum">
+            <div class="discover-art"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#3a3530" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#3a3530" stroke-width="1"/><circle cx="12" cy="12" r="1.5" fill="#3a3530"/></svg></div>
+            <div class="discover-body">
+              <div class="discover-title">Bright Future</div>
+              <div class="discover-artist">Adrianne Lenker</div>
+              <div class="discover-meta"><span class="source-badge stereogum">Stereogum</span><span class="chip">Folk</span></div>
+              <div class="discover-actions"><button class="btn-add-wantlist">+ Add to Wantlist</button><span class="discover-date">Mar 22, 2024</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /feature 11 -->
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SETTINGS PANEL PREVIEW
+  ══════════════════════════════════════════════════════════ -->
+  <div class="feature-section" id="f-settings">
+    <div class="feature-label">Foundation <span class="shipped-badge">Shipped ✓</span></div>
+    <div class="feature-title">Settings Panel</div>
+    <div class="feature-desc">Opens when Settings is clicked in the sidebar. Houses the Experimental Features toggle — the gate for Music Discovery and future experimental work. Simple, low visual weight.</div>
+
+    <div class="settings-panel">
+      <div class="settings-section-label">Experimental Features</div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Enable Experimental Features</div>
+          <div class="settings-row-desc">Unlocks features that are in active development. Currently adds a <strong style="color:var(--text)">Discover</strong> tab with new music recommendations from Bandcamp Daily, Pitchfork, and Stereogum. May change or break between updates.</div>
+        </div>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="exp-toggle" onchange="handleExpToggle(this)" />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+
+      <div id="exp-status" style="font-size:10px;color:var(--text-dim);margin-top:12px;display:none">
+        ✓ Experimental features enabled — <strong style="color:var(--teal)">Discover</strong> tab is now visible in the sidebar.
+      </div>
+    </div>
+  </div><!-- /settings -->
+
 </div><!-- /page -->
 
 <script>
@@ -917,6 +1157,27 @@
   function setLabelActive(btn) {
     btn.closest('.label-filters').querySelectorAll('.label-chip').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
+  }
+
+  // ── Feature 11: Music Discovery filters ──
+  function setDiscoverFilter(btn, source) {
+    btn.closest('.discover-filters').querySelectorAll('.discover-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#discover-cards .discover-card').forEach(card => {
+      const sources = card.dataset.sources || '';
+      card.style.display = (source === 'all' || sources.includes(source)) ? '' : 'none';
+    });
+  }
+  function setDiscoverFilter2(btn, source) {
+    btn.closest('.discover-filters').querySelectorAll('.discover-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#discover-cards2 .discover-card').forEach(card => {
+      const sources = card.dataset.sources2 || '';
+      card.style.display = (source === 'all' || sources.includes(source)) ? '' : 'none';
+    });
+  }
+  function handleExpToggle(cb) {
+    document.getElementById('exp-status').style.display = cb.checked ? 'block' : 'none';
   }
 
   // ── Feature 9: Break-even calculator ──
