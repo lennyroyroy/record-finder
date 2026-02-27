@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.11" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.12" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -1404,6 +1404,8 @@ const STYLES = `
     display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   .btn-guest:hover { background: rgba(74,144,128,0.1); border-color: var(--teal); }
+  .login-signup-link { color: var(--text-muted); text-decoration: none; transition: color 0.15s; }
+  .login-signup-link:hover { color: var(--teal); }
 
   /* ── MOBILE USER BAR ────────────────────────────────────────────────────── */
   .mobile-user-bar {
@@ -1849,6 +1851,12 @@ function LoginScreen({ error, loading, onGuestMode }) {
                 ◎ Try a demo without logging in
               </button>
             </div>
+            <p className="form-hint" style={{ marginTop: "16px", textAlign: "center" }}>
+              No Discogs account?{" "}
+              <a href="https://www.discogs.com/users/create" target="_blank" rel="noopener noreferrer" className="login-signup-link">
+                Create one →
+              </a>
+            </p>
           </>
         )}
       </div>
