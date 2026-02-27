@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sort Bar Preview</title>
+<style>
+  :root {
+    --bg: #1a1714;
+    --surface: #201d1a;
+    --surface2: #2a2520;
+    --border: #3a3530;
+    --text: #f0e8d8;
+    --text-muted: #9a9088;
+    --text-dim: #6a6058;
+    --accent: #e07840;
+    --accent-dim: #c06030;
+    --teal: #4a9080;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 13px;
+    padding: 24px 16px;
+  }
+  h2 {
+    font-family: Georgia, serif;
+    font-weight: 400;
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .section {
+    margin-bottom: 36px;
+  }
+  .label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+  .phone-frame {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 10px;
+    max-width: 375px;
+  }
+
+  /* ── SORT BAR BASE ── */
+  .sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+  .sort-bar-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .sort-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .sort-btn.active {
+    background: rgba(224,120,64,0.1);
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  /* ── SCENARIO LABELS ── */
+  .scenario-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    margin-top: 20px;
+  }
+  .scenario-label:first-of-type { margin-top: 0; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  /* ── OPTION LABELS ── */
+  .option-tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .option-tag.current { background: rgba(106,96,88,0.3); color: var(--text-dim); border: 1px solid var(--border); }
+  .option-tag.proposed { background: rgba(74,144,128,0.15); color: var(--teal); border: 1px solid rgba(74,144,128,0.3); }
+  .option-tag.alt { background: rgba(224,120,64,0.1); color: var(--accent); border: 1px solid rgba(224,120,64,0.3); }
+
+  /* price count span — hidden in proposed options */
+  .price-count-hidden { display: none; }
+</style>
+</head>
+<body>
+
+<h2>Sort Bar — Mobile Layout Options</h2>
+<p class="subtitle">375px viewport · all scenarios · before &amp; after</p>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- CURRENT (BROKEN) -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<div class="section">
+  <span class="option-tag current">Current (broken)</span>
+
+  <p class="scenario-label">Worst case — price sorted, all scanned, sort active + clear + collapse</p>
+  <div class="phone-frame">
+    <div class="sort-bar" style="overflow:hidden">
+      <span class="sort-bar-label">Sort:</span>
+      <button class="sort-btn">Artist</button>
+      <button class="sort-btn">Year</button>
+      <button class="sort-btn active">Price ↑ (66/66)</button>
+      <button class="sort-btn">✕ Clear</button>
+      <button class="sort-btn">⊖ Collapse All</button>
+    </div>
+  </div>
+
+  <p class="scenario-label">Default — no sort, some scanned</p>
+  <div class="phone-frame">
+    <div class="sort-bar" style="overflow:hidden">
+      <span class="sort-bar-label">Sort:</span>
+      <button class="sort-btn">Artist</button>
+      <button class="sort-btn">Year</button>
+      <button class="sort-btn">Price (29/66)</button>
+      <button class="sort-btn">⊖ Collapse All</button>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- OPTION A — Shorten labels on mobile -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<div class="section">
+  <span class="option-tag proposed">Option A — shorten labels</span>
+  <p style="font-size:10px; color:var(--text-dim); margin-bottom:14px;">
+    Price hides count → just "Price ↑" &nbsp;·&nbsp; "✕ Clear" → "✕" &nbsp;·&nbsp; "Collapse All" → "⊖ All"
+  </p>
+
+  <p class="scenario-label">Worst case — price sorted, all scanned</p>
+  <div class="phone-frame">
+    <div class="sort-bar">
+      <span class="sort-bar-label">Sort:</span>
+      <button class="sort-btn">Artist</button>
+      <button class="sort-btn">Year</button>
+      <button class="sort-btn active">Price ↑</button>
+      <button class="sort-btn">✕</button>
+      <button class="sort-btn">⊖ All</button>
+    </div>
+  </div>
+
+  <p class="scenario-label">Default — no sort, some scanned (count still hidden on mobile)</p>
+  <div class="phone-frame">
+    <div class="sort-bar">
+      <span class="sort-bar-label">Sort:</span>
+      <button class="sort-btn">Artist</button>
+      <button class="sort-btn">Year</button>
+      <button class="sort-btn">Price</button>
+      <button class="sort-btn">⊖ All</button>
+    </div>
+  </div>
+
+  <p class="scenario-label">Artist sorted</p>
+  <div class="phone-frame">
+    <div class="sort-bar">
+      <span class="sort-bar-label">Sort:</span>
+      <button class="sort-btn active">Artist ↑</button>
+      <button class="sort-btn">Year</button>
+      <button class="sort-btn">Price</button>
+      <button class="sort-btn">✕</button>
+      <button class="sort-btn">⊖ All</button>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- OPTION B — Two-row layout (sort | actions) -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<div class="section">
+  <span class="option-tag alt">Option B — two defined rows</span>
+  <p style="font-size:10px; color:var(--text-dim); margin-bottom:14px;">
+    Row 1: sort buttons only &nbsp;·&nbsp; Row 2: clear + collapse flush right
+  </p>
+
+  <p class="scenario-label">Worst case — price sorted, all scanned</p>
+  <div class="phone-frame">
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <!-- Row 1: sort buttons -->
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span class="sort-bar-label">Sort:</span>
+        <button class="sort-btn">Artist</button>
+        <button class="sort-btn">Year</button>
+        <button class="sort-btn active">Price ↑ (66/66)</button>
+      </div>
+      <!-- Row 2: actions -->
+      <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end;">
+        <button class="sort-btn">✕ Clear</button>
+        <button class="sort-btn">⊖ Collapse All</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="scenario-label">Default — no sort active</p>
+  <div class="phone-frame">
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span class="sort-bar-label">Sort:</span>
+        <button class="sort-btn">Artist</button>
+        <button class="sort-btn">Year</button>
+        <button class="sort-btn">Price (29/66)</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end;">
+        <button class="sort-btn">⊖ Collapse All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- OPTION C — Scrollable single row -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<div class="section">
+  <span class="option-tag alt">Option C — horizontal scroll row</span>
+  <p style="font-size:10px; color:var(--text-dim); margin-bottom:14px;">
+    No wrapping, single row scrolls horizontally. Labels unchanged. Scroll hint fades on right edge.
+  </p>
+
+  <p class="scenario-label">Worst case — price sorted, all scanned</p>
+  <div class="phone-frame" style="overflow:hidden; position:relative;">
+    <!-- fade hint -->
+    <div style="position:absolute; right:0; top:0; bottom:0; width:32px; background:linear-gradient(to left, var(--surface), transparent); z-index:1; pointer-events:none; border-radius:0 10px 10px 0;"></div>
+    <div style="display:flex; align-items:center; gap:6px; overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; scrollbar-width:none;">
+      <span class="sort-bar-label" style="flex-shrink:0;">Sort:</span>
+      <button class="sort-btn" style="flex-shrink:0;">Artist</button>
+      <button class="sort-btn" style="flex-shrink:0;">Year</button>
+      <button class="sort-btn active" style="flex-shrink:0;">Price ↑ (66/66)</button>
+      <button class="sort-btn" style="flex-shrink:0;">✕ Clear</button>
+      <button class="sort-btn" style="flex-shrink:0;">⊖ Collapse All</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
