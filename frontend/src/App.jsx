@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.14" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.15" + (import.meta.env.DEV ? "-dev" : "");
 
 function formatScanAge(ts) {
   if (!ts) return null;
@@ -18,7 +18,6 @@ function isScanStale(ts) { return ts != null && Date.now() - ts > 86400000; }
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -466,6 +465,7 @@ const STYLES = `
     min-height: 100vh;
     padding: 40px 40px 48px;
     max-width: 1120px;
+    overflow-x: hidden;
   }
 
   /* ── MOBILE TAB BAR ────────────────────────────────────────────────────── */
