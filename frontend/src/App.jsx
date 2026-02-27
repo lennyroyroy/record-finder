@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.9" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.10" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -32,6 +32,7 @@ const STYLES = `
   html, body {
     width: 100%;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   body {
@@ -40,7 +41,6 @@ const STYLES = `
     font-family: 'DM Mono', monospace;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
   }
 
   /* ── LAYOUT ────────────────────────────────────────────────────────────── */
@@ -529,7 +529,9 @@ const STYLES = `
   }
 
   @media (max-width: 540px) {
-    .price-suffix { display: none; }
+    .price-suffix  { display: none; }
+    .sort-count    { display: none; }
+    .sort-label-full { display: none; }
     .card { padding: 14px; }
     .card-title { font-size: 14px; }
     .card-artist { font-size: 10px; }
@@ -1438,7 +1440,7 @@ const STYLES = `
   .card-collapsed-sub { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
 
   /* ── SORT BAR ───────────────────────────────────────────────────────────── */
-  .sort-bar       { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; overflow: hidden; }
+  .sort-bar       { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
   .sort-bar-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; }
   .sort-btn {
     background: var(--surface2); border: 1px solid var(--border); border-radius: 999px;
@@ -2089,15 +2091,18 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
             {(() => {
               const scanned = items.filter((i) => bestPrice(results[i.id]) != null).length;
               const arrow = sortBy === "price" ? (sortDir === "asc" ? " ↑" : " ↓") : "";
-              return scanned > 0 ? `Price${arrow} (${scanned}/${items.length})` : `Price (scan first)`;
+              if (scanned === 0) return "Price";
+              return <>{`Price${arrow}`}<span className="sort-count"> ({scanned}/{items.length})</span></>;
             })()}
           </button>
           {sortBy !== "none" && (
-            <button className="sort-btn" onClick={() => setSortBy("none")}>✕ Clear</button>
+            <button className="sort-btn" onClick={() => setSortBy("none")}>✕<span className="sort-label-full"> Clear</span></button>
           )}
           {items.some((i) => results[i.id]) && (
             <button className="sort-btn" onClick={toggleAllCollapse}>
-              {items.filter((i) => results[i.id]).every((i) => collapsedCards.has(i.id)) ? "⊕ Expand All" : "⊖ Collapse All"}
+              {items.filter((i) => results[i.id]).every((i) => collapsedCards.has(i.id))
+                ? <>⊕ <span className="sort-label-full">Expand </span>All</>
+                : <>⊖ <span className="sort-label-full">Collapse </span>All</>}
             </button>
           )}
         </div>
