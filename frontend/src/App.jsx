@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.13" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.14" + (import.meta.env.DEV ? "-dev" : "");
 
 function formatScanAge(ts) {
   if (!ts) return null;
@@ -59,6 +59,7 @@ const STYLES = `
   .app-shell {
     display: flex;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   /* ── SIDEBAR ───────────────────────────────────────────────────────────── */
@@ -1984,23 +1985,23 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
     }
   }
 
-  async function scanAll() {
+  async function scanAll(refresh = false) {
     if (isGuest || scanningAll) return;
-    const unscanned = items.filter((i) => !results[i.id]);
-    if (!unscanned.length) { showToast("All items already scanned ✓"); return; }
+    const toScan = refresh ? items : items.filter((i) => !results[i.id]);
+    if (!toScan.length) return;
     setScanningAll(true);
     scanCancelRef.current = false;
-    for (let i = 0; i < unscanned.length; i++) {
+    for (let i = 0; i < toScan.length; i++) {
       if (scanCancelRef.current) break;
-      setScanProgress({ current: i + 1, total: unscanned.length, title: unscanned[i].title });
-      await searchPrices(unscanned[i]);
-      if (i < unscanned.length - 1 && !scanCancelRef.current) {
+      setScanProgress({ current: i + 1, total: toScan.length, title: toScan[i].title });
+      await searchPrices(toScan[i]);
+      if (i < toScan.length - 1 && !scanCancelRef.current) {
         await new Promise((r) => setTimeout(r, 5000));
       }
     }
     setScanningAll(false);
     setScanProgress({ current: 0, total: 0, title: "" });
-    if (!scanCancelRef.current) showToast("Scan complete ✓");
+    if (!scanCancelRef.current) showToast(refresh ? "Refresh complete ✓" : "Scan complete ✓");
   }
 
   function toggleCollapse(id) {
@@ -2076,9 +2077,13 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
               {syncing ? "Syncing…" : "↻ Sync from Discogs"}
             </button>
             {items.length > 0 && (
-              <button className="btn-sync" onClick={scanAll} disabled={scanningAll || syncing}
+              <button className="btn-sync" onClick={() => scanAll(items.filter(i => !results[i.id]).length === 0)} disabled={scanningAll || syncing}
                 style={{ background: "rgba(74,144,128,0.12)", borderColor: "rgba(74,144,128,0.35)", color: "var(--teal)" }}>
-                {scanningAll ? `Scanning… ${scanProgress.current}/${scanProgress.total}` : `⊙ Scan All (${items.filter(i => !results[i.id]).length} left)`}
+                {scanningAll
+                  ? `Scanning… ${scanProgress.current}/${scanProgress.total}`
+                  : items.filter(i => !results[i.id]).length === 0
+                    ? "↻ Refresh All"
+                    : `⊙ Scan All (${items.filter(i => !results[i.id]).length} left)`}
               </button>
             )}
           </div>
