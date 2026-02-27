@@ -2,7 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.12" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.13" + (import.meta.env.DEV ? "-dev" : "");
+
+function formatScanAge(ts) {
+  if (!ts) return null;
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if (mins < 2) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+function isScanStale(ts) { return ts != null && Date.now() - ts > 86400000; }
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -1436,9 +1447,11 @@ const STYLES = `
   .btn-cancel-scan:hover { border-color: var(--danger); color: var(--danger); }
 
   /* ── CARD COLLAPSE ───────────────────────────────────────────────────────── */
-  .card-collapse-row { display: flex; justify-content: center; align-items: center; border-top: 1px solid var(--border); padding: 3px 0; margin-top: 6px; }
+  .card-collapse-row { display: flex; justify-content: center; align-items: center; border-top: 1px solid var(--border); padding: 3px 0; margin-top: 6px; position: relative; }
   .btn-collapse { background: none; border: none; color: var(--text-dim); font-size: 14px; cursor: pointer; padding: 2px 8px; line-height: 1; transition: color 0.15s; }
   .btn-collapse:hover { color: var(--text-muted); }
+  .card-scan-ts { position: absolute; right: 4px; font-size: 9px; color: var(--text-dim); letter-spacing: 0.04em; pointer-events: none; }
+  .card-scan-ts.stale { color: #a06040; }
   .card-collapsed-price { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--teal); }
   .card-collapsed-sub { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
 
@@ -1883,6 +1896,9 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   const [scanProgress, setScanProgress] = useState({ current: 0, total: 0, title: "" });
   const scanCancelRef = useRef(false);
   const [toast, showToast] = useToast();
+  const [scanTimes, setScanTimes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("sos_scan_times") || "{}"); } catch { return {}; }
+  });
 
   function toggleSort(field) {
     if (sortBy === field) {
@@ -2015,6 +2031,11 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
       setResults((r) => {
         const next = { ...r, [item.id]: data };
         if (!isGuest) localStorage.setItem("sos_results", JSON.stringify(next));
+        return next;
+      });
+      setScanTimes((t) => {
+        const next = { ...t, [item.id]: Date.now() };
+        if (!isGuest) localStorage.setItem("sos_scan_times", JSON.stringify(next));
         return next;
       });
     } catch (err) {
@@ -2150,6 +2171,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
               onCompareAdd?.(item, results[item.id]);
               showToast(`Added "${item.title}" to Compare`);
             }}
+            scanTime={scanTimes[item.id] ?? null}
             collapsed={collapsedCards.has(item.id)}
             onToggleCollapse={() => toggleCollapse(item.id)}
           />
@@ -2159,7 +2181,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
   );
 }
 
-function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collapsed, onToggleCollapse }) {
+function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collapsed, onToggleCollapse, scanTime }) {
   const usListings = result?.discogs_us || [];
   const intlListings = result?.discogs_intl || [];
   const allListings = [...usListings, ...intlListings];
@@ -2181,6 +2203,8 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collaps
   const totalForSale = allListings.reduce((sum, l) => sum + (l.num_for_sale || 1), 0);
 
   const ytQuery = encodeURIComponent(`${item.artist} ${item.title}`);
+  const isStale = isScanStale(scanTime);
+  const scanLabel = formatScanAge(scanTime);
 
   return (
     <div className="card">
@@ -2226,6 +2250,11 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collaps
           <button className="btn-collapse" onClick={onToggleCollapse} title={collapsed ? "Expand" : "Collapse"}>
             {collapsed ? "▾" : "▴"}
           </button>
+          {scanTime && (
+            <span className={`card-scan-ts${isStale ? " stale" : ""}`}>
+              ↻ {scanLabel}
+            </span>
+          )}
         </div>
       )}
 
