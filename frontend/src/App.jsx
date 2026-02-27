@@ -2068,7 +2068,7 @@ function WantlistTab({ username, onCountChange, onCompareAdd, isGuest }) {
         <div className="best-deal-banner">
           <span className="best-deal-eyebrow">Today's best deal</span>
           <span className="best-deal-text">{bestDeal.title} · {bestDeal.artist}</span>
-          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)}<span className="price-suffix"> inc. shipping</span></span>
+          <span className="best-deal-price">${bestPrice(results[bestDeal.id]).toFixed(2)}<span className="price-suffix"> est. shipping</span></span>
         </div>
       )}
 
@@ -2205,7 +2205,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collaps
           {collapsed && result ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px" }}>
               <span className="card-collapsed-price">${bestTotal?.toFixed(2)}</span>
-              <span className="card-collapsed-sub">inc. shipping</span>
+              <span className="card-collapsed-sub">est. shipping</span>
             </div>
           ) : (
             <>
@@ -2243,7 +2243,7 @@ function WantlistCard({ item, result, searching, onSearch, onCompareAdd, collaps
               <div className="price-cell">
                 <div className="price-label">Best Total</div>
                 <div className="price-value best">${bestTotal.toFixed(2)}</div>
-                <div className="price-sub">inc. shipping</div>
+                <div className="price-sub">est. shipping</div>
               </div>
             )}
             {minPrice != null && (
