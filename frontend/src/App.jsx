@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.10" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.11" + (import.meta.env.DEV ? "-dev" : "");
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
@@ -541,7 +541,7 @@ const STYLES = `
     .price-sub { font-size: 9px; }
     .card-actions { gap: 6px; }
     .btn-brand { font-size: 8px; padding: 5px 8px; }
-    .wantlist-card-actions { min-width: 90px; }
+    .wantlist-card-actions { min-width: 90px; max-width: 105px; }
   }
 
   /* ── LOGIN SCREEN ──────────────────────────────────────────────────────── */
@@ -791,6 +791,7 @@ const STYLES = `
     padding: 20px;
     margin-bottom: 12px;
     transition: border-color 0.15s;
+    overflow: hidden;
   }
 
   .card:hover { border-color: #4a4540; }
@@ -1407,8 +1408,8 @@ const STYLES = `
   /* ── MOBILE USER BAR ────────────────────────────────────────────────────── */
   .mobile-user-bar {
     display: none; background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 9px 16px; align-items: center; justify-content: space-between; gap: 8px;
-    margin: -24px -16px 20px -16px;
+    padding: 9px 10px; align-items: center; justify-content: space-between; gap: 8px;
+    margin: -24px -10px 20px -10px;
   }
   @media (max-width: 680px) { .mobile-user-bar { display: flex; } }
   .mobile-user-name { font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
