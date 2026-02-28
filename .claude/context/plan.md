@@ -20,7 +20,7 @@ _Make the app trustworthy for strangers, not just the builder._
 _Make the app feel complete and satisfying for a new user's first session._
 
 - [x] **72-hour auto-reset** — On app load, check most recent scan timestamp; if older than 72 hours, silently wipe results and scan times.
-- [ ] **QA + Preview Workflow Overhaul** — (1) QA intake: plain screenshot + one-sentence description by default. (2) Feature previews: move from `Helpful Markdown Files/` to `.claude/previews/` (gitignored); single `preview.html` overwritten each time; `/ship` auto-deletes before committing. (3) Rename `Helpful Markdown Files/` → `artifacts/`; update all references in `CLAUDE.md` and `guide.md`.
+- [x] **QA + Preview Workflow Overhaul** — (1) QA intake: plain screenshot + one-sentence description by default. (2) Feature previews: move from `Helpful Markdown Files/` to `.claude/previews/` (gitignored); single `preview.html` overwritten each time; `/ship` auto-deletes before committing. (3) Rename `Helpful Markdown Files/` → `artifacts/`; update all references in `CLAUDE.md` and `guide.md`.
 - [x] **Search bar within the wantlist** — Filter by string, in-memory. Trivial. Important at 65+ items.
 
 ---
@@ -180,3 +180,4 @@ _Shipped. Kept for reference._
 - ~~**Rate limit stress test**~~ — Passed Session 9. 21+ items, no 429s, ~9s/item.
 - ~~**Discogs avatar not showing**~~ — Resolved. Stale token fix: log out and back in.
 - ~~**72-hour auto-reset**~~ — Shipped v1.18. Wipes `sos_results` + `sos_scan_times` on load if newest scan is >72h old.
+- ~~**QA + Preview Workflow Overhaul**~~ — Done Session 11. Previews gitignored at `.claude/previews/`, `Helpful Markdown Files/` → `artifacts/`, `guide.md` rewritten, `ship.md` auto-deletes preview before commit.
