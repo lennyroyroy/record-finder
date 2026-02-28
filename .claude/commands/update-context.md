@@ -17,7 +17,7 @@ Runs automatically at the end of `/ship`. Closes the loop on the session.
    ```
    Infer the session number from how many entries already exist.
 
-3. **Auto-check plan.md** — Compare what was shipped against open items in plan.md. Mark completed items `- [x]` and move them to the `Done` section at the bottom. Infer from git log and session context — no user input needed.
+3. **Auto-check plan.md** — Compare what was shipped against open items in plan.md. Mark completed items `- [x]` (leave them in their phase) and also add a `- ~~strikethrough~~` entry to the `Done` section at the bottom with a short note on when/how it shipped. Infer from git log and session context — no user input needed.
 
 4. **Ask one optional question:**
 
