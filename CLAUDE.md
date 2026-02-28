@@ -8,24 +8,35 @@ Spin or Stream (formerly Record Finder) is a vinyl procurement tool for public l
 
 ## Session Workflow
 
-### Starting a session
-Run `/prime` — loads context, checks git status, summarizes where we are.
+### Build session (writing code)
+1. `/prime` — loads architecture context, plan.md, last changelog entry, git status. Gives 5-line summary with suggested next action.
+2. Build the feature on `dev`.
+3. `/ship` — commits, pushes dev, merges to main, deploys to prod.
+4. `/update-context` — updates changelog.md, checks off plan.md item, logs any new ideas.
+5. `/clear` — mandatory before starting the next feature.
 
-### Finishing a feature
-Run `/ship` — commits, pushes dev, merges to main, deploys to prod.
+### Planning session (thinking, not building)
+1. `/review` — loads plan.md, ideas.md, last changelog entry **only**. No architecture files. Lighter and cheaper than `/prime`.
+2. Reorganize, reprioritize, make decisions.
+3. If files changed: `/save-docs` — commits context files with `docs —` prefix, pushes dev only. No deploy.
+4. `/clear`.
 
 ### Between features
-**Run `/clear` before starting something new.** This is a hard habit. Don't carry feature context across sessions — it bloats tokens and causes drift. If the user hasn't cleared after shipping, remind them.
+**Always `/clear` between context types.** Never carry build context into a planning session or vice versa. If the user hasn't cleared, remind them.
 
 ## Context Files
 
 All planning and reference docs live in `.claude/`:
 - `.claude/context/plan.md` — April launch plan, phased to-dos
 - `.claude/context/ideas.md` — feature backlog with effort/value analysis
-- `.claude/context/learning.md` — course outline (post-launch)
-- `.claude/context/changelog.md` — version history
-- `.claude/commands/prime.md` — session start command
+- `.claude/context/changelog.md` — session-by-session narrative history
+- `.claude/context/guide.md` — how the context system works, all workflow types
+- `.claude/commands/prime.md` — build session start command
+- `.claude/commands/review.md` — planning session start command (lighter than prime)
 - `.claude/commands/ship.md` — deploy command
+- `.claude/commands/update-context.md` — post-ship doc update command
+- `.claude/commands/save-docs.md` — doc-only commit for planning/brainstorm sessions
+- `.claude/post-launch/learning.md` — coding course outline (not needed pre-launch)
 
 HTML feature previews stay in `Helpful Markdown Files/` (visual artifacts, not context).
 

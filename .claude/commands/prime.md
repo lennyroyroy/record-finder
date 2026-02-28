@@ -8,8 +8,9 @@ Run this at the start of every session.
 4. Read the **most recent entry only** from `.claude/context/changelog.md` — what was last built and any context worth carrying in
 5. Run `git status` and `git log --oneline -5`
 
-Then summarize in 4 lines:
+Then summarize in 5 lines:
 - Current app version and what was last shipped (from changelog + git log)
 - Which launch phase we're in (from plan.md)
 - Any uncommitted changes or open work in progress
+- Suggested next: the first unchecked item in the current active phase
 - One reminder: if we've just finished something, run `/clear` before starting the next feature
