@@ -44,6 +44,8 @@ _Bug fixes and QA tasks — not new features._
 
 - **OAuth logout QA** — Full logout sequence hasn't been tested end-to-end. Test: log in → log out → log in again, confirm no stale state.
 
+- **QA + Preview Workflow Overhaul** — Tooling/workflow decisions. Nothing user-facing. (1) QA intake: plain screenshot + one-sentence description is the default; Figma annotations only when spatial relationships are hard to describe; text-only for logic/behavior bugs. (2) Feature previews: move from `Helpful Markdown Files/` to `.claude/previews/` (gitignored); single `preview.html` overwritten each time; `/ship` auto-deletes it before committing; previews are static HTML only — inline only relevant CSS, hardcode representative data, approximate look but not behavior. (3) Rename `Helpful Markdown Files/` → `artifacts/`; update all references in `CLAUDE.md` and `guide.md`.
+
 ---
 
 ## Infrastructure — Big Bets
