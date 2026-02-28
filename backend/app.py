@@ -155,7 +155,7 @@ def oauth_callback():
         "username": username,
         "avatar_url": avatar_url,
     })
-    return redirect(f"{redirect_back}?auth=success&token={token}")
+    return redirect(f"{redirect_back}/app?auth=success&token={token}")
 
 @app.route("/oauth/logout")
 def oauth_logout():

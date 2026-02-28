@@ -2,7 +2,7 @@
   "name": "Spin or Stream",
   "short_name": "Spin or Stream",
   "description": "Vinyl procurement tool — compare your Discogs wantlist prices",
-  "start_url": "/",
+  "start_url": "/app",
   "display": "standalone",
   "background_color": "#1c1814",
   "theme_color": "#1c1814",
