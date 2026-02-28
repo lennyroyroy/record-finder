@@ -4,6 +4,18 @@ High-level summary of work done per session. Not a technical deep-dive — just 
 
 ---
 
+## Session 11 — QA + preview workflow overhaul
+
+**What shipped:**
+- Renamed `Helpful Markdown Files/` → `artifacts/` (git mv, history preserved).
+- Created `.claude/previews/` directory. Added `.claude/previews/preview.html` to `.gitignore` — previews are now ephemeral and never committed.
+- Updated `CLAUDE.md`: swapped old folder reference for new previews workflow note.
+- Updated `ship.md`: added step 2 to delete `preview.html` before staging.
+- Rewrote `guide.md`: removed all stale `ideas.md` references (that file was merged into `plan.md` last session), updated brainstorm/mid-build workflows to reference `plan.md` directly, added Feature Previews section.
+- Updated `save-docs.md`: removed `ideas.md` from the staged files list.
+
+---
+
 ## Session 10 — 72-hour auto-reset + docs consolidation (v1.18)
 
 **What shipped:**
