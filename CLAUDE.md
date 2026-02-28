@@ -17,6 +17,18 @@ Run `/ship` — commits, pushes dev, merges to main, deploys to prod.
 ### Between features
 **Run `/clear` before starting something new.** This is a hard habit. Don't carry feature context across sessions — it bloats tokens and causes drift. If the user hasn't cleared after shipping, remind them.
 
+## Context Files
+
+All planning and reference docs live in `.claude/`:
+- `.claude/context/plan.md` — April launch plan, phased to-dos
+- `.claude/context/ideas.md` — feature backlog with effort/value analysis
+- `.claude/context/learning.md` — course outline (post-launch)
+- `.claude/context/changelog.md` — version history
+- `.claude/commands/prime.md` — session start command
+- `.claude/commands/ship.md` — deploy command
+
+HTML feature previews stay in `Helpful Markdown Files/` (visual artifacts, not context).
+
 ## Commands
 
 ### Backend (Python/Flask)
