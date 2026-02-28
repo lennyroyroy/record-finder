@@ -19,7 +19,7 @@ _Make the app trustworthy for strangers, not just the builder._
 ## Phase 2 — Polish (mid-March → early April)
 _Make the app feel complete and satisfying for a new user's first session._
 
-- [ ] **Weekly auto-reset** — On app load, check most recent scan timestamp; if older than 7 days, silently wipe results and scan times. ~10 lines.
+- [x] **72-hour auto-reset** — On app load, check most recent scan timestamp; if older than 72 hours, silently wipe results and scan times.
 - [ ] **QA + Preview Workflow Overhaul** — (1) QA intake: plain screenshot + one-sentence description by default. (2) Feature previews: move from `Helpful Markdown Files/` to `.claude/previews/` (gitignored); single `preview.html` overwritten each time; `/ship` auto-deletes before committing. (3) Rename `Helpful Markdown Files/` → `artifacts/`; update all references in `CLAUDE.md` and `guide.md`.
 - [x] **Search bar within the wantlist** — Filter by string, in-memory. Trivial. Important at 65+ items.
 
@@ -179,3 +179,4 @@ _Shipped. Kept for reference._
 - ~~**OAuth logout QA**~~ — Passed Session 9. Full end-to-end test clean.
 - ~~**Rate limit stress test**~~ — Passed Session 9. 21+ items, no 429s, ~9s/item.
 - ~~**Discogs avatar not showing**~~ — Resolved. Stale token fix: log out and back in.
+- ~~**72-hour auto-reset**~~ — Shipped v1.18. Wipes `sos_results` + `sos_scan_times` on load if newest scan is >72h old.

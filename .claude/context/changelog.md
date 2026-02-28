@@ -4,6 +4,15 @@ High-level summary of work done per session. Not a technical deep-dive — just 
 
 ---
 
+## Session 10 — 72-hour auto-reset + docs consolidation (v1.18)
+
+**What shipped:**
+- Added `weeklyReset` IIFE to `App.jsx`: on load, checks newest scan timestamp in `sos_scan_times`; if >72 hours old, silently wipes `sos_results` and `sos_scan_times`. Runs before any state initializes so the wipe is invisible to the user.
+- Bumped to v1.18.
+- Merged `ideas.md` into `plan.md` — one source of truth for all planning, backlog, and ideas. Deleted `ideas.md`. Updated `review.md`, `update-context.md`, and `CLAUDE.md` to remove all references to the old file.
+
+---
+
 ## Session 9 — Phase 1 QA complete
 
 **What shipped:**
