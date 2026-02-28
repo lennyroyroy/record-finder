@@ -7,24 +7,13 @@ _How these documents work, how they relate, and how to use them effectively._
 ## The Documents
 
 ### `plan.md` — What to build and when
-**Purpose:** The authoritative launch roadmap. Phased by time (Foundation → Polish → Launch Prep → Launch). Contains the active to-do list for shipping a public product by April 2026.
+**Purpose:** The authoritative launch roadmap AND full feature backlog. Phased by time (Foundation → Polish → Launch Prep → Launch). Contains active to-dos, backlog, housekeeping, infrastructure bets, and Done archive — all in one place.
 
 **When to read it:** At the start of every build session (via `/prime`). When deciding what to work on next.
 
-**When to update it:** After shipping a feature — check off the item. After a planning session — adjust phases, add/remove items, update open decisions.
+**When to update it:** After shipping a feature — check off the item and move it to Done. After a planning session — adjust phases, add/remove items, update open decisions.
 
-**Key rule:** If it's in `plan.md`, it's committed. It belongs to a phase, has a deadline implied by that phase, and should be treated as a real obligation.
-
----
-
-### `ideas.md` — What might be worth building
-**Purpose:** The full feature backlog. Everything is categorized by real effort and real value: Critical Path (see plan.md), Build Next, Hold, Housekeeping, Infrastructure, Rethink, Icebox, Done.
-
-**When to read it:** When looking for the next thing to build after finishing a plan.md item. When evaluating whether a new idea has real value.
-
-**When to update it:** When a new idea comes up — add it to the right category, don't just dump it at the bottom. When something ships — move it to `Done`. When a "Hold" item gets unblocked — promote it to `Build Next`.
-
-**Key rule:** `plan.md` is a subset of `ideas.md`. If something is in `plan.md`, it was promoted from `ideas.md`. The Critical Path section in ideas.md just points to plan.md — don't maintain two lists.
+**Key rule:** One file, one source of truth. Do not maintain a separate ideas file.
 
 ---
 
@@ -45,21 +34,21 @@ _How these documents work, how they relate, and how to use them effectively._
 ---
 
 ### `../commands/ship.md` — Deploy to production
-**Purpose:** Commits on dev, pushes, merges to main, confirms Netlify deploy. Calls `/update-context` afterward to close the loop.
+**Purpose:** Commits on dev, pushes, merges to main, confirms Netlify deploy. Deletes `.claude/previews/preview.html` before committing. Calls `/update-context` afterward to close the loop.
 
 **When to update it:** If the deployment process changes (new branches, CI, environments).
 
 ---
 
 ### `../commands/update-context.md` — Close the loop after shipping
-**Purpose:** After `/ship`, asks 3 questions: what shipped, which plan.md item is done, any new ideas. Edits changelog.md, plan.md, and ideas.md based on answers.
+**Purpose:** After `/ship`, auto-updates changelog.md and plan.md from session context and git log. Asks once for new ideas. Commits and syncs docs to main.
 
 **When to update it:** If the post-ship doc update process needs to change.
 
 ---
 
 ### `../commands/review.md` — Planning session start
-**Purpose:** Lighter than `/prime` — loads only the three context docs (plan, ideas, changelog). No architecture files loaded. Summarizes phase status, suggests next 3 priorities, flags due decisions. Use instead of `/prime` for any session where you're thinking, not building.
+**Purpose:** Lighter than `/prime` — loads only plan.md and the last changelog entry. No architecture files. Summarizes phase status, suggests next 3 priorities, flags due decisions. Use instead of `/prime` for any session where you're thinking, not building.
 
 **When to update it:** If the planning session orientation needs to change.
 
@@ -68,8 +57,7 @@ _How these documents work, how they relate, and how to use them effectively._
 ## How They Work Together
 
 ```
-plan.md            →  What we're doing this sprint (active obligations)
-ideas.md           →  What comes after, or what we're skipping (full backlog)
+plan.md            →  What we're doing this sprint + full backlog (single file)
 changelog.md       →  What we've done (narrative history)
 
 prime.md           →  How to start a BUILD session
@@ -97,12 +85,12 @@ Pick the suggested next item (or choose another from the active phase). Build it
 ```
 /ship
 ```
-→ Commits dev, merges to main, deploys.
+→ Deletes preview.html, commits dev, merges to main, deploys.
 
 ```
 /update-context
 ```
-→ 3 questions: changelog entry, plan.md checkbox, new ideas. All docs updated.
+→ Auto-updates changelog and plan.md. Asks for new ideas. All docs committed.
 
 ```
 /clear
@@ -120,13 +108,13 @@ Pick the suggested next item (or choose another from the active phase). Build it
 
 Do NOT run `/prime` — architecture docs aren't needed and waste tokens.
 
-Just start the conversation: _"I want to think through [idea]. Open ideas.md."_
+Just start the conversation: _"I want to think through [idea]. Open plan.md."_
 
-Claude reads ideas.md, you discuss effort/value/fit/timing. If it's worth keeping:
-_"Add this to ideas.md under [category]."_
+Claude reads plan.md, you discuss effort/value/fit/timing. If it's worth keeping:
+_"Add this to plan.md under [Backlog / Housekeeping / etc]."_
 
 At the end:
-- If ideas.md was edited → `/save-docs` (stages context files, commits with `docs —` prefix, merges to main, no deploy)
+- If plan.md was edited → `/save-docs` (stages context files, commits with `docs —` prefix, merges to main, no deploy)
 - If nothing changed → `/clear`, nothing to commit.
 
 Do NOT run `/ship` or `/update-context` — nothing was shipped.
@@ -139,11 +127,11 @@ Do NOT run `/ship` or `/update-context` — nothing was shipped.
 
 You're deep in a coding session and a side idea surfaces. Don't discuss it. Don't plan it. Just store it:
 
-_"Add to ideas.md under Build Next: [one-line description of idea]."_
+_"Add to plan.md under [Backlog / Hold / etc]: [one-line description of idea]."_
 
-Claude edits ideas.md inline. Continue working. The edit will be committed automatically when you `/ship` the current feature. At `/update-context` time, say "no new ideas" (it's already logged).
+Claude edits plan.md inline. Continue working. The edit will be committed automatically when you `/ship` the current feature. At `/update-context` time, say "no new ideas" (it's already logged).
 
-**Key rule:** Log it, don't discuss it. The moment you start evaluating a side idea mid-build, you burn context and lose momentum. One sentence in ideas.md is enough — the detail can wait.
+**Key rule:** Log it, don't discuss it. The moment you start evaluating a side idea mid-build, you burn context and lose momentum. One sentence in plan.md is enough — the detail can wait.
 
 ---
 
@@ -154,7 +142,7 @@ Do NOT run `/prime` — it loads architecture files that add cost with no planni
 ```
 /review
 ```
-→ Loads plan.md, ideas.md, last changelog entry only. Summarizes phase status, suggests top 3 priorities, flags any open decisions approaching their decide-by date.
+→ Loads plan.md, last changelog entry only. Summarizes phase status, suggests top 3 priorities, flags any open decisions approaching their decide-by date.
 
 Work through: reorder items, check off open decisions, promote ideas from Hold → Build Next, adjust phase timelines, discuss anything unclear.
 
@@ -165,6 +153,16 @@ At the end:
 Do NOT run `/ship` — nothing was deployed.
 
 **Key rule:** Keep planning sessions focused on decisions, not implementations. If a conversation turns into "how would we build X," stop — that's a build session. Log the decision and open a build session.
+
+---
+
+## Feature Previews
+
+When building UI features, generate a preview at `.claude/previews/preview.html`. Rules:
+- **Gitignored** — never committed. Overwrite freely each time.
+- `/ship` deletes it before staging (step 2).
+- For QA: share a plain screenshot + one-sentence description by default. Only use the full preview when the user needs to compare layout options.
+- Old/archived previews belong in `artifacts/`.
 
 ---
 
@@ -185,16 +183,7 @@ Do NOT run `/ship` — nothing was deployed.
 
 ---
 
-## System Applied
+## System History
 
-The following improvements were applied to this folder on 2026-02-28 and are now the documented standard:
-
-- `ideas.md` Critical Path section replaced with a pointer to `plan.md` — single source of truth for active work
-- `changelog.md` caught up with a Sessions 6–N block covering v1.1–v1.15
-- `prime.md` updated to read the last changelog entry on session start + surface suggested next action
-- `learning.md` moved to `.claude/post-launch/` — out of active context path until post-launch
-- `ship.md` wired to `/update-context` as the mandatory close-the-loop step
-- `update-context.md` created — post-ship doc update command
-- `review.md` created — lightweight planning session command (no architecture context loaded)
-- Open Decisions in `plan.md` given decide-by dates and next actions
-- `guide.md` (this file) expanded with all 4 workflow types and token efficiency table
+- **Session 10 (2026-02-28):** `ideas.md` merged into `plan.md` — single source of truth. All `ideas.md` references in commands updated.
+- **Session 11 (2026-02-28):** QA + Preview Workflow Overhaul — `Helpful Markdown Files/` renamed to `artifacts/`, `.claude/previews/` created (gitignored), `ship.md` updated to delete preview before commit, guide.md rewritten to remove `ideas.md` references.
