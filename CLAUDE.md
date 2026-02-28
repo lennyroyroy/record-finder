@@ -37,7 +37,7 @@ All planning and reference docs live in `.claude/`:
 - `.claude/commands/save-docs.md` — doc-only commit for planning/brainstorm sessions
 - `.claude/post-launch/learning.md` — coding course outline (not needed pre-launch)
 
-HTML feature previews stay in `Helpful Markdown Files/` (visual artifacts, not context).
+HTML feature previews go in `.claude/previews/preview.html` (gitignored — overwritten each time, deleted by `/ship` before committing). Permanent visual artifacts and old previews live in `artifacts/`.
 
 ## Commands
 

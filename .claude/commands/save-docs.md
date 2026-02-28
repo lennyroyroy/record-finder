@@ -8,7 +8,7 @@ Use after planning or brainstorm sessions when context files were edited but no 
 
 2. Stage changed context files:
    ```
-   git add .claude/context/plan.md .claude/context/ideas.md .claude/context/changelog.md .claude/context/guide.md
+   git add .claude/context/plan.md .claude/context/changelog.md .claude/context/guide.md
    ```
    Only stage files that are actually modified — don't add unmodified files.
 
