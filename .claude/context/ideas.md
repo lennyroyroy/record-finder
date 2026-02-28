@@ -10,12 +10,6 @@ _Tracked in `plan.md` by phase. See there for active status and priority order._
 
 ---
 
-## Build Next — High Value, Low Effort
-_Clear value, feasible with current architecture, no major dependencies._
-
-- **Weekly auto-reset** — On app load, check most recent scan timestamp; if older than 7 days, silently wipe results and scan times. Stale amber indicators handle soft nudges; this is the hard weekly cleanup. ~10 lines.
-- **QA + Preview Workflow Overhaul** — Tooling/workflow decisions. Nothing user-facing. (1) QA intake: plain screenshot + one-sentence description is the default; Figma annotations only when spatial relationships are hard to describe; text-only for logic/behavior bugs. (2) Feature previews: move from `Helpful Markdown Files/` to `.claude/previews/` (gitignored); single `preview.html` overwritten each time; `/ship` auto-deletes it before committing; previews are static HTML only — inline only relevant CSS, hardcode representative data, approximate look but not behavior. (3) Rename `Helpful Markdown Files/` → `artifacts/`; update all references in `CLAUDE.md` and `guide.md`.
-
 ---
 
 ## Hold — Needs a Decision First

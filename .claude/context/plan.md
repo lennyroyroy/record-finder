@@ -10,7 +10,7 @@ _Make the app trustworthy for strangers, not just the builder._
 
 - [ ] **Privacy policy + Terms of Service** — Write and publish at `/privacy`. Link from login screen footer and landing page footer. Required for App Store; expected by any real user.
 - [ ] **"Your data lives in your browser" disclosure** — One sentence on the login screen. Sets expectations before someone builds a 100-item wantlist and clears their browser.
-- [ ] **Landing page routing decision** — Decide: Netlify `_redirects` (move app to `/app`) vs. subdomain (`app.spinorstream.com`). Implement before any marketing push to avoid breaking links.
+- [ ] **Landing page routing** — ~~Decision made:~~ Going with `/app` via Netlify `_redirects`. Implement the redirect rule and move app to `/app` before any marketing push.
 - [ ] **OAuth logout QA** — Full end-to-end test: log in → log out → log in again. Confirm no stale state. Should take 15 minutes.
 - [ ] **Rate limit stress test** — Manually scan 20+ items back-to-back and confirm the 5s delay + retry logic handles 429s gracefully with a clear user message.
 
@@ -19,10 +19,11 @@ _Make the app trustworthy for strangers, not just the builder._
 ## Phase 2 — Polish (mid-March → early April)
 _Make the app feel complete and satisfying for a new user's first session._
 
+- [ ] **Weekly auto-reset** — On app load, check most recent scan timestamp; if older than 7 days, silently wipe results and scan times. ~10 lines.
+- [ ] **QA + Preview Workflow Overhaul** — (1) QA intake: plain screenshot + one-sentence description by default. (2) Feature previews: move from `Helpful Markdown Files/` to `.claude/previews/` (gitignored); single `preview.html` overwritten each time; `/ship` auto-deletes before committing. (3) Rename `Helpful Markdown Files/` → `artifacts/`; update all references in `CLAUDE.md` and `guide.md`.
 - [ ] **Search bar within the wantlist** — Filter by string, in-memory. Trivial. Important at 65+ items.
 - [ ] **"Already own this" warning** — Cross-check wantlist against collection by title/id. Surface a chip or muted badge on the card.
 - [ ] **Savings % badge** — Best total vs. avg price. One calculation, one chip. Useful context after a scan.
-- [ ] **Weekly auto-reset** — 7-day staleness check on app load. Silent wipe of scan results and timestamps. ~10 lines.
 - [ ] **Export to CSV** — Wantlist and/or collection. Pure frontend, no backend needed. Practical for power users.
 
 ---
@@ -63,11 +64,11 @@ _Not in scope for April. Revisit based on user feedback._
 ## Open Decisions
 _These need a call before work can start. Each has a decide-by date — missing it blocks downstream work._
 
-1. **Landing page routing** — `/app` subdirectory vs. `app.spinorstream.com` subdomain. Affects OAuth redirect URLs and CORS config. **Decide by March 10** — Phase 1 work (privacy page, data disclosure) will create links that need to point somewhere stable.
+1. **Landing page routing** — ~~`/app` subdirectory vs. `app.spinorstream.com` subdomain.~~ **Decided:** `/app` via Netlify `_redirects`. No CORS or OAuth redirect changes needed.
 
-2. **Backend hosting** — Is Render free tier acceptable for launch, or upgrade now? Free tier sleeps after inactivity, which means a 30s cold start for new users' first scan. **Decide by March 15** — if upgrading, want it running before Phase 2 QA begins. Next action: check Render pricing and decide.
+2. **Backend hosting** — ~~Is Render free tier acceptable for launch, or upgrade now?~~ **Decided:** Upgrade to paid before launch. Do it by mid-March, before Phase 2 QA begins, so cold-start delays don't affect testing.
 
-3. **Social presence** — Which platform first? Twitter/X, Instagram, or Bluesky? **Decide by April 1** — Phase 3 requires accounts to be live before updating footer links. Next action: pick one platform, create @spinorstream, confirm handle availability.
+3. **Social presence** — ~~Which platform first?~~ **Decided:** Instagram first (@spinorstream secured). Then Threads (auto-linked to IG), TikTok, and Bluesky. Avoiding X/Twitter. Verify @spinorstream handle on TikTok and Bluesky before Phase 3.
 
 ---
 
