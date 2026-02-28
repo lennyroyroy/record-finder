@@ -23,7 +23,7 @@ Then summarize:
 ```
 /save-docs
 ```
-Stages changed context files, commits with `docs —` prefix, pushes to dev only. No deploy. Then `/clear`.
+Stages changed context files, commits with `docs —` prefix, merges to main. No deploy. Then `/clear`.
 
 **If only discussed, nothing changed in files:**
 Just `/clear`. Nothing to commit.

@@ -1,6 +1,6 @@
 # /save-docs — Save Context Doc Changes
 
-Use after planning or brainstorm sessions when context files were edited but no app code was changed. Saves your thinking to git without triggering a deploy.
+Use after planning or brainstorm sessions when context files were edited but no app code was changed. Saves your thinking to git and keeps dev and main in sync without triggering a deploy.
 
 ## Steps
 
@@ -18,13 +18,17 @@ Use after planning or brainstorm sessions when context files were edited but no 
    ```
    Examples: `docs — planning session`, `docs — add search bar idea to backlog`, `docs — reprioritize Phase 2`
 
-4. Push to `dev` only:
+4. Push dev, merge to main, push main:
    ```
    git push origin dev
+   git checkout main
+   git merge dev
+   git push origin main
+   git checkout dev
    ```
-   Do NOT merge to `main`. Doc changes don't need to deploy — Netlify will skip the build anyway.
+   Netlify will not trigger a meaningful rebuild — no frontend source files changed.
 
-5. Confirm: "Docs saved to dev. Nothing deployed."
+5. Confirm: "Docs saved. Dev and main are in sync. Nothing deployed."
 
 ## After saving
 

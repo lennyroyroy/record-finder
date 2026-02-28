@@ -126,7 +126,7 @@ Claude reads ideas.md, you discuss effort/value/fit/timing. If it's worth keepin
 _"Add this to ideas.md under [category]."_
 
 At the end:
-- If ideas.md was edited → `/save-docs` (stages context files, commits with `docs —` prefix, pushes dev only, no deploy)
+- If ideas.md was edited → `/save-docs` (stages context files, commits with `docs —` prefix, merges to main, no deploy)
 - If nothing changed → `/clear`, nothing to commit.
 
 Do NOT run `/ship` or `/update-context` — nothing was shipped.
@@ -159,7 +159,7 @@ Do NOT run `/prime` — it loads architecture files that add cost with no planni
 Work through: reorder items, check off open decisions, promote ideas from Hold → Build Next, adjust phase timelines, discuss anything unclear.
 
 At the end:
-- If any context files changed → `/save-docs` (stages context files, commits `docs —`, pushes dev only, no deploy)
+- If any context files changed → `/save-docs` (stages context files, commits `docs —`, merges to main, no deploy)
 - If only discussed, nothing written → `/clear`, nothing to commit.
 
 Do NOT run `/ship` — nothing was deployed.

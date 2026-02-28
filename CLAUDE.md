@@ -18,7 +18,7 @@ Spin or Stream (formerly Record Finder) is a vinyl procurement tool for public l
 ### Planning session (thinking, not building)
 1. `/review` — loads plan.md, ideas.md, last changelog entry **only**. No architecture files. Lighter and cheaper than `/prime`.
 2. Reorganize, reprioritize, make decisions.
-3. If files changed: `/save-docs` — commits context files with `docs —` prefix, pushes dev only. No deploy.
+3. If files changed: `/save-docs` — commits context files with `docs —` prefix, merges to main. No deploy.
 4. `/clear`.
 
 ### Between features
