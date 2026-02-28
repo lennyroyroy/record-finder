@@ -67,6 +67,13 @@ _These need a call before work can start._
 
 ---
 
+## Backlog — Tooling & Meta
+_Workflow and developer tooling ideas. Not app features._
+
+- **`claude-starter` — portable session workflow kit** — Extract this project's `.claude/` system (commands, context structure, CLAUDE.md template) into a standalone GitHub template repo with a `setup.sh` install script. Script prompts for project name/stack, copies generic files, fills placeholders, adds `.gitignore` entries. Supports `--update` flag to refresh command files without touching context. Repo tracks its own `CHANGELOG.md` so improvements made here (or on future projects) can be back-ported. Revisit after spinorstream launch — by then the system will be more battle-tested and easier to generalize cleanly.
+
+---
+
 ## Backlog — Hold
 _Good ideas, but blocked on a dependency or decision before building._
 
