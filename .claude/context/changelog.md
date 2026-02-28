@@ -4,6 +4,20 @@ High-level summary of work done per session. Not a technical deep-dive — just 
 
 ---
 
+## Session 8 — Landing page at root, app at /app (v1.17)
+
+**What shipped:**
+- Added `_redirects` — `/` force-rewrites to landing page, `/app/*` rewrites to React SPA. Landing page is now the homepage; app lives at `/app`.
+- Fixed OAuth callback: backend was redirecting to bare origin after Discogs auth, which now hits the landing page instead of the app. Changed redirect to `{origin}/app?auth=success&token=...`.
+- Updated "Open App" nav link in landing page from `spinorstream.com` → `spinorstream.com/app`.
+- Added `'/'` to Vite dev middleware so `localhost:5173/` serves the landing page in dev.
+- Updated PWA `start_url` to `/app` in both `site.webmanifest` and VitePWA config; workbox denylist now also excludes root `/`.
+- Added "Your data is saved only in this browser" disclosure on the login screen (one sentence above Privacy & Terms link).
+- Also corrected plan.md drift: search bar was in ideas.md Done but still showed `[ ]` in plan.md — fixed.
+- Bumped to v1.17.
+
+---
+
 ## Session 7 — Privacy Policy + Terms of Service (v1.16)
 
 **What shipped:**
