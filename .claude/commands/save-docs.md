@@ -6,11 +6,11 @@ Use after planning or brainstorm sessions when context files were edited but no 
 
 1. Run `git status` — confirm only `.claude/` files are modified. If any `frontend/` or `backend/` files appear, stop and ask the user before proceeding.
 
-2. Stage changed context files:
+2. Stage all changed `.claude/` files:
    ```
    git add .claude/context/plan.md .claude/context/changelog.md .claude/context/guide.md
    ```
-   Only stage files that are actually modified — don't add unmodified files.
+   Also stage any modified `.claude/commands/` files if they were edited this session. Only stage files that are actually modified — don't add unmodified files.
 
 3. Commit with a `docs —` prefix:
    ```

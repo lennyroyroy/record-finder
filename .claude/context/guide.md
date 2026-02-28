@@ -183,7 +183,3 @@ When building UI features, generate a preview at `.claude/previews/preview.html`
 
 ---
 
-## System History
-
-- **Session 10 (2026-02-28):** `ideas.md` merged into `plan.md` — single source of truth. All `ideas.md` references in commands updated.
-- **Session 11 (2026-02-28):** QA + Preview Workflow Overhaul — `Helpful Markdown Files/` renamed to `artifacts/`, `.claude/previews/` created (gitignored), `ship.md` updated to delete preview before commit, guide.md rewritten to remove `ideas.md` references.
