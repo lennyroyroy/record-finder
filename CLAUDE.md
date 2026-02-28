@@ -4,7 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Record Finder is a personal vinyl procurement tool. It syncs a Discogs wantlist, scans marketplace prices, and tracks a collection through a three-stage pipeline: Wantlist → Compare → Collection.
+Spin or Stream (formerly Record Finder) is a vinyl procurement tool for public launch April 2026. It syncs a Discogs wantlist, scans marketplace prices, and tracks a collection through a three-stage pipeline: Wantlist → Compare → Collection.
+
+## Session Workflow
+
+### Starting a session
+Run `/prime` — loads context, checks git status, summarizes where we are.
+
+### Finishing a feature
+Run `/ship` — commits, pushes dev, merges to main, deploys to prod.
+
+### Between features
+**Run `/clear` before starting something new.** This is a hard habit. Don't carry feature context across sessions — it bloats tokens and causes drift. If the user hasn't cleared after shipping, remind them.
 
 ## Commands
 
