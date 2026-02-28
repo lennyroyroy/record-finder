@@ -19,8 +19,11 @@ export default defineConfig({
         server.middlewares.use((req, res, next) => {
           const url = req.url.split('?')[0]
           const staticPages = {
+            '/': 'public/landing/index.html',
             '/privacy': 'public/privacy/index.html',
             '/privacy/': 'public/privacy/index.html',
+            '/landing': 'public/landing/index.html',
+            '/landing/': 'public/landing/index.html',
           }
           if (staticPages[url]) {
             res.setHeader('Content-Type', 'text/html')
@@ -35,8 +38,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       workbox: {
-        // Don't intercept navigation to /landing or /privacy — separate static pages
-        navigateFallbackDenylist: [/^\/landing/, /^\/privacy/],
+        // Don't intercept navigation to root, /landing, or /privacy — separate static pages
+        navigateFallbackDenylist: [/^\/$/, /^\/landing/, /^\/privacy/],
       },
       manifest: {
         name: 'Spin or Stream',
@@ -46,7 +49,7 @@ export default defineConfig({
         background_color: '#1c1814',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: '/app',
         icons: [
           { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],

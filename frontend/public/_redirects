@@ -1,0 +1,6 @@
+# Serve landing page at root — force overrides React app's index.html
+/ /landing/ 200!
+
+# React SPA at /app
+/app /index.html 200
+/app/* /index.html 200
