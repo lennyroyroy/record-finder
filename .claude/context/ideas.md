@@ -15,6 +15,12 @@ _Tracked in `plan.md` by phase. See there for active status and priority order._
 ## Hold — Needs a Decision First
 _Good ideas with a dependency or a question that must be answered before building._
 
+- **Landing page layout upgrade (Phase 3)** — Four concrete improvements to make before launch:
+  1. **Three-panel screenshot composite** — Replace the single placeholder with a fanned Wantlist / Compare / Collection sequence. Rotato can generate this as one image. Blocked on: taking the actual screenshots.
+  2. **Demo video embed** — 60-90s autoplay muted loop below the pipeline description. Highest-converting addition. Blocked on: recording the video.
+  3. **"Saved money" proof callout** — A visual card showing a real example (e.g., "Mac DeMarco · Salad Days — $100 on Discogs · $20 reissue at Walmart"). Looks like an app screenshot. Pure HTML/CSS, no blocker.
+  4. **Second CTA** — "Already on Discogs? Try the demo right now →" linking to `/app`. Lets people skip the waitlist and just use it. Pure HTML, no blocker.
+
 - **Apple App Store listing** — Wrap the web app in Capacitor (Ionic), buy Apple Developer account ($99/yr), submit. The app already has icons and a manifest. ~1–2 focused days. The question: does App Store add value over Safari "Add to Home Screen" for a personal tool? More valuable post-public-launch for discoverability.
 - **"PRICE DROP" badge** — Needs price history. Current scan overwrites the previous one. Store `previous_result` alongside `result` in localStorage, compare on re-scan. Decide if price history is worth adding to the data model first.
 - **Filter tabs: All / With Prices / Best Deals** — "All" and "With Prices" are easy. "Best Deals" needs a definition (under avg? under budget?). Split: do the easy two now, hold the rest.
@@ -41,6 +47,7 @@ _Foundation changes. Each unlocks a category of features but is a significant co
 - **Cloud sync** — Move off localStorage so the app works across devices. Requires a real database and auth overhaul. The single most important architectural decision for a public product. Everything multi-device depends on this. Don't start casually — but don't launch publicly at scale without a plan for it.
 - **Price history** — Store last 2–3 scan results per item in localStorage. Foundational for Price Drop badges and New Listings filter. The right next infrastructure step if you want those features.
 - **Multi-step onboarding** — Create Account → Connect Discogs → Sync Wantlist. Only makes sense after cloud sync exists.
+- **Clear scan data on logout** — `sos_results`, `sos_scan_times`, and `sos_wantlist_cache` currently persist across logout. Fine for a single-user personal tool, but if two users share a device, the second user inherits the first user's scan data. Low risk today; revisit when cloud sync lands and multi-user becomes real.
 - **Price drop alerts** — Email/push when a wantlist item hits a target price. Requires server-side scheduled scanning and a notification service. Not feasible with the current stateless proxy. Needs cloud sync first.
 - **Reverb / eBay marketplace scan** — Each platform is 1–2 days of backend work. High value if the goal is a true price aggregator.
 
