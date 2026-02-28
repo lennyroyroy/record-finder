@@ -1,17 +1,42 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    // Serve static sub-pages (public/*/index.html) in dev — Vite's SPA fallback
+    // would otherwise catch these routes and return the React app.
+    {
+      name: 'serve-static-subpages',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url.split('?')[0]
+          const staticPages = {
+            '/privacy': 'public/privacy/index.html',
+            '/privacy/': 'public/privacy/index.html',
+          }
+          if (staticPages[url]) {
+            res.setHeader('Content-Type', 'text/html')
+            res.end(fs.readFileSync(path.resolve(__dirname, staticPages[url])))
+            return
+          }
+          next()
+        })
+      },
+    },
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       workbox: {
-        // Don't intercept navigation to /landing — it's a separate static page
-        navigateFallbackDenylist: [/^\/landing/],
+        // Don't intercept navigation to /landing or /privacy — separate static pages
+        navigateFallbackDenylist: [/^\/landing/, /^\/privacy/],
       },
       manifest: {
         name: 'Spin or Stream',
