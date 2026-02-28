@@ -31,7 +31,7 @@ _Make the app feel complete and satisfying for a new user's first session._
 _The non-code work that makes or breaks a launch._
 
 - [ ] **Landing page: real screenshots** — Replace placeholder in pipeline section with actual Compare tab at ~1200px wide. Export as WebP.
-- [ ] **Landing page: Mailchimp** — Paste embed URL into form `action` attributes. See `MAILCHIMP_SETUP.md`.
+- [x] **Landing page: Mailchimp** — Paste embed URL into form `action` attributes. See `MAILCHIMP_SETUP.md`.
 - [ ] **Landing page: social handles** — Update footer links once Twitter/Instagram accounts are live.
 - [ ] **Social accounts** — Create @spinorstream (or equivalent) on at least one platform before launch.
 - [ ] **Final mobile QA pass** — Test on real iPhone in Safari. Confirm no overflow, no FOUT, scan flow works, PWA install works.
