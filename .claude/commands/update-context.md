@@ -4,7 +4,7 @@ Runs automatically at the end of `/ship`. Closes the loop on the session.
 
 ## Steps
 
-1. **Read the current state** of `.claude/context/plan.md`, `.claude/context/ideas.md`, `.claude/context/changelog.md`, and `git log --oneline -5`
+1. **Read the current state** of `.claude/context/plan.md`, `.claude/context/changelog.md`, and `git log --oneline -5`
 
 2. **Auto-update changelog.md** — Write a new session entry at the top (below the `---` after the header). Infer everything from git log and what was built this session. No user input needed. Use this format:
    ```
@@ -25,7 +25,7 @@ Runs automatically at the end of `/ship`. Closes the loop on the session.
    > Describe the idea, or hit Skip to finish.
 
    - If skipped: proceed to step 5.
-   - If an idea is provided: add it to the correct category in ideas.md (Hold / Housekeeping / Infrastructure / Rethink / Icebox). Infer the category — or ask if genuinely unclear.
+   - If an idea is provided: add it to the correct section in plan.md (Backlog — Hold / Housekeeping / Infrastructure / Rethink / Icebox). Infer the section — or ask if genuinely unclear.
 
 5. **Commit and push the doc updates:**
    - Stage only `.claude/context/` files that changed
