@@ -61,11 +61,13 @@ _Not in scope for April. Revisit based on user feedback._
 ---
 
 ## Open Decisions
-_These need a call before work can start._
+_These need a call before work can start. Each has a decide-by date — missing it blocks downstream work._
 
-1. **Landing page routing** — `/app` subdirectory vs. `app.spinorstream.com` subdomain. Affects OAuth redirect URLs.
-2. **Backend hosting** — Is Render free tier acceptable for launch, or upgrade now?
-3. **Social presence** — Which platform first? Twitter/X, Instagram, or Bluesky?
+1. **Landing page routing** — `/app` subdirectory vs. `app.spinorstream.com` subdomain. Affects OAuth redirect URLs and CORS config. **Decide by March 10** — Phase 1 work (privacy page, data disclosure) will create links that need to point somewhere stable.
+
+2. **Backend hosting** — Is Render free tier acceptable for launch, or upgrade now? Free tier sleeps after inactivity, which means a 30s cold start for new users' first scan. **Decide by March 15** — if upgrading, want it running before Phase 2 QA begins. Next action: check Render pricing and decide.
+
+3. **Social presence** — Which platform first? Twitter/X, Instagram, or Bluesky? **Decide by April 1** — Phase 3 requires accounts to be live before updating footer links. Next action: pick one platform, create @spinorstream, confirm handle availability.
 
 ---
 

@@ -6,14 +6,7 @@ _Goal: public launch April 2026. Reorganized 2026-02-27._
 ---
 
 ## Critical Path — Must Ship Before Launch
-_Blockers or near-blockers for a public product. Nothing in here is optional._
-
-- **Privacy policy + Terms of Service** — Required for App Store, expected by any serious user. A simple `/privacy` page. Content can be generated; the work is publishing it and linking from the footer and login screen.
-- **"Your data lives in your browser" disclosure** — Until cloud sync exists, users need to know their wantlist is device-local. One line on the login screen or onboarding. Sets expectations, prevents support headaches.
-- **Rate limit UX** — Discogs allows 60 req/min per user token. With batch scanning this is manageable, but if a user has 100+ items and hits a 429, the error handling needs to be clear and graceful. Current: 5s delay + 3 retries. Verify this is solid under load before launch.
-- **Landing page: real screenshots** — Placeholder in pipeline section. Swap for real Compare tab screenshot at ~1200px. Save as WebP.
-- **Landing page: Mailchimp** — Forms are wired. See `MAILCHIMP_SETUP.md`. Just needs the embed URL pasted in.
-- **Landing page: social handles** — Footer links are placeholders. Update once accounts are live.
+_Tracked in `plan.md` by phase. See there for active status and priority order._
 
 ---
 

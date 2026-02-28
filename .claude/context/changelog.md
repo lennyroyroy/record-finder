@@ -4,6 +4,27 @@ High-level summary of work done per session. Not a technical deep-dive — just 
 
 ---
 
+## Sessions 6–N — v1.1 through v1.15 (catch-up)
+
+_Reconstructed from plan.md Done section and ideas.md Done section. Individual session boundaries not preserved._
+
+**What shipped:**
+- v1.1: Public landing/waitlist page at `/landing/`
+- v1.3: PlayDropdown with YouTube Music, Spotify, Apple Music preview links; brand-colored icons for all retailers and music services (react-icons)
+- v1.4: Landing page "Open App" link updated to `https://spinorstream.com`
+- v1.10: Sort bar mobile overflow fix — shortened labels on mobile (Option A)
+- v1.12: PWA manifest, branded vinyl icon, apple-touch-icon, theme-color; installable via Safari "Add to Home Screen". Added Discogs signup link on login screen.
+- v1.13: Scan timestamp on fold row (right-aligned, amber after 24h); scan-all progress indicator ("Scanning X of Y"); Refresh All button; "Today's best deal" pinned banner; renamed "inc. shipping" → "est. shipping"
+- v1.14: Refresh All button refinement + app-shell overflow fix
+- v1.15: Fixed initial-load font FOUT overflow (iOS Safari)
+
+**Infrastructure/tooling:**
+- Moved context docs to `.claude/context/`, added `frontend/CLAUDE.md`
+- Added `/prime` and `/ship` commands; session workflow documented in `CLAUDE.md`
+- Settings tab pruned
+
+---
+
 ## Session 1 — Initial Build
 
 **What was built:**

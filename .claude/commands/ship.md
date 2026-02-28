@@ -15,4 +15,6 @@ Stages, commits, and deploys everything to prod. Run this when a feature is done
 
 ## After shipping
 
-Remind the user: **this is a good time to `/clear` before starting the next feature.**
+Run `/update-context` — updates changelog.md, checks off plan.md, and logs any new ideas. This is the mandatory close-the-loop step before clearing.
+
+Then remind the user: **run `/clear` before starting the next feature.**
