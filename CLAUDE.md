@@ -16,7 +16,7 @@ Spin or Stream (formerly Record Finder) is a vinyl procurement tool for public l
 5. `/clear` — mandatory before starting the next feature.
 
 ### Planning session (thinking, not building)
-1. `/review` — loads plan.md, ideas.md, last changelog entry **only**. No architecture files. Lighter and cheaper than `/prime`.
+1. `/review` — loads plan.md, last changelog entry **only**. No architecture files. Lighter and cheaper than `/prime`.
 2. Reorganize, reprioritize, make decisions.
 3. If files changed: `/save-docs` — commits context files with `docs —` prefix, merges to main. No deploy.
 4. `/clear`.
@@ -27,8 +27,7 @@ Spin or Stream (formerly Record Finder) is a vinyl procurement tool for public l
 ## Context Files
 
 All planning and reference docs live in `.claude/`:
-- `.claude/context/plan.md` — April launch plan, phased to-dos
-- `.claude/context/ideas.md` — feature backlog with effort/value analysis
+- `.claude/context/plan.md` — April launch plan, phased to-dos, and full feature backlog
 - `.claude/context/changelog.md` — session-by-session narrative history
 - `.claude/context/guide.md` — how the context system works, all workflow types
 - `.claude/commands/prime.md` — build session start command

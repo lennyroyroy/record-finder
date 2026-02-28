@@ -6,9 +6,8 @@ For strategy, prioritization, and context review. No code changes expected.
 
 ## Steps
 
-1. Read `.claude/context/plan.md` — phases, unchecked items, open decisions with due dates
-2. Read `.claude/context/ideas.md` — full backlog by category
-3. Read the **last entry only** from `.claude/context/changelog.md` — recent context
+1. Read `.claude/context/plan.md` — phases, unchecked items, open decisions, and full backlog
+2. Read the **last entry only** from `.claude/context/changelog.md` — recent context
 
 Do NOT read `CLAUDE.md` or `frontend/CLAUDE.md` — architecture context is not needed for planning.
 

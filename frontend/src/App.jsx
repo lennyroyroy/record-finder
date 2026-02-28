@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.17" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.18" + (import.meta.env.DEV ? "-dev" : "");
 
 function formatScanAge(ts) {
   if (!ts) return null;
@@ -14,6 +14,20 @@ function formatScanAge(ts) {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 function isScanStale(ts) { return ts != null && Date.now() - ts > 86400000; }
+
+// Auto-reset: if newest scan is >72 hours old, wipe stale data on load
+(function weeklyReset() {
+  try {
+    const times = JSON.parse(localStorage.getItem("sos_scan_times") || "{}");
+    const timestamps = Object.values(times);
+    if (!timestamps.length) return;
+    const newest = Math.max(...timestamps);
+    if (Date.now() - newest > 3 * 24 * 60 * 60 * 1000) {
+      localStorage.removeItem("sos_results");
+      localStorage.removeItem("sos_scan_times");
+    }
+  } catch {}
+})();
 
 // ─── GLOBAL STYLES ──────────────────────────────────────────────────────────
 
