@@ -11,8 +11,8 @@ _Make the app trustworthy for strangers, not just the builder._
 - [x] **Privacy policy + Terms of Service** — Write and publish at `/privacy`. Link from login screen footer and landing page footer. Required for App Store; expected by any real user.
 - [x] **"Your data lives in your browser" disclosure** — One sentence on the login screen. Sets expectations before someone builds a 100-item wantlist and clears their browser.
 - [x] **Landing page routing** — ~~Decision made:~~ Going with `/app` via Netlify `_redirects`. Implement the redirect rule and move app to `/app` before any marketing push.
-- [ ] **OAuth logout QA** — Full end-to-end test: log in → log out → log in again. Confirm no stale state. Should take 15 minutes.
-- [ ] **Rate limit stress test** — Manually scan 20+ items back-to-back and confirm the 5s delay + retry logic handles 429s gracefully with a clear user message.
+- [x] **OAuth logout QA** — Full end-to-end test: log in → log out → log in again. Confirm no stale state. Should take 15 minutes.
+- [x] **Rate limit stress test** — Manually scan 20+ items back-to-back and confirm the 5s delay + retry logic handles 429s gracefully with a clear user message.
 
 ---
 
@@ -84,3 +84,5 @@ _These need a call before work can start. Each has a decide-by date — missing 
 - ~~"Your data lives in your browser" disclosure (v1.17)~~
 - ~~Landing page routing — /app via _redirects (v1.17)~~
 - ~~Search bar within the wantlist~~
+- ~~OAuth logout QA (Session 9)~~
+- ~~Rate limit stress test (Session 9)~~

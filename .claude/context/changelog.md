@@ -4,6 +4,17 @@ High-level summary of work done per session. Not a technical deep-dive — just 
 
 ---
 
+## Session 9 — Phase 1 QA complete
+
+**What shipped:**
+- No code. Pure QA session.
+- OAuth logout QA: full end-to-end test passed. Auth keys clear on logout, OAuth redirects back to `/app`, wantlist syncs fresh on re-login, no stale auth state.
+- Rate limit stress test: 21+ items scanned back-to-back, all 200s, no 429s. Effective delay is ~9s per item (5s hardcoded + ~2-4s request time). Scan completes cleanly with "Refresh complete ✓" toast.
+- Noted: `sos_results`, `sos_scan_times`, `sos_wantlist_cache` intentionally persist across logout (single-user tool). Logged multi-user stale data edge case to ideas.md under Infrastructure.
+- Phase 1 is complete.
+
+---
+
 ## Session 8 — Landing page at root, app at /app (v1.17)
 
 **What shipped:**
