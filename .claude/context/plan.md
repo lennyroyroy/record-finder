@@ -81,4 +81,6 @@ _These need a call before work can start. Each has a decide-by date — missing 
 - ~~Refresh All button (v1.13)~~
 - ~~Custom domain + Cloudflare~~
 - ~~Privacy policy + Terms of Service (v1.16)~~
+- ~~"Your data lives in your browser" disclosure (v1.17)~~
+- ~~Landing page routing — /app via _redirects (v1.17)~~
 - ~~Search bar within the wantlist~~

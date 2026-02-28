@@ -31,6 +31,7 @@ _Bug fixes and QA tasks — not new features._
 
 - **OAuth logout QA** — Full logout sequence hasn't been tested end-to-end. Test: log in → log out → log in again, confirm no stale state.
 - **Rename "Listen" button to "Stream"** — Label change on the play/listen button in wantlist cards. Better aligns with the app name and the vinyl vs. streaming framing. Trivial.
+- **Vinyl facts rotate too fast on mobile** — The facts carousel during OAuth redirect cycles too quickly on mobile. Increase the interval or slow the transition so users can actually read them.
 
 ---
 
