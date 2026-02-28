@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaAmazon, FaBandcamp, FaSpotify } from "react-icons/fa";
 import { SiWalmart, SiTarget, SiDiscogs, SiYoutubemusic, SiApplemusic } from "react-icons/si";
 
-const APP_VERSION = "v1.15" + (import.meta.env.DEV ? "-dev" : "");
+const APP_VERSION = "v1.16" + (import.meta.env.DEV ? "-dev" : "");
 
 function formatScanAge(ts) {
   if (!ts) return null;
@@ -1869,6 +1869,11 @@ function LoginScreen({ error, loading, onGuestMode }) {
               No Discogs account?{" "}
               <a href="https://www.discogs.com/users/create" target="_blank" rel="noopener noreferrer" className="login-signup-link">
                 Create one →
+              </a>
+            </p>
+            <p className="form-hint" style={{ marginTop: "8px", textAlign: "center" }}>
+              <a href="/privacy/" target="_blank" rel="noopener noreferrer" className="login-signup-link">
+                Privacy &amp; Terms
               </a>
             </p>
           </>
