@@ -30,6 +30,7 @@ _Good ideas with a dependency or a question that must be answered before buildin
 _Bug fixes and QA tasks — not new features._
 
 - **OAuth logout QA** — Full logout sequence hasn't been tested end-to-end. Test: log in → log out → log in again, confirm no stale state.
+- **Rename "Listen" button to "Stream"** — Label change on the play/listen button in wantlist cards. Better aligns with the app name and the vinyl vs. streaming framing. Trivial.
 
 ---
 

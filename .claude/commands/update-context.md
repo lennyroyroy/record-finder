@@ -1,37 +1,36 @@
 # /update-context — Update All Context Docs
 
-Run this immediately after shipping. Closes the loop on the session before clearing.
+Runs automatically at the end of `/ship`. Closes the loop on the session.
 
 ## Steps
 
-1. **Read the current state** of `.claude/context/plan.md`, `.claude/context/ideas.md`, and `.claude/context/changelog.md`
+1. **Read the current state** of `.claude/context/plan.md`, `.claude/context/ideas.md`, `.claude/context/changelog.md`, and `git log --oneline -5`
 
-2. **Ask the user three questions** (ask all three at once, clearly numbered):
+2. **Auto-update changelog.md** — Write a new session entry at the top (below the `---` after the header). Infer everything from git log and what was built this session. No user input needed. Use this format:
+   ```
+   ## Session N — {brief title}
 
-   > **1. What shipped?**
-   > Write 1–2 sentences for the changelog. What changed, and was there anything tricky?
-   >
-   > **2. Which plan.md item(s) are done?**
-   > Show the user the current unchecked items from plan.md so they can confirm which to mark complete.
-   >
-   > **3. Any new ideas to log?**
-   > If yes, ask for the idea and which ideas.md category it belongs in (Critical Path / Build Next / Hold / Housekeeping / Infrastructure / Rethink / Icebox). If no, skip.
+   **What shipped:**
+   - {inferred from git log and session context}
 
-3. **Make the edits:**
+   ---
+   ```
+   Infer the session number from how many entries already exist.
 
-   - **changelog.md** — Append a new session entry at the top (below the `---` after the header). Use this format:
-     ```
-     ## Session N — {brief title}
+3. **Auto-check plan.md** — Compare what was shipped against open items in plan.md. Mark completed items `- [x]` and move them to the `Done` section at the bottom. Infer from git log and session context — no user input needed.
 
-     **What shipped:**
-     - {user's answer from Q1}
+4. **Ask one optional question:**
 
-     ---
-     ```
-     Infer the session number from how many entries already exist.
+   > **Any new ideas to log?**
+   > Describe the idea, or hit Skip to finish.
 
-   - **plan.md** — Check off the completed item(s) the user identified. Change `- [ ]` to `- [x]`. Then move the item to the `Done` section at the bottom. If no Done section exists, add one.
+   - If skipped: proceed to step 5.
+   - If an idea is provided: add it to the correct category in ideas.md (Hold / Housekeeping / Infrastructure / Rethink / Icebox). Infer the category — or ask if genuinely unclear.
 
-   - **ideas.md** — If the shipped item exists in ideas.md (Critical Path or Build Next), move it to the `Done` section with a strikethrough and version note. If there's a new idea from Q3, add it to the correct category.
+5. **Commit and push the doc updates:**
+   - Stage only `.claude/context/` files that changed
+   - Commit message: `docs — update context after {brief description}`
+   - Push to `dev`, then merge to `main` and push, return to `dev`
+   - This keeps dev and main in sync on context files
 
-4. **Confirm** what was updated: "Updated changelog, plan, and ideas. Ready to `/clear`."
+6. **Confirm:** "Context updated and synced to main. Ready to `/clear`."

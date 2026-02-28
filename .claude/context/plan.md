@@ -8,7 +8,7 @@ _Created: 2026-02-27._
 ## Phase 1 — Foundation (Now → mid-March)
 _Make the app trustworthy for strangers, not just the builder._
 
-- [ ] **Privacy policy + Terms of Service** — Write and publish at `/privacy`. Link from login screen footer and landing page footer. Required for App Store; expected by any real user.
+- [x] **Privacy policy + Terms of Service** — Write and publish at `/privacy`. Link from login screen footer and landing page footer. Required for App Store; expected by any real user.
 - [ ] **"Your data lives in your browser" disclosure** — One sentence on the login screen. Sets expectations before someone builds a 100-item wantlist and clears their browser.
 - [ ] **Landing page routing** — ~~Decision made:~~ Going with `/app` via Netlify `_redirects`. Implement the redirect rule and move app to `/app` before any marketing push.
 - [ ] **OAuth logout QA** — Full end-to-end test: log in → log out → log in again. Confirm no stale state. Should take 15 minutes.
@@ -80,3 +80,4 @@ _These need a call before work can start. Each has a decide-by date — missing 
 - ~~Scan timestamp on fold row (v1.13)~~
 - ~~Refresh All button (v1.13)~~
 - ~~Custom domain + Cloudflare~~
+- ~~Privacy policy + Terms of Service (v1.16)~~

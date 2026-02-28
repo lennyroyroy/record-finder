@@ -1,6 +1,6 @@
 # /ship — Deploy to Production
 
-Stages, commits, and deploys everything to prod. Run this when a feature is done and reviewed.
+Stages, commits, and deploys everything to prod, then updates all context docs.
 
 ## Steps
 
@@ -12,9 +12,8 @@ Stages, commits, and deploys everything to prod. Run this when a feature is done
 6. Checkout `main`, merge `dev`, push `main`
 7. Checkout `dev`
 8. Confirm: "Deployed. Netlify will pick up the change from main."
+9. **Run `/update-context` automatically** — updates changelog.md, checks off plan.md, prompts for new ideas, then commits and pushes doc changes to keep dev and main in sync.
 
-## After shipping
+## After everything completes
 
-Run `/update-context` — updates changelog.md, checks off plan.md, and logs any new ideas. This is the mandatory close-the-loop step before clearing.
-
-Then remind the user: **run `/clear` before starting the next feature.**
+Remind the user: **run `/clear` before starting the next feature.**

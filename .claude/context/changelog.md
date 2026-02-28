@@ -4,6 +4,16 @@ High-level summary of work done per session. Not a technical deep-dive — just 
 
 ---
 
+## Session 7 — Privacy Policy + Terms of Service (v1.16)
+
+**What shipped:**
+- Created `/privacy` — combined Privacy Policy + Terms of Service page. Plain English, matches app design system (dark bg, DM Mono, orange accent). Covers localStorage-only data model, Discogs OAuth, currency API, no-tracking stance, and terms of use.
+- Linked from login screen footer and landing page footer.
+- Fixed Vite dev server to serve static sub-pages correctly via custom middleware (SPA fallback was intercepting `/privacy/`).
+- Bumped to v1.16.
+
+---
+
 ## Sessions 6–N — v1.1 through v1.15 (catch-up)
 
 _Reconstructed from plan.md Done section and ideas.md Done section. Individual session boundaries not preserved._
