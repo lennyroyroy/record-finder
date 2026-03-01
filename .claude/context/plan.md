@@ -34,6 +34,8 @@ _The non-code work that makes or breaks a launch._
 - [ ] **Social accounts** — Create @spinorstream (or equivalent) on at least one platform before launch.
 - [ ] **Final mobile QA pass** — Test on real iPhone in Safari. Confirm no overflow, no FOUT, scan flow works, PWA install works.
 - [ ] **Backend health check** — Confirm Render service is on a paid plan (free tier sleeps after inactivity — bad for new users). Or add a keep-alive ping.
+- [ ] **Analytics** — Add free analytics (Plausible or similar lightweight script) before launch so visitor data exists from day one. No backend changes required.
+- [ ] **Landing page: "what it does" paragraph** — Add one clear paragraph of copy explaining what Spin or Stream does for a first-time visitor who doesn't know Discogs. Currently the landing page assumes too much context.
 
 ---
 
@@ -97,6 +99,63 @@ _Good ideas, but blocked on a dependency or decision before building._
 
 - **Price threshold indicator in Compare** — Highlight listings at or under a target price. Budget slider may overlap. Needs clearer definition.
 
+- **Manual price comparison view on Compare card (major)** — A toggle view on the Compare card where the user manually enters prices from retailers as they browse. Each row: Vendor / Cost / Shipping / Total (auto-calculated). An "Unavailable" checkbox hides a row. Best Option at the bottom highlights the cheapest. Mockup captured. Open question: how to trigger and dismiss this view — clicking album art is one option, but the back-flip needs a clear affordance. Needs design decision before building.
+
+- **Pending state on Compare card (major)** — A "Pending" button on the Compare card (visible on both the standard and manual-comparison views) moves an album to a Pending section inside Collection. Pending covers two states: under consideration, and ordered/in-transit. Pending albums auto-expire 2 weeks after being marked, or are removed automatically when Discogs reports the album as collected. A "Remove from pending" button exits early. Interaction model needs more thought — especially how pending interacts with the existing collection sync — before building.
+
+- **Compare cards: side-by-side layout on desktop** — On wide viewports, Compare cards stack vertically like Wantlist cards. They should sit side by side at desktop widths. Will need layout options presented before implementing.
+
+- **Sort on Compare tab** — Add sorting to the Compare section. Best deal should float to the top by default. Secondary sort options (artist, price) optional.
+
+- **Country of origin setting + "ships from your country" filter** — Let the user set their country in Settings. Use it to power a filter on Wantlist and Compare that surfaces only listings shipping domestically. Both the setting and the filter are needed; build together.
+
+- **Default currency setting** — Allow the user to select their preferred display currency in Settings. Currently hardcoded to USD.
+
+- **Real album art in demo mode** — Demo mode uses placeholder images. Swap in real album art to make the demo feel live and reduce first-impression friction for new users.
+
+- **Tutorial / onboarding guide** — Walkthrough for new users covering sync, scan, and compare flow. Not urgent; revisit post-launch or during a quiet session.
+
+---
+
+## Backlog — Brand & Design
+_Logo, assets, and visual production. Feeds into landing page and social._
+
+- **Fiverr: App Screenshot Mockups & Landing Page Assets** — Post job using the prepared brief. Share full detailed brief with seller once engaged. Scope includes logo mark cleanup if the SVG prototype (`artifacts/logo.svg`) isn't production-ready after review.
+
+- **Logo & brand asset exports** — Send final logo mark through Vectorizer.ai to get a clean SVG master. Build master canvas in Canva (500×500px, `#1c1814` bg, centered mark with padding). Export all sized variants: Twitter/X header (1400×400), Instagram profile (320×320), Apple touch icon (180×180), favicon (32×32), Product Hunt thumbnail (240×240), Open Graph image (1200×630 with tagline "Know exactly what to buy before you spend a dollar").
+
+- **Replace favicon** — Swap the default favicon in `public/` with the new branded 32×32 export.
+
+- **Capture and process app screenshots** — Log in as glassmouse and capture all 6 raw screenshots in one session. Process through Shots.so with consistent dark settings. Build three-panel fanned composite hero in Canva (1400×900, Wantlist / Compare / Collection). Banks the assets needed for the landing page upgrade already in Backlog — Hold.
+
+- **Demo video** — Install Screen Studio. Record a 60–90s walkthrough following the outlined flow. Edit down to a 30–45s Reel cut for social.
+
+---
+
+## Backlog — Marketing: Pre-Launch
+_Setup and content creation before the public announcement._
+
+- **Social: full profile setup** — Claim @spinorstream on Instagram and Twitter/X (Phase 3 covers claiming; this covers setup). Write bios, upload logo mark as profile photo, upload Twitter/X header banner. Follow target accounts on Instagram (discogs, bandcamp, thevinyfactory, vinyljunkies, recordstoreday, vinylcollectors, analogplanet, musiconcvinyl, waxworkrecords, local NYC record stores) and Twitter/X (discogs, bandcamp, pitchfork, thewiremagazine).
+
+- **Social content: first 5 posts** — Create in Canva: (1) intro post with login screen mockup, (2) how it works carousel — 4 slides, (3) real example post with Compare screenshot, (4) 30–45s Reel cut of demo video, (5) photo of physical record collection. Schedule all 5 in Buffer (free tier).
+
+- **Reddit warm-up** — Spend one week engaging genuinely in r/vinyl and r/recordcollectors before any promotion. Then post a tester recruitment post in r/vinyl targeting 10–15 beta testers. DM the link, collect structured feedback.
+
+- **Mailchimp: confirmation email** — Set up the welcome/confirmation email in Mailchimp triggered on form signup (free automation). Distinct from the embed already done in Phase 3 — this is the email the subscriber actually receives.
+
+---
+
+## Backlog — Marketing: Launch
+_Execution during and immediately after the public launch window._
+
+- **Reddit launch posts** — Write r/vinyl post (origin story framing, Mac DeMarco real-world example) and r/recordcollectors post (wantlist-to-collection pipeline angle). Different copy for each community. Schedule for launch week: Monday and Wednesday.
+
+- **Discogs community forum** — Find and post in the Tools & Apps section of the Discogs community forum. Highest-ROI channel for the core audience.
+
+- **Product Hunt** — Create PH account. Build full listing: screenshots, description, maker comment written as an origin story. Identify a hunter with PH reputation to submit. Coordinate beta testers to upvote on launch day. Schedule for a Thursday during launch week (highest traffic day).
+
+- **Substack outreach** — Identify 2–3 Substack writers covering vinyl and record collecting. Send short, personal cold emails — not a pitch, a genuine heads-up.
+
 ---
 
 ## Housekeeping
@@ -105,6 +164,22 @@ _Bug fixes and small QA tasks — not new features._
 - **Rename "Listen" button to "Stream"** — Label change on the play/listen button in wantlist cards. Better aligns with the app name and the vinyl vs. streaming framing. Trivial.
 
 - **Vinyl facts rotate too fast on mobile** — The facts carousel during OAuth redirect cycles too quickly on mobile. Increase the interval or slow the transition so users can actually read them.
+
+- **Auth page layout cleanup** — The login screen has grown crowded with recent additions. QA and simplify: reduce visual noise, improve hierarchy. Present design options before implementing.
+
+- **Button color audit** — Today's Best Deal banner, Listings badge, Sync from Discogs, and Refresh All are all rendered in green. Green should signal one thing — revisit the color system and propose a cleaner palette where each action type has a distinct, intentional color.
+
+- **Desktop: search bar layout compression** — When the wantlist search bar is active, the surrounding content area compresses noticeably. Investigate and fix the layout shift.
+
+- **Mobile: persistent right-side cutoff (dedicated session)** — Content is clipped on the right side on mobile. This has been attempted multiple times without a clean fix. Dedicate a full session: audit all previous fix attempts, identify the true root cause, and resolve — even if it means restructuring the mobile layout significantly.
+
+- **Price accuracy QA** — Spotted a disconnect between the card price and what's actually listed on Discogs (e.g., $13 shown for Set Em Wild, Set Em Free — couldn't find that listing on Discogs). Investigate whether this is a stale cache issue, marketplace data timing, or a display bug. Reproduce consistently before fixing.
+
+- **Shopping QA: end-to-end purchase validation** — Pick a real album, follow the price from the card into Discogs, and confirm the listing exists at or near the shown price. Document any gaps. Requires spending real money to validate the full experience honestly.
+
+- **Stress test: add 100+ albums to wantlist** — Manually add 100+ albums on Discogs to push the wantlist past ~166 items. Surface any layout, performance, or scan issues not visible at the current 66-item count.
+
+- **External testing: create a friend's Discogs account** — Set up a secondary Discogs account to QA the new-user flow from a completely fresh perspective, separate from the builder's account.
 
 ---
 
