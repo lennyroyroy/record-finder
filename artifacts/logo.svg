@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <clipPath id="left">
+      <rect x="0" y="0" width="250" height="500"/>
+    </clipPath>
+    <clipPath id="right">
+      <rect x="250" y="0" width="250" height="500"/>
+    </clipPath>
+    <clipPath id="disc">
+      <circle cx="250" cy="250" r="219"/>
+    </clipPath>
+
+    <!--
+      Radial gradient on each half to give the slight depth the original has:
+      slightly brighter near center, slightly darker toward outer edge.
+    -->
+    <radialGradient id="shadeLeft" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#D97828" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.22"/>
+    </radialGradient>
+    <radialGradient id="shadeRight" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#5A9188" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.22"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ── Background ──────────────────────────────────────────── -->
+  <!-- Deep warm near-black, matches the original's brown-black bg -->
+  <rect width="500" height="500" fill="#180C06"/>
+
+  <!-- ── Record halves ───────────────────────────────────────── -->
+  <!-- Orange: warm amber, hue ~27°, sat ~72%, lum ~44% -->
+  <circle cx="250" cy="250" r="219" fill="#C46820" clip-path="url(#left)"/>
+  <!-- Teal: muted blue-green, hue ~170°, sat ~27%, lum ~33% -->
+  <circle cx="250" cy="250" r="219" fill="#3D6D66" clip-path="url(#right)"/>
+
+  <!-- Subtle radial shading overlay (depth) -->
+  <circle cx="250" cy="250" r="219" fill="url(#shadeLeft)"  clip-path="url(#left)"/>
+  <circle cx="250" cy="250" r="219" fill="url(#shadeRight)" clip-path="url(#right)"/>
+
+  <!--
+    ── Groove lines ───────────────────────────────────────────
+    8 perfectly concentric arcs, evenly spaced every 19px.
+    Both sides share identical radii — eliminates any asymmetric sweep.
+    Stroke is semi-transparent white so it reads as lighter orange / lighter teal
+    on the respective halves, matching the original's highlight-groove style.
+    stroke-width 2 gives the grooves visible weight at large format.
+  -->
+  <g clip-path="url(#left)">
+    <circle cx="250" cy="250" r="74"  fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="93"  fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="112" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="131" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="150" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="169" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="188" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="207" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+  </g>
+  <g clip-path="url(#right)">
+    <circle cx="250" cy="250" r="74"  fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="93"  fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="112" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="131" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="150" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="169" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="188" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+    <circle cx="250" cy="250" r="207" fill="none" stroke="rgba(255,255,255,0.17)" stroke-width="2"/>
+  </g>
+
+  <!-- ── Vertical split line (contained to disc) ─────────────── -->
+  <line x1="250" y1="0" x2="250" y2="500"
+        stroke="#180C06" stroke-width="3"
+        clip-path="url(#disc)"/>
+
+  <!-- ── Outer rim ────────────────────────────────────────────── -->
+  <!-- Dark ring at the record edge, same color as background -->
+  <circle cx="250" cy="250" r="219"
+          fill="none" stroke="#180C06" stroke-width="7"/>
+
+  <!-- ── Center label ─────────────────────────────────────────── -->
+  <!-- Warm cream, sized to match ~24% of record radius -->
+  <circle cx="250" cy="250" r="53" fill="#EDE2C0"/>
+
+  <!-- ── Spindle hole ──────────────────────────────────────────── -->
+  <circle cx="250" cy="250" r="12" fill="#180C06"/>
+</svg>
